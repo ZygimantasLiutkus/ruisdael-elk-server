@@ -82,6 +82,8 @@ pitest:
   script:
     - chmod +x ./gradlew
     - ./gradlew :pitest
+    - cat build/reports/pitest/index.html | grep -Po "<td>.*?([0-9]{1,3})%" | head -n 2 | tail -n 1
+  coverage: /([0-9]{1,3})%/
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull
