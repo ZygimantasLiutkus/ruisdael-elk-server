@@ -59,12 +59,18 @@ pmd:
 
 junit-jacoco:
   stage: test
-  needs: [build]
+  needs: [checkstyle, pmd]
   script:
     - chmod +x ./gradlew
     - ./gradlew :test :jacocoTestReport
     - cat build/reports/jacoco/test/html/index.html | grep -Po "Total.*?([0-9]{1,3})%"
   coverage: /([0-9]{1,3})%/
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - build/
+      - .gradle/
   artifacts:
     when: always
     reports:
@@ -76,3 +82,11 @@ pitest:
   script:
     - chmod +x ./gradlew
     - ./gradlew :pitest
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - build/
+      - .gradle/
+  artifacts:
+    paths: [ "build/reports/pitest/index.html" ]
