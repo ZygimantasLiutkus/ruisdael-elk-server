@@ -1,4 +1,4 @@
-image: eclipse-temurin/eclipse-temurin:17.0.7_7-jdk
+image: eclipse-temurin:17.0.7_7-jdk
 
 stages:
   - build
