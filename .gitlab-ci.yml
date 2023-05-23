@@ -14,7 +14,7 @@ build:
   needs: []
   script:
     - chmod +x ./gradlew
-    - ./gradlew --build-cache :server:assemble
+    - ./gradlew --build-cache :assemble
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
@@ -27,7 +27,7 @@ checkstyle:
   needs: [build]
   script: 
     - chmod +x ./gradlew
-    - ./gradlew :server:checkstyleMain :server:checkstyleTest
+    - ./gradlew :checkstyleMain :checkstyleTest
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull
@@ -45,7 +45,7 @@ pmd:
   needs: [build]
   script:
     - chmod +x ./gradlew
-    - ./gradlew :server:pmdMain :server:pmdTest
+    - ./gradlew :pmdMain :pmdTest
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull
@@ -62,7 +62,7 @@ junit-jacoco:
   needs: [build]
   script:
     - chmod +x ./gradlew
-    - ./gradlew :server:test :server:jacocoTestReport
+    - ./gradlew :test :jacocoTestReport
     - cat build/reports/jacoco/test/html/index.html | grep -Po "Total.*?([0-9]{1,3})%"
   coverage: /([0-9]{1,3})%/
   artifacts:
@@ -75,4 +75,4 @@ pitest:
   needs: [junit-jacoco]
   script:
     - chmod +x ./gradlew
-    - ./gradlew :server:pitest
+    - ./gradlew :pitest
