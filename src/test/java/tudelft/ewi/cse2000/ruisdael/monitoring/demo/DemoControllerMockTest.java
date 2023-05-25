@@ -1,4 +1,4 @@
-package nl.tudelft.ewi.gitlab.cse2000.group12b.ruisdaelmonitoringwebui.demo;
+package tudelft.ewi.cse2000.ruisdael.monitoring.demo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

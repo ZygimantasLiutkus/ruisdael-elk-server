@@ -1,4 +1,4 @@
-package nl.tudelft.ewi.gitlab.cse2000.group12b.ruisdaelmonitoringwebui;
+package tudelft.ewi.cse2000.ruisdael.monitoring;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

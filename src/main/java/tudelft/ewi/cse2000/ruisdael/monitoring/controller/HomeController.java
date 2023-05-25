@@ -1,4 +1,4 @@
-package nl.tudelft.ewi.gitlab.cse2000.group12b.ruisdaelmonitoringwebui.controller;
+package tudelft.ewi.cse2000.ruisdael.monitoring.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
