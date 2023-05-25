@@ -1,14 +1,19 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.controller;
 
+import java.util.Arrays;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
 
-import java.util.Arrays;
-
 @Controller
 public class DeviceController {
+
+    /**
+     * Handler for the /overview page on the dashboard.
+     *
+     * @return See Thymeleaf overview template.
+     */
     @GetMapping("/overview")
     public String getOverview(Model model) {
         model.addAttribute("devices", Arrays.asList(

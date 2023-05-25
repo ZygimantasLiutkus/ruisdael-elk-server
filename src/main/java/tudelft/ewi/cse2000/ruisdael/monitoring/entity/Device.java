@@ -1,14 +1,13 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.entity;
 
-
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Objects;
-
-/**Author: Dean Polimac
+/**
+ * Author: Dean Polimac.
  * Date:23/05/2023
  * <p>
  *     This class contains all the attributes of a instrument in the Ruisdael network. The attributes of the class
@@ -30,7 +29,7 @@ import java.util.Objects;
 public class Device {
 
     /**
-     * These are all the attributes being sent from the node to the server:
+     * These are all the attributes being sent from the node to the server.
      * data = {'RAM.total': ram[0],  # B(ytes)
      *         'RAM.available': ram[1],  # B
      *         'RAM.used.perc': ram[2],  # %
@@ -50,8 +49,9 @@ public class Device {
      *        }
      * The Device Entity should resemble it.
      */
-    private @Id
-    @GeneratedValue Long id;
+    @Id
+    @GeneratedValue
+    private Long id;
     private String name;
     private boolean online;
     private double totalStorage;
@@ -65,9 +65,12 @@ public class Device {
     private double downloadSpeed;
     private String location;
 
-    public Device() {}
+    public Device() {
+
+    }
 
     /**
+     *  All argument constructor.
      *
      * @param name - Name of the device.
      * @param online - Status of the device, if the device is online then it is true, otherwise false.
@@ -99,6 +102,9 @@ public class Device {
         this.location = location;
     }
 
+    /**
+     * Constructor used for passing a device to the front-end.
+     */
     public Device(boolean online, String name, String location, double totalStorage, double availableStorage,
                   double totalRam, double availableRam) {
         this.online = online;
@@ -111,15 +117,19 @@ public class Device {
     }
 
 
-    /**This method should be checked, I assume that the name of the
+    /**This method should be checked, I assume that the name of the.
      *
      * @param o - Object representing another device.
      * @return true, iff the two Device objects have all the same attributes.
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Device device = (Device) o;
         return online == device.online && Double.compare(device.totalStorage, totalStorage) == 0
                 && Double.compare(device.availableStorage, availableStorage) == 0

@@ -17,7 +17,9 @@ public class Ram {
     private double total;
     private double available;
 
-    public Ram() {}
+    public Ram() {
+
+    }
 
     public Ram(double total, double available) {
         this.total = total;
@@ -50,8 +52,12 @@ public class Ram {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Ram ram = (Ram) o;
         return Double.compare(ram.total, total) == 0 && Double.compare(ram.available, available) == 0;
     }
