@@ -17,20 +17,22 @@ import java.util.function.Function;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
+@SpringBootTest
 class ElasticsearchServiceTest {
 
-    @Mock
+    @MockBean
     private ElasticsearchClient mockClient;
-    @Mock
+    @MockBean
     private SearchResponse mockResponse;
-    @Mock
+    @MockBean
     private HitsMetadata mockHitMeta;
 
-    @InjectMocks
+    @Autowired
     private ElasticsearchService elasticsearchService;
 
     @BeforeEach
