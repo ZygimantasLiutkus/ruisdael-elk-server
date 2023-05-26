@@ -1,4 +1,4 @@
-package nl.tudelft.ewi.gitlab.cse2000.group12b.ruisdaelmonitoringwebui.demo;
+package tudelft.ewi.cse2000.ruisdael.monitoring.demo;
 
 import org.springframework.stereotype.Service;
 

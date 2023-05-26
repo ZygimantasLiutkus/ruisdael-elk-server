@@ -1,4 +1,4 @@
-package nl.tudelft.ewi.gitlab.cse2000.group12b.ruisdaelmonitoringwebui.demo;
+package tudelft.ewi.cse2000.ruisdael.monitoring.demo;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,9 +19,9 @@ public class DemoController {
      * @return Thymeleaf Template name. The returned string maps to src/main/resources/templates/STRINGHERE
      */
     @GetMapping("/greeting")
-    public String thymeleafExample(@RequestParam(name = "fieldname", required = false, defaultValue = "World") String greeting, Model model) {
+    public String thymeleafExample(@RequestParam(name = "fieldname", required = false, defaultValue = "World")
+                                       String greeting, Model model) {
         model.addAttribute("greeting", new Greeting("Hello, ", greeting));
-
         return "demo/helloworld";
     }
 
