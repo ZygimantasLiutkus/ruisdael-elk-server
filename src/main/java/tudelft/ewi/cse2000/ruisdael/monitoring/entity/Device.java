@@ -54,11 +54,15 @@ public class Device {
     private Long id;
     private String name;
     private boolean online;
+
     private double totalStorage;
     private double availableStorage;
+
     private double totalRam;
     private double availableRam;
+
     private double cpuUsage;
+
     private double uploadSize;
     private double downloadSize;
     private double uploadSpeed;
@@ -116,6 +120,22 @@ public class Device {
         this.availableRam = availableRam;
     }
 
+    /**
+     *
+     * @param o - Instance of an object
+     * @return true, iff the o is an instance of Device, and the name and location are the same, otherwise false.
+     */
+    public boolean isSame(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Device device = (Device) o;
+        return this.name.equals(device.getName()) && this.name.equals(device.location);
+    }
+
 
     /**This method should be checked, I assume that the name of the.
      *
@@ -151,6 +171,10 @@ public class Device {
                 uploadSize, downloadSize, uploadSpeed, downloadSpeed, location);
     }
 
+    /**
+     *
+     * @return string representation of a Device.
+     */
     @Override
     public String toString() {
         return "The device " + name + " located at " + location  + "is currently " + (online ? "online" : "offline")
