@@ -14,6 +14,34 @@ body {
     margin-left: auto;
 }
 
+.status-container {
+    position: relative;
+    display: flex;
+    height: auto;
+    width: auto;
+    min-height: 30px;
+    min-width: 30px;
+    margin-bottom: 1rem;
+    align-content: center;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: row;
+}
+
+.status-div-container, .status-div {
+    position: relative;
+    float: left;
+    display: inline;
+    min-height: 30px;
+    min-width: 30px;
+    margin: 0.1rem;
+}
+
+.status-container {
+    border: #646278 1px solid;
+}
+
 .navbar>.container, .navbar>.container-fluid, .navbar>.container-lg, .navbar>.container-md, .navbar>.container-sm,
 .navbar>.container-xl, .navbar>.container-xxl {
     display: flex;

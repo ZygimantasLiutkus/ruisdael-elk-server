@@ -37,8 +37,19 @@
         <div class="container">
             <div class="overview">
 
-                <h1 style="color: white;"> Device Status Overview </h1>
+                <h1 style="color: white;"> General Overview </h1>
 
+                <!-- This is used for the grid of the node statuses -->
+                <h2 style="color: white; margin-bottom: 1rem"> Device Statuses</h2>
+
+                <div class="status-container">
+                    <div class="status-div-container" th:each="device, iter : ${devices}">
+                        <div class="status-div" th:title="${device.getName()}" th:if="${device.isOnline()}" style="background: springgreen"><a class="status-div" href="#"></a></div>
+                        <div class="status-div" th:title="${device.getName()}" th:unless="${device.isOnline()}" style="background: red"><a class="status-div" href="#"></a></div>
+                    </div>
+                </div>
+
+                <h2 style="color: white"> Device List </h2>
                 <table class="table table-dark">
                     <thead>
                     <tr>
