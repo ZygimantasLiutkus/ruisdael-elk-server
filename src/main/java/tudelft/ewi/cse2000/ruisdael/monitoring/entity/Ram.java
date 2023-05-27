@@ -3,9 +3,11 @@ package tudelft.ewi.cse2000.ruisdael.monitoring.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import lombok.Getter;
 
 import java.util.Objects;
 
+@Getter
 public class Ram {
     /**
      * RAM.total': ram[0],  # B(ytes)
@@ -14,40 +16,32 @@ public class Ram {
      * RAM.used.bytes': ram[3],  # B
      * RAM.free': ram[4],  # B  // What is the difference between this and available
      */
-    private double total;
-    private double available;
+
+    private double total;   // Represents the total RAM the device has
+    private double available;   // Represents the readily available RAM
+    private double free;    // Represents the RAM which is free, but not immediately available.
 
     public Ram() {
 
     }
 
-    public Ram(double total, double available) {
+    public Ram(double total, double available, double free) {
         this.total = total;
         this.available = available;
+        this.free = free;
     }
 
-    public double getTotal() {
-        return total;
-    }
-
-    public void setTotal(double total) {
-        this.total = total;
-    }
-
-    public double getAvailable() {
-        return available;
-    }
-
-    public void setAvailable(double used) {
-        this.available = used;
-    }
 
     public double getUsedPercentage() {
-        return (total - available) / 100.0;
+        return ((total - available) / available) * 100.0;
     }
 
     public double getAvailablePercentage() {
-        return available / 100.0;
+        return (available / total) * 100.0;
+    }
+
+    public double getFreePercentage() {
+        return (free / total) * 100;
     }
 
     @Override
