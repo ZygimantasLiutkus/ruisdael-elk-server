@@ -1,19 +1,30 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
 <head>
-    <title>Spring Security Example </title>
+    <title>Log In Required</title>
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/login.css">
 </head>
 <body>
-<div th:if="${param.error}">
-    Invalid username and password.
+<div class="container">
+    <div class="login-page">
+        <div>
+            <h3>Ruisdael Monitoring Dashboard</h3>
+        </div>
+        <div th:if="${param.error}">
+            Invalid username and password.
+        </div>
+        <div th:if="${param.logout}">
+            You have been logged out.
+        </div>
+        <form th:action="@{/authenticate}" method="post" class="login-form">
+            <input type="text" placeholder="username" name="username">
+            <br />
+            <input type="password" placeholder="password" name="password">
+            <br />
+            <input type="submit" />
+        </form>
+    </div>
 </div>
-<div th:if="${param.logout}">
-    You have been logged out.
-</div>
-<form th:action="@{/authenticate}" method="post">
-    <div><label> User Name : <input type="text" name="username"/> </label></div>
-    <div><label> Password: <input type="password" name="password"/> </label></div>
-    <div><input type="submit" value="Sign In"/></div>
-</form>
 </body>
 </html>
