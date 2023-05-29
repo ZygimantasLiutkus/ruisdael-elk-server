@@ -49,24 +49,17 @@ public class Device {
      *        }
      * The Device Entity should resemble it.
      */
-    @Id
-    @GeneratedValue
-    private Long id;
     private String name;
     private boolean online;
 
-    private double totalStorage;
-    private double availableStorage;
+    private Storage storage;
 
-    private double totalRam;
-    private double availableRam;
+    private Ram ram;
 
     private double cpuUsage;
 
-    private double uploadSize;
-    private double downloadSize;
-    private double uploadSpeed;
-    private double downloadSpeed;
+   private Bandwidth bandwidth;
+
     private String location;
 
     public Device() {
@@ -82,6 +75,7 @@ public class Device {
      * @param availableStorage - The memory storage which is available, in bytes.
      * @param totalRam - The total RAM of the device, in bytes.
      * @param availableRam - The RAM being used, in bytes.
+     * @param freeRam - The RAM which is not allocated towards any process, but is not readily available yet.
      * @param cpuUsage - The current CPU usage of the device, represented as a percentage.
      * @param uploadSize - The size of the information the device is sending to the server, represented as bytes.
      * @param downloadSize - The size of the information the device is downloading, represented as bytes.
@@ -90,19 +84,14 @@ public class Device {
      * @param location - The location of the device. All the names of locations are provided by Ruisdael.
      */
     public Device(String name, boolean online, double totalStorage, double availableStorage, double totalRam,
-                  double availableRam, double cpuUsage, double uploadSize, double downloadSize, double uploadSpeed,
+                  double availableRam, double freeRam, double cpuUsage, double uploadSize, double downloadSize, double uploadSpeed,
                   double downloadSpeed, String location) {
         this.name = name;
         this.online = online;
-        this.totalStorage = totalStorage;
-        this.availableStorage = availableStorage;
-        this.totalRam = totalRam;
-        this.availableRam = availableRam;
+        this.storage = new Storage(totalStorage, availableStorage);
+        this.ram = new Ram(totalRam, availableRam, freeRam);
         this.cpuUsage = cpuUsage;
-        this.uploadSize = uploadSize;
-        this.downloadSize = downloadSize;
-        this.uploadSpeed = uploadSpeed;
-        this.downloadSpeed = downloadSpeed;
+        this.bandwidth = new Bandwidth(uploadSize, downloadSize, uploadSpeed, downloadSpeed);
         this.location = location;
     }
 
@@ -110,14 +99,12 @@ public class Device {
      * Constructor used for passing a device to the front-end.
      */
     public Device(boolean online, String name, String location, double totalStorage, double availableStorage,
-                  double totalRam, double availableRam) {
+                  double totalRam, double availableRam, double freeRam) {
         this.online = online;
         this.name = name;
         this.location = location;
-        this.totalStorage = totalStorage;
-        this.availableStorage = availableStorage;
-        this.totalRam = totalRam;
-        this.availableRam = availableRam;
+        this.storage = new Storage(totalStorage, availableStorage);
+        this.ram = new Ram(totalRam, availableRam, freeRam);
     }
 
     /**
@@ -137,56 +124,32 @@ public class Device {
     }
 
 
-    /**This method should be checked, I assume that the name of the.
-     *
-     * @param o - Object representing another device.
-     * @return true, iff the two Device objects have all the same attributes.
-     */
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         Device device = (Device) o;
-        return online == device.online && Double.compare(device.totalStorage, totalStorage) == 0
-                && Double.compare(device.availableStorage, availableStorage) == 0
-                && Double.compare(device.totalRam, totalRam) == 0
-                && Double.compare(device.availableRam, availableRam) == 0
-                && Double.compare(device.cpuUsage, cpuUsage) == 0
-                && Double.compare(device.uploadSize, uploadSize) == 0
-                && Double.compare(device.downloadSize, downloadSize) == 0
-                && Double.compare(device.uploadSpeed, uploadSpeed) == 0
-                && Double.compare(device.downloadSpeed, downloadSpeed) == 0
-                && Objects.equals(device.location, location)
-                && Objects.equals(id, device.id)
-                && Objects.equals(name, device.name);
+        return online == device.online && Double.compare(device.cpuUsage, cpuUsage) == 0
+                && Objects.equals(name, device.name) && Objects.equals(storage, device.storage)
+                && Objects.equals(ram, device.ram) && Objects.equals(bandwidth, device.bandwidth)
+                && Objects.equals(location, device.location);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, online, totalStorage, availableStorage, totalRam, availableRam, cpuUsage,
-                uploadSize, downloadSize, uploadSpeed, downloadSpeed, location);
+        return Objects.hash(name, online, storage, ram, cpuUsage, bandwidth, location);
     }
 
-    /**
-     *
-     * @return string representation of a Device.
-     */
     @Override
     public String toString() {
-        return "The device " + name + " located at " + location  + "is currently " + (online ? "online" : "offline")
-                + ". Its performance information is as follows: "
-                + "\ntotal storage= " + totalStorage
-                + "\navailable storage= " + availableStorage
-                + "\ntotal RAM= " + totalRam
-                + "\navailable RAM= " + availableRam
-                + "\ncpu usage= " + cpuUsage
-                + "\nupload size= " + uploadSize
-                + "\ndownload size= " + downloadSize
-                + "\nupload speed= " + uploadSpeed
-                + "\ndownload speed= " + downloadSpeed;
+        return "Device{" +
+                "name='" + name + ",\n" +
+                "online=" + online + ",\n" +
+                "storage=" + storage + ",\n" +
+                "ram=" + ram + ",\n" +
+                "cpuUsage=" + cpuUsage + ",\n" +
+                "bandwidth=" + bandwidth + ",\n" +
+                "location='" + location + ",\n" +
+                '}';
     }
 }
