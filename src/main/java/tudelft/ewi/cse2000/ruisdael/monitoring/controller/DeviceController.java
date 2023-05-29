@@ -38,7 +38,13 @@ public class DeviceController {
         }
 
         model.addAttribute("devices", devices);
-        return "demo/overview";
+        return "overview";
     }
+
+    @GetMapping("/device-list")
+    public String getDeviceList(Model model) {
+        return "device-list";
+    }
+
 
 }
