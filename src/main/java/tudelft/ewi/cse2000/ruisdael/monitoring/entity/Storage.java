@@ -1,9 +1,9 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.entity;
 
+import java.util.Objects;
+
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Objects;
 
 @Getter
 @Setter
@@ -13,7 +13,7 @@ public class Storage {
     private double freeStorage;
 
     /**
-     * Constructor for the Storage object;
+     * Constructor for the Storage object.
      * @param totalStorage - Represents the total storage of a device.
      * @param freeStorage - Represents the currently free storage of a device.
      */
@@ -30,8 +30,12 @@ public class Storage {
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Storage storage = (Storage) o;
         return Double.compare(storage.totalStorage, totalStorage) == 0
                 && Double.compare(storage.freeStorage, freeStorage) == 0;
@@ -48,9 +52,9 @@ public class Storage {
      */
     @Override
     public String toString() {
-        return "Storage{" +
-                "totalStorage=" + totalStorage +
-                ", freeStorage=" + freeStorage +
-                '}';
+        return "Storage{"
+                + "totalStorage=" + totalStorage
+                + ", freeStorage=" + freeStorage
+                + '}';
     }
 }

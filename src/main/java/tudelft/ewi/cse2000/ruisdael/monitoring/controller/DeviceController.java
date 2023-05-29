@@ -1,11 +1,16 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.controller;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
+
 
 @Controller
 public class DeviceController {

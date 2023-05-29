@@ -58,7 +58,7 @@ public class Device {
 
     private double cpuUsage;
 
-   private Bandwidth bandwidth;
+    private Bandwidth bandwidth;
 
     private String location;
 
@@ -108,11 +108,12 @@ public class Device {
     }
 
     /**
-     *
+     *Method is used to compare a Device instance with another Object.
      * @param o - Instance of an object
      * @return true, iff the o is an instance of Device, and the name and location are the same, otherwise false.
      */
-    public boolean isSame(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
@@ -123,33 +124,22 @@ public class Device {
         return this.name.equals(device.getName()) && this.name.equals(device.location);
     }
 
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Device device = (Device) o;
-        return online == device.online && Double.compare(device.cpuUsage, cpuUsage) == 0
-                && Objects.equals(name, device.name) && Objects.equals(storage, device.storage)
-                && Objects.equals(ram, device.ram) && Objects.equals(bandwidth, device.bandwidth)
-                && Objects.equals(location, device.location);
-    }
-
     @Override
     public int hashCode() {
         return Objects.hash(name, online, storage, ram, cpuUsage, bandwidth, location);
     }
 
     @Override
+    @SuppressWarnings("PMD.AvoidDuplicateLiterals") // This is being suppressed since it raises an error due to the use of '\n'
     public String toString() {
-        return "Device{" +
-                "name='" + name + ",\n" +
-                "online=" + online + ",\n" +
-                "storage=" + storage + ",\n" +
-                "ram=" + ram + ",\n" +
-                "cpuUsage=" + cpuUsage + ",\n" +
-                "bandwidth=" + bandwidth + ",\n" +
-                "location='" + location + ",\n" +
-                '}';
+        return "Device{"
+                + "name=" + name + ",\n"
+                + "online=" + online + ",\n"
+                + "storage=" + storage + ",\n"
+                + "ram=" + ram + ",\n"
+                + "cpuUsage=" + cpuUsage + ",\n"
+                + "bandwidth=" + bandwidth + ",\n"
+                + "location='" + location + ",\n"
+                + '}';
     }
 }
