@@ -42,6 +42,7 @@
                 <!-- This is used for the grid of the node statuses -->
                 <h2 style="color: white; margin-bottom: 1rem"> Device Statuses</h2>
 
+                <!-- The colors used are a bit too bright, also the design of this should be discussed with the client -->
                 <div class="status-container">
                     <div class="status-div-container" th:each="device, iter : ${devices}">
                         <div class="status-div" th:title="${device.getName()}" th:if="${device.isOnline()}" style="background: springgreen"><a class="status-div" href="#"></a></div>
