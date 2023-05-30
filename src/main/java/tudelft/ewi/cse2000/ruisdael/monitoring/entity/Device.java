@@ -1,9 +1,10 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.entity;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
 import java.util.Objects;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -26,6 +27,8 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Device {
 
     /**
@@ -61,10 +64,6 @@ public class Device {
     private Bandwidth bandwidth;
 
     private String location;
-
-    public Device() {
-
-    }
 
     /**
      *  All argument constructor.
