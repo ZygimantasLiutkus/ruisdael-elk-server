@@ -1,10 +1,10 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.entity;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
 import java.util.Objects;
+
 import lombok.Getter;
 import lombok.Setter;
+
 
 /**
  * Author: Dean Polimac.

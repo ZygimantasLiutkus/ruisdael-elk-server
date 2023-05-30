@@ -1,10 +1,10 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
 
-import java.util.List;
 
 @Service
 public class DeviceService {
