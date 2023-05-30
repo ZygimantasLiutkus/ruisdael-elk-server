@@ -34,11 +34,12 @@ public class ElasticsearchService {
     public List<String> getDistinctIndexNames() {
         try {
             SearchResponse<Map> response = client.search(s -> s
-                    .index("metric_clone*"), Map.class);
+                    .index("collector_*"), Map.class);
 
             List<String> indices = response
                     .hits().hits()
                     .stream().map(Hit::index)
+                    .map(x -> x.replaceFirst("collector_", ""))
                     .distinct()
                     .toList();
 
