@@ -17,17 +17,17 @@
         <div class="col-3 node-box">
             <p style="margin-top: 15px;">Status: <span th:text="${device.isOnline() ? 'ONLINE' : 'OFFLINE'}"></span></p>
             <p>Location: <span th:text="${device.getLocation()}">Unknown</span></p>
-            <p>Last Update: <span th:text="${device.getTimestamp()}">Unknown</span></p>
-            <p>To be added... additional information</p>
+            <div style="position:absolute; bottom: 0;">
+                <p>Last Update: <span th:text="${device.getTimestamp()}">Unknown</span></p>
+            </div>
         </div>
-        <div class="col-6">
+        <div class="col-9">
             <div class="row justify-content-center">
-                <div class="col-3 node-box">
+                <div class="col-4 node-box">
                     <h3>CPU:</h3>
                     <h2 class="text-center"><span th:text="${device.getCpuUsage()}">???</span>%</h2>
                 </div>
-                <div class="col-1"></div>
-                <div class="col-7 node-box">
+                <div class="col-8 node-box">
                     <h3>Memory:</h3>
                     <h2 class="text-center"><span th:text="${device.getHumanReadableValueGbs(device.getAvailableRam())}">???</span> GB / <span th:text="${device.getHumanReadableValueGbs(device.getTotalRam())}">???</span> GB (Used/Total)</h2>
                 </div>
