@@ -49,11 +49,24 @@ public class ElasticsearchService {
             }
 
             Hit<Map> lastHit = allHits.get(0); //Get latest result
+            String deviceName = lastHit.index().replace("collector_", "");
 
-            return DeviceDataConverter.createDeviceFromElasticData(lastHit.index(), true, lastHit.source());
+            return DeviceDataConverter.createDeviceFromElasticData(deviceName, true, lastHit.source());
         } catch (Exception e) { //IOException or IllegalArgumentException
             return null;
         }
+    }
+
+    /**
+     * Queries elastic to receive data on all nodes, but the order of nodes is not guaranteed.
+     * @return A list of all nodes with the latest data in a {@link Device} object.
+     */
+    public List<Device> getAllDevices() {
+        List<String> distinctIndexNames = getDistinctIndexNames();
+
+        return distinctIndexNames.stream()
+                .map(this::getDeviceDetailsFromName)
+                .toList();
     }
 
     /**

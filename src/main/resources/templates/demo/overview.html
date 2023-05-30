@@ -26,7 +26,7 @@
                     <tbody>
                     <!-- The table rows should link to the device overview page -->
                     <tr th:each="device : ${devices}">
-                        <td th:text="${device.getName()}"></td>
+                        <td><a th:href="${'/node/' + device.getName()}"><span th:text="${device.getName()}">Unknown Node</span></a></td>
                         <td th:text="${device.getLocation()}"></td>
                         <td th:if="${device.isOnline()}" style="color:springgreen">Online</td>
                         <td th:unless="${device.isOnline()}" style="color:red">Offline</td>
