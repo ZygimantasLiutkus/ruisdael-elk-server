@@ -5,11 +5,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
+import tudelft.ewi.cse2000.ruisdael.monitoring.service.DeviceService;
 
 
 @Controller
@@ -26,7 +31,7 @@ public class DeviceController {
         List<String> locations = (Arrays.asList("Rotterdam", "Delft", "Den Haag", "Amsterdam", "Eindhoven", "Leiden",
                 "Utrecht"));
 
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 45; i++) {
             Device d = new Device();
             d.setName("Device " + (i + 1));
             d.setLocation(locations.get(new Random().nextInt(locations.size())));
@@ -45,6 +50,5 @@ public class DeviceController {
     public String getDeviceList(Model model) {
         return "device-list";
     }
-
 
 }

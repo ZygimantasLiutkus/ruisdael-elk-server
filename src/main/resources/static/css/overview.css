@@ -55,3 +55,24 @@ table {
 .status-container {
     border: #646278 1px solid;
 }
+
+.btn-primary {
+    background-color: transparent;
+}
+
+.page-link {
+    position: relative;
+    display: block;
+    color: white;
+    text-decoration: none;
+    background-color: transparent;
+    /* border: 1px solid #dee2e6; */
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+.bottom-bar {
+    width: 100%;
+    min-height: 50px;
+    margin-top: 2%;
+    background-color: #212529;
+}
