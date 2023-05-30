@@ -2,6 +2,8 @@ package tudelft.ewi.cse2000.ruisdael.monitoring.entity;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+
+import java.text.DecimalFormat;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,6 +29,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Device {
+
+    public static final DecimalFormat byteFormat = new DecimalFormat("#0.00");
 
     /**
      * These are all the attributes being sent from the node to the server.
@@ -64,6 +68,7 @@ public class Device {
     private double uploadSpeed;
     private double downloadSpeed;
     private String location;
+    private String timestamp;
 
     public Device() {
 
@@ -87,7 +92,7 @@ public class Device {
      */
     public Device(String name, boolean online, double totalStorage, double availableStorage, double totalRam,
                   double availableRam, double cpuUsage, double uploadSize, double downloadSize, double uploadSpeed,
-                  double downloadSpeed, String location) {
+                  double downloadSpeed, String location, String timestamp) {
         this.name = name;
         this.online = online;
         this.totalStorage = totalStorage;
@@ -100,6 +105,7 @@ public class Device {
         this.uploadSpeed = uploadSpeed;
         this.downloadSpeed = downloadSpeed;
         this.location = location;
+        this.timestamp = timestamp;
     }
 
     /**
@@ -116,6 +122,32 @@ public class Device {
         this.availableRam = availableRam;
     }
 
+    /**
+     * Takes the supplied value (a double representing an amount of bytes) and devides it by 10 ^ 9, to get the amount in gigabytes.
+     * Then formats the value as XX.XX and returns this string.
+     * This method is not marked static to easily access it in Thymeleaf.
+     */
+    public String getHumanReadableValueGbs(Double byteValue) {
+        return byteFormat.format(byteValue / 1000000000);
+    }
+
+    /**
+     * Takes the supplied value (a double representing an amount of bytes) and devides it by 10 ^ 6, to get the amount in megabytes.
+     * Then formats the value as XX.XX and returns this string.
+     * This method is not marked static to easily access it in Thymeleaf.
+     */
+    public String getHumanReadableValueMbs(Double byteValue) {
+        return byteFormat.format(byteValue / 1000000);
+    }
+
+    /**
+     * Takes the supplied value (a double representing an amount of bytes) and devides it by 10 ^ 3, to get the amount in kilobytes.
+     * Then formats the value as XX.XX and returns this string.
+     * This method is not marked static to easily access it in Thymeleaf.
+     */
+    public String getHumanReadableValueKbs(Double byteValue) {
+        return byteFormat.format(byteValue / 1000);
+    }
 
     /**This method should be checked, I assume that the name of the.
      *

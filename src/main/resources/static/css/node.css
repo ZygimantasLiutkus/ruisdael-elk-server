@@ -1,0 +1,8 @@
+.node-box {
+    background-color: #262a2e;
+    color: #d1d1d1;
+    grid-area: login-page;
+    font-family: "Verdana", sans-serif;
+    box-shadow: 0 0 10px 0 #2e3236;
+    margin: 2px 5px;
+}

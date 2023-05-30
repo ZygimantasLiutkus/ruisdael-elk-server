@@ -1,12 +1,16 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.SortOptions;
+import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tudelft.ewi.cse2000.ruisdael.monitoring.component.DeviceDataConverter;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
 
 /**
  * Service class for Elasticsearch operations.
@@ -24,6 +28,32 @@ public class ElasticsearchService {
     @Autowired
     public ElasticsearchService(ElasticsearchClient client) {
         this.client = client;
+    }
+
+    /**
+     * Queries elastic to receive the latest data on a given node, and converts this to a @{@link Device}.
+     * @param nodeIndexName The name of the node to look up data for.
+     * @return A {@link Device} object with the latest data, or null if no such device exists, or no data is available.
+     */
+    public Device getDeviceDetailsFromName(String nodeIndexName) {
+        try {
+            SearchResponse<Map> response = client.search(s -> s
+                    .index("collector_" + nodeIndexName)
+                    .sort(new SortOptions.Builder().field(field -> field.field("@timestamp").order(SortOrder.Desc)).build()),
+                    Map.class);
+
+            List<Hit<Map>> allHits = response.hits().hits();
+
+            if (allHits.size() == 0) { //No results
+                return null;
+            }
+
+            Hit<Map> lastHit = allHits.get(0); //Get latest result
+
+            return DeviceDataConverter.createDeviceFromElasticData(lastHit.index(), true, lastHit.source());
+        } catch (Exception e) { //IOException or IllegalArgumentException
+            return null;
+        }
     }
 
     /**
