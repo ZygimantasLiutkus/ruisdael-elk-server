@@ -27,6 +27,8 @@ dependencies {
 	// implementation 'org.springframework.boot:spring-boot-starter-security' // later use
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'co.elastic.clients:elasticsearch-java:8.8.0'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7.1'
 	// implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6' // later use
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
