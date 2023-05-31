@@ -29,24 +29,24 @@
                 </div>
                 <div class="col-8 node-box">
                     <h3>Memory:</h3>
-                    <h2 class="text-center"><span th:text="${device.getHumanReadableValueGbs(device.getAvailableRam())}">???</span> GB / <span th:text="${device.getHumanReadableValueGbs(device.getTotalRam())}">???</span> GB (Used/Total)</h2>
+                    <h2 class="text-center"><span th:text="${device.getHumanReadableValueGbs(device.getRam().getAvailable())}">???</span> GB / <span th:text="${device.getHumanReadableValueGbs(device.getRam().getTotal())}">???</span> GB (Used/Total)</h2>
                 </div>
             </div>
             <div class="row">
                 <div class="col node-box">
                     <h3>Storage:</h3>
-                    <h2 class="text-center"><span th:text="${device.getHumanReadableValueGbs(device.getAvailableStorage())}">???</span> GB / <span th:text="${device.getHumanReadableValueGbs(device.getTotalStorage())}">???</span> GB (Used/Total)</h2>
+                    <h2 class="text-center"><span th:text="${device.getHumanReadableValueGbs(device.getStorage().getFreeStorage())}">???</span> GB / <span th:text="${device.getHumanReadableValueGbs(device.getStorage().getTotalStorage())}">???</span> GB (Used/Total)</h2>
                 </div>
             </div>
             <div class="row">
                 <div class="col node-box">
                     <h3>Network - Uplink:</h3>
-                    <h2 class="text-center"><span th:text="${device.getHumanReadableValueMbs(device.getUploadSize())}">???</span> MB Upload</h2>
-                    <h2 class="text-center"><span th:text="${device.getHumanReadableValueKbs(device.getUploadSpeed())}">???</span>  KB/s Bandwidth Use</h2>
+                    <h2 class="text-center"><span th:text="${device.getHumanReadableValueMbs(device.getBandwidth().getUploadSize())}">???</span> MB Upload</h2>
+                    <h2 class="text-center"><span th:text="${device.getHumanReadableValueKbs(device.getBandwidth().getUploadSpeed())}">???</span>  KB/s Bandwidth Use</h2>
                     <br />
                     <h3>Network - Downlink:</h3>
-                    <h2 class="text-center"><span th:text="${device.getHumanReadableValueMbs(device.getDownloadSize())}">???</span> MB Download</h2>
-                    <h2 class="text-center"><span th:text="${device.getHumanReadableValueKbs(device.getDownloadSpeed())}">???</span> KB/s Bandwidth Use</h2>
+                    <h2 class="text-center"><span th:text="${device.getHumanReadableValueMbs(device.getBandwidth().getDownloadSize())}">???</span> MB Download</h2>
+                    <h2 class="text-center"><span th:text="${device.getHumanReadableValueKbs(device.getBandwidth().getDownloadSpeed())}">???</span> KB/s Bandwidth Use</h2>
                 </div>
             </div>
         </div>

@@ -40,10 +40,8 @@ public class DeviceDataConverter {
             ArrayList<Double> location = (ArrayList<Double>) values.get("location");
             String locationAsString = String.format("%4.2f, %4.2f", location.get(0), location.get(1));
 
-            Device device = new Device(name, online, storageTotal, storageFree, ramTotal,
-                    ramAvailable, cpu, uploadSize, downloadSize, uploadSpeed, downloadSpeed, locationAsString, timestamp);
-
-            return device;
+            return new Device(name, online, storageTotal, storageFree, ramTotal, ramAvailable, ramFree, cpu,
+                    uploadSize, downloadSize, uploadSpeed, downloadSpeed, locationAsString, timestamp);
         } catch (Exception e) {
             throw new IllegalArgumentException("Unable to convert data");
         }
