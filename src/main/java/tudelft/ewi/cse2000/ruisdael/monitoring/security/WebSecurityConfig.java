@@ -3,13 +3,14 @@ package tudelft.ewi.cse2000.ruisdael.monitoring.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -39,7 +40,10 @@ public class WebSecurityConfig {
                         .defaultSuccessUrl("/overview", true)
                         .failureUrl("/login?error=true")
                 )
-                .logout(LogoutConfigurer::permitAll);
+                .logout(httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer
+                        .permitAll()
+                        .logoutRequestMatcher(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/logout"))
+                        .logoutRequestMatcher(AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/logout")));
         return http.build();
     }
 
