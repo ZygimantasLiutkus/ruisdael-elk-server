@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <title>Log In Required</title>
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+<div class="container">
+    <div class="login-page">
+        <div>
+            <h3>Ruisdael Monitoring Dashboard</h3>
+        </div>
+        <div th:if="${param.error}">
+            Invalid username and password.
+        </div>
+        <div th:if="${param.logout}">
+            You have been logged out.
+        </div>
+        <form th:action="@{/authenticate}" method="post" class="login-form">
+            <input type="text" placeholder="username" name="username">
+            <br />
+            <input type="password" placeholder="password" name="password">
+            <br />
+            <input type="submit" />
+        </form>
+    </div>
+</div>
+</body>
+</html>

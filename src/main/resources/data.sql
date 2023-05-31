@@ -1,0 +1,8 @@
+INSERT INTO USERS (ENABLED, IS_ADMIN, IS_USER, PASSWORD, TOKEN_EXPIRED, USERNAME)
+SELECT ENABLED, IS_ADMIN, IS_USER, PASSWORD, TOKEN_EXPIRED, USERNAME
+FROM (SELECT TRUE AS Enabled, FALSE AS Is_admin, TRUE AS Is_user, '$2a$04$e1b6/9PPun8rNpusI7BdOuxog8ootSvHtbcWO4E9p86x6E5wmha4q' AS Password, TRUE as Token_expired, 'demo' AS Username
+      UNION ALL
+      SELECT TRUE, TRUE, TRUE, '$2a$04$e1b6/9PPun8rNpusI7BdOuxog8ootSvHtbcWO4E9p86x6E5wmha4q', TRUE, 'admin') sub
+WHERE NOT EXISTS(SELECT 1
+                 FROM USERS u
+                 WHERE sub.Username = u.USERNAME);

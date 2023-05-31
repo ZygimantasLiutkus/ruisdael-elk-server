@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <!-- Documents in the resources/static/ folder can be accessed like normal. -->
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+    <!-- Gets the "greeting" object from the thymeleaf model. Using the ${} syntax allows you to access it as a java object -->
+    <p th:text="${greeting.getGreetingMessage()} + ${greeting.getName()} + '!'"/>
+
+    <!-- Basic form submission. Action defines the  URL path, object is the object in the Thymeleaf Model that the form is linked to. With the *{} syntax, a variable from the java object can be assigned to inputs -->
+    <form action="#" th:action="@{/greeting}" th:object="${greeting}" method="post">
+        <p>Greeting: <input type="text" th:field="*{greetingMessage}" /></p>
+        <p>Name: <input type="text" th:field="*{name}" /></p>
+        <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
+    </form>
+</body>
+</html>
