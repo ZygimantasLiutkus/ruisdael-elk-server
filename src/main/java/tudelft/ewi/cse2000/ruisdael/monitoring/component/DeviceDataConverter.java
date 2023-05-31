@@ -31,8 +31,8 @@ public class DeviceDataConverter {
 
             double cpu = Double.parseDouble(values.get("CPU").toString());
 
-            int uploadSize = Integer.parseInt(values.get("upload.size").toString());
-            int downloadSize = Integer.parseInt(values.get("download.size").toString());
+            long uploadSize = Long.parseLong(values.get("upload.size").toString());
+            long downloadSize = Long.parseLong(values.get("download.size").toString());
             double uploadSpeed = Double.parseDouble(values.get("upload.speed").toString());
             double downloadSpeed = Double.parseDouble(values.get("download.speed").toString());
 
