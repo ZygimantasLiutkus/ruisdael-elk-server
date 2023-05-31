@@ -1,9 +1,10 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.entity;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import java.text.DecimalFormat;
 import java.util.Objects;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -26,7 +27,11 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Device {
+
+    public static final DecimalFormat byteFormat = new DecimalFormat("#0.00");
 
     /**
      * These are all the attributes being sent from the node to the server.
@@ -61,10 +66,7 @@ public class Device {
     private Bandwidth bandwidth;
 
     private String location;
-
-    public Device() {
-
-    }
+    private String timestamp;
 
     /**
      *  All argument constructor.
@@ -84,8 +86,8 @@ public class Device {
      * @param location - The location of the device. All the names of locations are provided by Ruisdael.
      */
     public Device(String name, boolean online, double totalStorage, double availableStorage, double totalRam,
-                  double availableRam, double freeRam, double cpuUsage, double uploadSize, double downloadSize, double uploadSpeed,
-                  double downloadSpeed, String location) {
+                  double availableRam, double freeRam, double cpuUsage, double uploadSize, double downloadSize, 
+                  double uploadSpeed, double downloadSpeed, String location, String timestamp) {
         this.name = name;
         this.online = online;
         this.storage = new Storage(totalStorage, availableStorage);
@@ -93,6 +95,7 @@ public class Device {
         this.cpuUsage = cpuUsage;
         this.bandwidth = new Bandwidth(uploadSize, downloadSize, uploadSpeed, downloadSpeed);
         this.location = location;
+        this.timestamp = timestamp;
     }
 
     /**
@@ -108,7 +111,34 @@ public class Device {
     }
 
     /**
-     *Method is used to compare a Device instance with another Object.
+     * Takes the supplied value (a double representing an amount of bytes) and devides it by 10 ^ 9, to get the amount in gigabytes.
+     * Then formats the value as XX.XX and returns this string.
+     * This method is not marked static to easily access it in Thymeleaf.
+     */
+    public String getHumanReadableValueGbs(Double byteValue) {
+        return byteFormat.format(byteValue / 1000000000);
+    }
+
+    /**
+     * Takes the supplied value (a double representing an amount of bytes) and devides it by 10 ^ 6, to get the amount in megabytes.
+     * Then formats the value as XX.XX and returns this string.
+     * This method is not marked static to easily access it in Thymeleaf.
+     */
+    public String getHumanReadableValueMbs(Double byteValue) {
+        return byteFormat.format(byteValue / 1000000);
+    }
+
+    /**
+     * Takes the supplied value (a double representing an amount of bytes) and devides it by 10 ^ 3, to get the amount in kilobytes.
+     * Then formats the value as XX.XX and returns this string.
+     * This method is not marked static to easily access it in Thymeleaf.
+     */
+    public String getHumanReadableValueKbs(Double byteValue) {
+        return byteFormat.format(byteValue / 1000);
+    }
+
+    /**
+     * Method is used to compare a Device instance with another Object.
      * @param o - Instance of an object
      * @return true, iff the o is an instance of Device, and the name and location are the same, otherwise false.
      */

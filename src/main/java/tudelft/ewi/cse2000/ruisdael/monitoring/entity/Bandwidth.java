@@ -2,32 +2,22 @@ package tudelft.ewi.cse2000.ruisdael.monitoring.entity;
 
 import java.util.Objects;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Bandwidth {
 
     private double uploadSize;
     private double downloadSize;
     private double uploadSpeed;
     private double downloadSpeed;
-
-    /**
-     * Constructor for the Bandwidth class used to represent the upload/download speed and size of devices.
-     * @param uploadSize - Upload size.
-     * @param downloadSize - Download size.
-     * @param uploadSpeed - Upload speed of device
-     * @param downloadSpeed - Download speed of device.
-     */
-    public Bandwidth(double uploadSize, double downloadSize, double uploadSpeed, double downloadSpeed) {
-        this.uploadSize = uploadSize;
-        this.downloadSize = downloadSize;
-        this.uploadSpeed = uploadSpeed;
-        this.downloadSpeed = downloadSpeed;
-    }
 
 
     /**

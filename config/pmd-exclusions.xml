@@ -8,6 +8,8 @@
 
     <rule ref="category/java/errorprone.xml">
         <exclude name="BeanMembersShouldSerialize"/>
+        <!-- Complained that ElasticsearchConfig isn't being closed, although it closes by default at end of application-->
+        <exclude name="CloseResource"/>
         ...
     </rule>
 

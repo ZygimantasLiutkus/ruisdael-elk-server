@@ -2,11 +2,15 @@ package tudelft.ewi.cse2000.ruisdael.monitoring.entity;
 
 import java.util.Objects;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Ram {
     /**
      * RAM.total': ram[0],  # B(ytes)
@@ -22,24 +26,11 @@ public class Ram {
 
 
     /**
-     * Used to represent the RAM of a Device.
-     * @param total - Total RAM of a Device.
-     * @param available - Available RAM which is ready to be allocated to a process.
-     * @param free - RAM which is not being used, but is not ready to be allocated to a process yet.
-     */
-    public Ram(double total, double available, double free) {
-        this.total = total;
-        this.available = available;
-        this.free = free;
-    }
-
-
-    /**
      * Used to represent the RAM used as a percentage.
      * @return double representing the used RAM as a percentage.
      */
     public double getUsedPercentage() {
-        return ((total - available) / available) * 100.0;
+        return ((total - available) / total) * 100.0;
     }
 
     /**
@@ -55,7 +46,7 @@ public class Ram {
      * @return double representing free RAM.
      */
     public double getFreePercentage() {
-        return (free / total) * 100;
+        return (free / total) * 100.0;
     }
 
     /**

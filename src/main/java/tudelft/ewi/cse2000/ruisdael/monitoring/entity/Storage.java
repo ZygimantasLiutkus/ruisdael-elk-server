@@ -2,25 +2,19 @@ package tudelft.ewi.cse2000.ruisdael.monitoring.entity;
 
 import java.util.Objects;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Storage {
 
     private double totalStorage;
     private double freeStorage;
-
-    /**
-     * Constructor for the Storage object.
-     * @param totalStorage - Represents the total storage of a device.
-     * @param freeStorage - Represents the currently free storage of a device.
-     */
-    public Storage(double totalStorage, double freeStorage) {
-        this.totalStorage = totalStorage;
-        this.freeStorage = freeStorage;
-    }
 
     /**
      * Equals method used to check if an instance of the Storage class is the same as a passed object.
