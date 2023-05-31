@@ -41,6 +41,23 @@ public class DeviceController {
 
     @GetMapping("/device-list")
     public String getDeviceList(Model model) {
+
+        List<Device> devices = new ArrayList<>();
+        List<String> locations = (Arrays.asList("Rotterdam", "Delft", "Den Haag", "Amsterdam", "Eindhoven", "Leiden",
+                "Utrecht"));
+
+        for (int i = 0; i < 45; i++) {
+            Device d = new Device();
+            d.setName("Device " + (i + 1));
+            d.setLocation(locations.get(new Random().nextInt(locations.size())));
+            d.setOnline(true);
+            if (i % 4 == 0) {
+                d.setOnline(false);
+            }
+            devices.add(d);
+        }
+
+        model.addAttribute("devices", devices);
         return "device-list";
     }
 
