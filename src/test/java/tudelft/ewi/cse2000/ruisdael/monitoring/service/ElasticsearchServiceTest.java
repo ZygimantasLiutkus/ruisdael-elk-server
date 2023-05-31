@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -12,8 +13,15 @@ import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
+
+import co.elastic.clients.elasticsearch.indices.ElasticsearchIndicesClient;
+import co.elastic.clients.elasticsearch.indices.IndicesStatsResponse;
+import co.elastic.clients.elasticsearch.indices.stats.IndicesStats;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,10 +35,15 @@ class ElasticsearchServiceTest {
 
     @MockBean
     private ElasticsearchClient mockClient;
+
     @MockBean
-    private SearchResponse mockResponse;
+    private ElasticsearchIndicesClient elasticsearchIndicesClient;
+
     @MockBean
-    private HitsMetadata mockHitMeta;
+    private IndicesStatsResponse indicesStatsResponse;
+
+    @MockBean
+    private IndicesStats indicesStats;
 
     @Autowired
     private ElasticsearchService elasticsearchService;
@@ -43,34 +56,28 @@ class ElasticsearchServiceTest {
     @Test
     void getDistinctIndexNames_WithIndices_ReturnsDistinctIndices() throws Exception {
         // Arrange
-        when(mockHitMeta.hits()).thenReturn(List.of(
-                new Hit.Builder().id("A").index("metric_clone1").build(),
-                new Hit.Builder().id("B").index("metric_clone2").build()
-        ));
-
-        when(mockResponse.hits()).thenReturn(mockHitMeta);
-
-        when(mockClient.search(any(Function.class), any())).thenReturn(mockResponse);
+        when(mockClient.indices()).thenReturn(elasticsearchIndicesClient);
+        when(elasticsearchIndicesClient.stats()).thenReturn(indicesStatsResponse);
+        when(indicesStatsResponse.indices()).thenReturn(Map.of("collector_clone1", indicesStats,
+                "collector_clone2", indicesStats));
 
         // Act
         List<String> distinctIndices = elasticsearchService.getDistinctIndexNames();
 
         // Assert
         assertEquals(2, distinctIndices.size());
-        assertTrue(distinctIndices.contains("metric_clone1"));
-        assertTrue(distinctIndices.contains("metric_clone2"));
+        assertTrue(distinctIndices.contains("clone1"));
+        assertTrue(distinctIndices.contains("clone2"));
 
-        verify(mockClient).search(any(Function.class), any());
+        verify(indicesStatsResponse, atLeastOnce()).indices();
     }
 
     @Test
     void getDistinctIndexNames_WithoutIndices_ReturnsEmptyList() throws Exception {
         // Arrange
-        when(mockHitMeta.hits()).thenReturn(List.of());
-
-        when(mockResponse.hits()).thenReturn(mockHitMeta);
-
-        when(mockClient.search(any(Function.class), any())).thenReturn(mockResponse);
+        when(mockClient.indices()).thenReturn(elasticsearchIndicesClient);
+        when(elasticsearchIndicesClient.stats()).thenReturn(indicesStatsResponse);
+        when(indicesStatsResponse.indices()).thenReturn(Map.of());
 
         // Act
         List<String> distinctIndices = elasticsearchService.getDistinctIndexNames();
@@ -78,23 +85,26 @@ class ElasticsearchServiceTest {
         // Assert
         assertTrue(distinctIndices.isEmpty());
 
-        verify(mockClient).search(any(Function.class), any());
+        verify(indicesStatsResponse, atLeastOnce()).indices();
     }
 
     @Test
     void getDistinctIndexNames_WithException_ReturnsEmptyList() throws Exception {
         // Arrange
-        when(mockClient.search(any(Function.class), any())).thenThrow(IOException.class);
+        when(mockClient.indices()).thenReturn(elasticsearchIndicesClient);
+        when(elasticsearchIndicesClient.stats()).thenReturn(indicesStatsResponse);
+        when(indicesStatsResponse.indices()).thenReturn(Map.of("collector_clone1", indicesStats));
+        when(elasticsearchIndicesClient.stats()).thenThrow(IOException.class);
 
         // Act
         List<String> distinctIndices = elasticsearchService.getDistinctIndexNames();
 
-        ThrowableAssert.ThrowingCallable action = () -> mockClient.search(q -> q, Integer.class);
+        ThrowableAssert.ThrowingCallable action = () -> elasticsearchIndicesClient.stats();
 
         // Assert
         assertTrue(distinctIndices.isEmpty());
 
-        verify(mockClient).search(any(Function.class), any());
+        verify(elasticsearchIndicesClient, atLeastOnce()).stats();
 
         assertThatExceptionOfType(IOException.class).isThrownBy(action);
     }
