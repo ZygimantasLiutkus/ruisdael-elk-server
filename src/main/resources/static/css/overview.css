@@ -89,3 +89,9 @@ table {
     margin-top: 1.5rem;
     table-layout: auto;
 }
+
+#map { 
+    height: 70vh; 
+    width : 70%; 
+    margin: 3% auto;
+  }

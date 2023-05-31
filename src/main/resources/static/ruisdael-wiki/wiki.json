@@ -1,0 +1,82 @@
+[
+    {
+      "facility": "Almere",
+      "location": [52.233499,5.175022]
+    },
+    {
+      "facility": "Architecture BK",
+      "location": [52.02128,4.221217]
+    },
+    {
+      "facility": "Bolnes",
+      "location": [51.535348,4.33662]
+    },
+    {
+      "facility": "CITG Storage Room 0.87",
+      "location": [51.595623,4.223178]
+    },
+    {
+      "facility": "CITG Storage Room 00.50",
+      "location": [51.595623,4.223178]
+    },
+    {
+      "facility": "Cabauw",
+      "location": [51.581297,4.553435]
+    },
+    {
+      "facility": "Capelle a/d Ijssel",
+      "location": [51.553886,4.35622]
+    },
+    {
+      "facility": "De Zweth",
+      "location": [51.575172,4.234049]
+    },
+    {
+      "facility": "Delfshaven",
+      "location": [51.541822,4.264625]
+    },
+    {
+      "facility": "EWI Roof",
+      "location": [51.595599,4.222452]
+    },
+    {
+      "facility": "Erasmus MC Roof",
+      "location": [51.544519,4.281325]
+    },
+    {
+      "facility": "Heijplaat",
+      "location": [51.535033,4.252217]
+    },
+    {
+      "facility": "Hoofddorp",
+      "location": [52.165415,4.415853]
+    },
+    {
+      "facility": "Lansingerland",
+      "location": [52.03726,4.314368]
+    },
+    {
+      "facility": "Lutjewad",
+      "location": [53.241298,6.21923]
+    },
+    {
+      "facility": "Ommoord",
+      "location": [51.573031,4.325082]
+    },
+    {
+      "facility": "Oost",
+      "location": [51.553108,4.325161]
+    },
+    {
+      "facility": "Ridderkerk",
+      "location": [51.524030,4.35643]
+    },
+    {
+      "facility": "Slufter",
+      "location": [51.56059,3.595949]
+    },
+    {
+      "facility": "Spaanse Polder",
+      "location": [51.555682,4.245843]
+    }
+   ]
