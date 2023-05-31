@@ -1,11 +1,16 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-
 import java.util.Objects;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Ram {
     /**
      * RAM.total': ram[0],  # B(ytes)
@@ -14,42 +19,42 @@ public class Ram {
      * RAM.used.bytes': ram[3],  # B
      * RAM.free': ram[4],  # B  // What is the difference between this and available
      */
-    private double total;
-    private double available;
 
-    public Ram() {
+    private double total;   // Represents the total RAM the device has
+    private double available;   // Represents the readily available RAM
+    private double free;    // Represents the RAM which is free, but not immediately available.
 
-    }
 
-    public Ram(double total, double available) {
-        this.total = total;
-        this.available = available;
-    }
-
-    public double getTotal() {
-        return total;
-    }
-
-    public void setTotal(double total) {
-        this.total = total;
-    }
-
-    public double getAvailable() {
-        return available;
-    }
-
-    public void setAvailable(double used) {
-        this.available = used;
-    }
-
+    /**
+     * Used to represent the RAM used as a percentage.
+     * @return double representing the used RAM as a percentage.
+     */
     public double getUsedPercentage() {
-        return (total - available) / 100.0;
+        return ((total - available) / total) * 100.0;
     }
 
+    /**
+     * Used to represent the available RAM as a percentage.
+     * @return double representing the available RAM as a percentage.
+     */
     public double getAvailablePercentage() {
-        return available / 100.0;
+        return (available / total) * 100.0;
     }
 
+    /**
+     * Used to represent free RAM as a percentage.
+     * @return double representing free RAM.
+     */
+    public double getFreePercentage() {
+        return (free / total) * 100.0;
+    }
+
+    /**
+     * Used to compare an instance of the RAM class with another Object instance.
+     * @param o - Object instance to be compared to.
+     * @return true, iff, the Object instance is also an instance of the RAM class, and its attributes are equal to the
+     *              instance it is being compared to.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -62,9 +67,25 @@ public class Ram {
         return Double.compare(ram.total, total) == 0 && Double.compare(ram.available, available) == 0;
     }
 
+    /**
+     * Used to create a hash code for the RAM instance.
+     * @return integer representing the instances hash code.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(total, available);
     }
 
+    /**
+     * Represents the RAM instance in a human-readable format.
+     * @return string representing the RAM instance.
+     */
+    @Override
+    public String toString() {
+        return "Ram{"
+                + "total=" + total
+                + ", available=" + available
+                + ", free=" + free
+                + '}';
+    }
 }
