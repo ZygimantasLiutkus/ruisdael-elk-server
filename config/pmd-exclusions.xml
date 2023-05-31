@@ -17,4 +17,7 @@
             <property name="ignoreExpressions" value="true" />
         </properties>
     </rule>
+    <!-- Complained that ElasticsearchConfig isn't being closed, although
+    it closes by default at end of application-->
+    <exclude ref="category/java/errorprone.xml/CloseResource"/>
 </ruleset>
