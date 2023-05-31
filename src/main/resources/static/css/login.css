@@ -1,0 +1,44 @@
+.login-page {
+    background-color: #262a2e;
+    color: #d1d1d1;
+    width: 400px;
+    padding: 0 4% 4%;
+    margin: auto;
+    grid-area: login-page;
+    font-family: "Verdana", sans-serif;
+    box-shadow: 0 0 10px 0 #2e3236;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 0.5fr 1.2fr 1.3fr;
+    gap: 0px 0px;
+    grid-template-areas:
+    ". . ."
+    ". login-page ."
+    ". . .";
+}
+
+body {
+    overflow-y: hidden;
+}
+
+form {
+    position: relative;
+    z-index: 1;
+    max-width: 400px;
+    padding: 30px;
+    text-align: center;
+}
+
+input {
+    outline: 0;
+    background: #d1d1d1;
+    width: 100%;
+    border: 0;
+    margin: 0 0 15px;
+    padding: 15px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
