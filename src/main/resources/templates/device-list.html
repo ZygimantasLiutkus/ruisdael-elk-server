@@ -7,7 +7,7 @@
         <link href="css/navbar.css" rel="stylesheet">
         <link href="css/device-list.css" rel="stylesheet">
         <script th:inline="javascript">
-            var devices = /*[[${devices}]]*/ [];
+            const devices = /*[[${devices}]]*/ [];
         </script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     </head>
@@ -48,26 +48,22 @@
                         <div class="filter-container">
 
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="name-radio">
-                                <label class="form-check-label" for="name-radio">
-                                    Name
-                                </label>
+                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="name-radio" value="name">
+                                <label class="form-check-label" for="name-radio">Name</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="location-radio">
-                                <label class="form-check-label" for="location-radio">
-                                    Location
-                                </label>
+                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="location-radio" value="location">
+                                <label class="form-check-label" for="location-radio">Location</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="status-radio">
-                                <label class="form-check-label" for="status-radio">
-                                    Status
-                                </label>
+                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="online-radio" value="true">
+                                <label class="form-check-label" for="online-radio">Online</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="offline-radio" value="false">
+                                <label class="form-check-label" for="offline-radio">Offline</label>
                             </div>
                         </div>
-
-
 
                         <div class="dropdown">
                             <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -82,8 +78,12 @@
                         </div>
 
                         <div class="input-group flex-nowrap">
-                            <input type="text" class="form-control" placeholder="Filter" aria-label="Username" aria-describedby="addon-wrapping" disabled>
-                            <button class="btn btn-outline-secondary" type="button" id="button-addon2">Search</button>
+                            <input type="text" class="form-control" id="search-tag" placeholder="Filter" aria-label="search-tag">
+                            <button class="btn btn-outline-secondary" type="button" th:onclick="search()">Search</button>
+                        </div>
+
+                        <div id="reset-table">
+                            <button class="btn btn-outline-secondary" type="button" th:onclick="createTable()">Reset Table</button>
                         </div>
 
                         <nav aria-label="Table navigation">
@@ -120,30 +120,44 @@
                     var isAsc = true;
                     var devicesPerPage = 10;
                     var currentPage = 1;
+                    var isSorting = false;
 
                     function sortCol(col) {
 
                         if (currentPage !== 1) {
                             changePage(1);
                         }
+                        let deviceList = devices;
+
+                        if (isSorting) {
+                            deviceList = [];
+                            for (let i = 1; i < table.rows.length; i++) {
+                                let row = table.rows[i];
+                                deviceList.push({
+                                    "name": row.cells[0].innerText,
+                                    "location": row.cells[1].innerText,
+                                    "online": row.cells[2].innerText === "Online"
+                                });
+                            }
+                        }
 
                         if (isAsc) {
                             if (col === "online") {
-                                devices = devices.sort((a, b) => a["online"] - b["online"]);
+                                deviceList.sort((a, b) => a["online"] - b["online"]);
                             } else {
-                                devices = devices.sort((a, b) => a[col].localeCompare(b[col], undefined, {numeric: true}));
+                                deviceList.sort((a, b) => a[col].localeCompare(b[col], undefined, {numeric: true}));
                             }
                         } else {
                             if (col === "online") {
-                                devices = devices.sort((a, b) => b["online"] - a["online"]);
+                                deviceList.sort((a, b) => b["online"] - a["online"]);
                             } else {
-                                devices = devices.sort((a, b) => b[col].localeCompare(a[col], undefined, { numeric: true }));
+                                deviceList.sort((a, b) => b[col].localeCompare(a[col], undefined, { numeric: true }));
                             }
                         }
                         isAsc = !isAsc
 
-                        for (let i = 0; i < devices.length; i++) {
-                            let device = devices[i];
+                        for (let i = 0; i < deviceList.length; i++) {
+                            let device = deviceList[i];
                             let row = table.rows[i + 1];
 
                             row.cells[0].innerText = device.name;
@@ -159,10 +173,11 @@
                         }
                     }
 
-                    function createTable() {
+                    function createTable(devs) {
+                        let deviceList = (devs != null) ? devs : devices;
                         let start = devicesPerPage * (currentPage - 1);
                         let end = start + devicesPerPage;
-                        let selectedDevices = devices.slice(start, end);
+                        let selectedDevices = deviceList.slice(start, end);
 
                         while (table.rows.length > 1) {
                             table.deleteRow(1);
@@ -183,6 +198,51 @@
                         }
                     }
 
+                    // Requires further integration with the pagination, for now if we want to view all the found
+                    // elements on page 2, it resets the table and displays all the devices.
+                    function search() {
+                        let radioButtons = document.getElementsByClassName("form-check-input");
+                        let tag = document.getElementById("search-tag").value.trim().toLowerCase();
+                        let found = [];
+                        let filter = ""
+                        let checked = false;
+                        isSorting = true;
+
+                        if (radioButtons.item(2).checked) {
+                            tag = "true";
+                            filter = "online";
+                        } else if (radioButtons.item(3).checked) {
+                            tag = "false";
+                            filter = "online";
+                        } else if (tag === "") {
+                            isSorting = false;
+                            createTable();
+                            return;
+                        } else {
+                            for (let i = 0; i < radioButtons.length - 2; i++) {
+                                let radioButton = radioButtons.item(i);
+                                if (radioButton.checked) {
+                                    filter = radioButton.value;
+                                    checked = true;
+                                    break;
+                                }
+                            }
+                            if (!checked) {
+                                isSorting = false;
+                                return;
+                            }
+                        }
+
+                        for (let i = 0; i < devices.length; i++) {
+                            let deviceTag = devices[i][filter].toString().toLowerCase();
+                            if (deviceTag.startsWith(tag)) {
+                                found.push(devices[i]);
+                            }
+                        }
+
+                        createTable(found)
+                    }
+
                     function updatePaginate() {
                         let listItems = document.getElementsByClassName("page-link");
                         let currentItem = listItems.item(currentPage);
@@ -190,9 +250,7 @@
                         currentItem.style.color = "#0a58ca";
 
                         for (let i = 1; i < listItems.length - 1; i++) {
-                            if (i === currentPage) {
-                                continue;
-                            } else {
+                            if (i !== currentPage) {
                                 listItems.item(i).style.backgroundColor = "transparent";
                                 listItems.item(i).style.color = "white";
                             }
@@ -213,13 +271,13 @@
                     }
 
                     function nextPage() {
-                        if (currentPage < (devices.length / devicesPerPage)) {
+                        if (currentPage < Math.ceil(devices.length / devicesPerPage)) {
                             changePage(++currentPage);
                         }
                     }
 
                     function lastPage() {
-                        currentPage = Math.ceil(devices.length / devicesPerPage)
+                        currentPage = Math.ceil(devices.length / devicesPerPage);
                         changePage(currentPage)
                     }
 
