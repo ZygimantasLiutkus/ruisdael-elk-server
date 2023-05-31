@@ -94,8 +94,13 @@ table {
     table-layout: auto;
 }
 
+.node-link {
+    color:white;
+    text-decoration-line: none;
+}
+
 #map { 
     height: 70vh; 
-    width : 70%; 
-    margin: 3% auto;
+    width : 100%;
+    /*margin: 3% auto;*/
   }
