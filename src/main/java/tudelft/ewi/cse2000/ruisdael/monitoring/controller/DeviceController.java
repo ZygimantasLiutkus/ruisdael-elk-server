@@ -39,9 +39,13 @@ public class DeviceController {
         return "overview";
     }
 
+    /**
+     * This method is used to send data to the Device Controller page.
+     * @param model - The model through which the data is fed to the Thymeleaf template.
+     * @return See Thymeleaf device-list template.
+     */
     @GetMapping("/device-list")
     public String getDeviceList(Model model) {
-
         List<Device> devices = new ArrayList<>();
         List<String> locations = (Arrays.asList("Rotterdam", "Delft", "Den Haag", "Amsterdam", "Eindhoven", "Leiden",
                 "Utrecht"));
