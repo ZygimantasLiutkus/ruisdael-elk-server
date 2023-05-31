@@ -42,8 +42,20 @@
         <div class="container">
             <div class="overview">
 
-                <h1 style="color: white;"> Device Status Overview </h1>
+                <h1 style="color: white;"> General Overview </h1>
 
+                <!-- This is used for the grid of the node statuses -->
+                <h2 style="color: white; margin-bottom: 1rem"> Device Statuses</h2>
+
+                <!-- The colors used are a bit too bright, also the design of this should be discussed with the client -->
+                <div class="status-container">
+                    <div class="status-div-container" th:each="device, iter : ${devices}">
+                        <div class="status-div" th:title="${device.getName()}" th:if="${device.isOnline()}" style="background: #4eb940"><a class="status-div" href="#"></a></div>
+                        <div class="status-div" th:title="${device.getName()}" th:unless="${device.isOnline()}" style="background: #ad2626"><a class="status-div" href="#"></a></div>
+                    </div>
+                </div>
+
+                <h2 style="color: white"> Device List </h2>
                 <table class="table table-dark">
                     <thead>
                     <tr>
@@ -57,11 +69,13 @@
                     <tr th:each="device : ${devices}">
                         <td th:text="${device.getName()}"></td>
                         <td th:text="${device.getLocation()}"></td>
-                        <td th:if="${device.isOnline()}" style="color:springgreen">Online</td>
-                        <td th:unless="${device.isOnline()}" style="color:red">Offline</td>
+                        <td th:if="${device.isOnline()}" style="color:#4eb940">Online</td>
+                        <td th:unless="${device.isOnline()}" style="color:#ad2626">Offline</td>
                     </tr>
                     </tbody>
                 </table>
+                <!-- Line bellow inserted for testing ElasticsearchService and connection to Elasticsearch -->
+                <h1 th:text="${hits}"></h1>
             </div>
         </div>
 
