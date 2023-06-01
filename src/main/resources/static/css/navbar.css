@@ -1,0 +1,32 @@
+.navbar>.container, .navbar>.container-fluid, .navbar>.container-lg, .navbar>.container-md, .navbar>.container-sm,
+.navbar>.container-xl, .navbar>.container-xxl {
+    display: flex;
+    flex-wrap: inherit;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 0;
+}
+
+.navbar-toggler {
+    height: 10px;
+    width: 10px;
+    background-color: #0d6efd;
+}
+
+.container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
+    width: 100%;
+    padding-right: var(--bs-gutter-x,.75rem);
+    padding-left: var(--bs-gutter-x,.75rem);
+    /*margin-left: 20%;*/
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.navbar-expand-lg .navbar-nav .nav-link {
+    padding-right: 1rem;
+    padding-left: 1rem;
+}
+
+.navbar-brand {
+    margin-left: 8%;
+}

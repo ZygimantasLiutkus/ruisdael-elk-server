@@ -13,7 +13,7 @@
     <!-- Basic form submission. Action defines the  URL path, object is the object in the Thymeleaf Model that the form is linked to. With the *{} syntax, a variable from the java object can be assigned to inputs -->
     <form action="#" th:action="@{/greeting}" th:object="${greeting}" method="post">
         <p>Greeting: <input type="text" th:field="*{greetingMessage}" /></p>
-        <p>Name: <input type="text" th:field="*{name}" /></p>
+        <p>Name: <input type="text" th:field="*{name}"/></p>
         <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
     </form>
 </body>

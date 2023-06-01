@@ -5,8 +5,13 @@ import co.elastic.clients.elasticsearch._types.SortOptions;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tudelft.ewi.cse2000.ruisdael.monitoring.component.DeviceDataConverter;
@@ -17,6 +22,7 @@ import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
  */
 @Service
 public class ElasticsearchService {
+    private static final String INDEXPREFIX = "collector_";
 
     private final ElasticsearchClient client;
 
@@ -38,7 +44,7 @@ public class ElasticsearchService {
     public Device getDeviceDetailsFromName(String nodeIndexName) {
         try {
             SearchResponse<Map> response = client.search(s -> s
-                    .index("collector_" + nodeIndexName)
+                    .index(INDEXPREFIX + nodeIndexName)
                     .sort(new SortOptions.Builder().field(field -> field.field("@timestamp").order(SortOrder.Desc)).build()),
                     Map.class);
 
@@ -49,7 +55,7 @@ public class ElasticsearchService {
             }
 
             Hit<Map> lastHit = allHits.get(0); //Get latest result
-            String deviceName = lastHit.index().replace("collector_", "");
+            String deviceName = lastHit.index().replace(INDEXPREFIX, "");
 
             return DeviceDataConverter.createDeviceFromElasticData(deviceName, true, lastHit.source());
         } catch (Exception e) { //IOException or IllegalArgumentException
@@ -76,17 +82,15 @@ public class ElasticsearchService {
      */
     public List<String> getDistinctIndexNames() {
         try {
-            SearchResponse<Map> response = client.search(s -> s
-                    .index("collector_*"), Map.class);
+            List<String> uniqueIndices = new ArrayList<>();
 
-            List<String> indices = response
-                    .hits().hits()
-                    .stream().map(Hit::index)
-                    .map(x -> x.replaceFirst("collector_", ""))
-                    .distinct()
-                    .toList();
+            client.indices().stats().indices().keySet().forEach(index -> {
+                if (index.startsWith(INDEXPREFIX)) {
+                    uniqueIndices.add(index.replaceFirst(INDEXPREFIX, ""));
+                }
+            });
 
-            return indices;
+            return uniqueIndices;
         } catch (Exception e) {
             e.printStackTrace();
             return List.of();
