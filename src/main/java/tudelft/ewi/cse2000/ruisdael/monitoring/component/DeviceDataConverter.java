@@ -37,7 +37,8 @@ public class DeviceDataConverter {
             double downloadSpeed = Double.parseDouble(values.get("download.speed").toString());
 
             String timestamp = values.get("@timestamp").toString();
-            ArrayList<Double> location = (ArrayList<Double>) values.get("location");
+            //FIXME location includes more data than just this now. Implement ASAP!
+            ArrayList<Double> location = (ArrayList<Double>) values.get("location.coordinates");
             String locationAsString = String.format("%4.2f, %4.2f", location.get(0), location.get(1));
 
             return new Device(name, online, storageTotal, storageFree, ramTotal, ramAvailable, ramFree, cpu,
