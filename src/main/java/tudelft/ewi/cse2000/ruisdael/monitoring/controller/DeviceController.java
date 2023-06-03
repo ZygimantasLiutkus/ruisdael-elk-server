@@ -1,15 +1,9 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.controller;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
 import org.springframework.web.bind.annotation.PathVariable;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
 import tudelft.ewi.cse2000.ruisdael.monitoring.service.ElasticsearchService;
@@ -32,7 +26,7 @@ public class DeviceController {
     public String getOverview(Model model) {
         //Use for Production
         model.addAttribute("devices", elasticsearchService.getAllDevices());
-
+        model.addAttribute("metrics", elasticsearchService.getMetricTypes());
         /* For testing purposes
         List<Device> devices = new ArrayList<>();
         List<String> locations = (Arrays.asList("Rotterdam", "Delft", "Den Haag", "Amsterdam", "Eindhoven", "Leiden",
@@ -74,6 +68,7 @@ public class DeviceController {
 
     /**
      * This method is used to send data to the Device Controller page.
+     *
      * @param model - The model through which the data is fed to the Thymeleaf template.
      * @return See Thymeleaf device-list template.
      */
