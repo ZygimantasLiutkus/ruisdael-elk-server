@@ -111,5 +111,5 @@ table {
 
 .dropdown-scrollbar {
     height: 20vh;
-    overflow: scroll;
+    overflow-y: scroll;
 }

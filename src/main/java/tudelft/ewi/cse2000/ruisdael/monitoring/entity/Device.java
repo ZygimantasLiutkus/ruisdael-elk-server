@@ -12,19 +12,18 @@ import lombok.Setter;
  * Author: Dean Polimac.
  * Date:23/05/2023
  * <p>
- *     This class contains all the attributes of a instrument in the Ruisdael network. The attributes of the class
- *     represent all the data which needs to be monitored at each instrument in the network. The data collection
- *     instruments in the Ruisdael network, which are to be monitored, can be referred to as "device", "node", or
- *     "instrument".
+ * This class contains all the attributes of a instrument in the Ruisdael network. The attributes of the class
+ * represent all the data which needs to be monitored at each instrument in the network. The data collection
+ * instruments in the Ruisdael network, which are to be monitored, can be referred to as "device", "node", or
+ * "instrument".
  * </p>
  * Notes:
  * <p>
- *     1. Currently the information that the device contains could be atomized by using other entities. Such an example
- *     would be creating an entity for the RAM and Storage usage, as well as for the Upload/Download speeds.
- *     2. Another thing that should be noted is the format in which we will store the timestamp.
- *     3. The combination of name + location should be unique for each device.
+ * 1. Currently the information that the device contains could be atomized by using other entities. Such an example
+ * would be creating an entity for the RAM and Storage usage, as well as for the Upload/Download speeds.
+ * 2. Another thing that should be noted is the format in which we will store the timestamp.
+ * 3. The combination of name + location should be unique for each device.
  * </p>
- *
  */
 @Getter
 @Setter
@@ -56,6 +55,7 @@ public class Device {
      * The Device Entity should resemble it.
      */
     private String name;
+    private String type;
     private boolean online;
 
     private Storage storage;
@@ -66,49 +66,60 @@ public class Device {
 
     private Bandwidth bandwidth;
 
-    private String location;
+    private Location location;
     private String timestamp;
 
     /**
      *  All argument constructor.
      *
-     * @param name - Name of the device.
-     * @param online - Status of the device, if the device is online then it is true, otherwise false.
-     * @param totalStorage - The total memory storage the device has, in bytes.
+     * @param name             - Name of the device.
+     * @param type             - Type of the device.
+     * @param online           - Status of the device, if the device is online then it is true, otherwise false.
+     * @param totalStorage     - The total memory storage the device has, in bytes.
      * @param availableStorage - The memory storage which is available, in bytes.
-     * @param totalRam - The total RAM of the device, in bytes.
-     * @param availableRam - The RAM being used, in bytes.
-     * @param freeRam - The RAM which is not allocated towards any process, but is not readily available yet.
-     * @param cpuUsage - The current CPU usage of the device, represented as a percentage.
-     * @param uploadSize - The size of the information the device is sending to the server, represented as bytes.
-     * @param downloadSize - The size of the information the device is downloading, represented as bytes.
-     * @param uploadSpeed - The upload speed of the device in terms of bytes.
-     * @param downloadSpeed - The download speed of the device in terms of bytes.
-     * @param location - The location of the device. All the names of locations are provided by Ruisdael.
+     * @param usedPercStorage  - The percentage of memory storage that is used.
+     * @param usedBytesStorage - The amount of memory storage that is used in bytes.
+     * @param totalRam         - The total RAM of the device, in bytes.
+     * @param availableRam     - The RAM being readily available, in bytes.
+     * @param freeRam          - The RAM which is not allocated towards any process, but is not readily available yet.
+     * @param usedPercRam      - The percentage of RAM being used.
+     * @param usedBytesRam     - The amount of RAM being used in bytes.
+     * @param cpuUsage         - The current CPU usage of the device, represented as a percentage.
+     * @param uploadSize       - The size of the information the device is sending to the server, represented as bytes.
+     * @param downloadSize     - The size of the information the device is downloading, represented as bytes.
+     * @param uploadSpeed      - The upload speed of the device in terms of bytes.
+     * @param downloadSpeed    - The download speed of the device in terms of bytes.
+     * @param location         - The location of the device in coordinates.
+     * @param locationName     - The name of the device's location provided by Ruisdael.
+     * @param elevation        - The elevation of the device.
+     * @param timestamp        - The timestamp of the device's iteration's creation.
      */
-    public Device(String name, boolean online, double totalStorage, double availableStorage, double totalRam,
-                  double availableRam, double freeRam, double cpuUsage, double uploadSize, double downloadSize, 
-                  double uploadSpeed, double downloadSpeed, String location, String timestamp) {
+    public Device(String name, String type, boolean online, double totalStorage, double availableStorage, double usedPercStorage,
+                  double usedBytesStorage, double totalRam, double availableRam, double freeRam, double usedPercRam,
+                  double usedBytesRam, double cpuUsage, double uploadSize, double downloadSize, double uploadSpeed,
+                  double downloadSpeed, String location, String locationName, String elevation, String timestamp) {
         this.name = name;
+        this.type = type;
         this.online = online;
-        this.storage = new Storage(totalStorage, availableStorage);
-        this.ram = new Ram(totalRam, availableRam, freeRam);
+        this.storage = new Storage(totalStorage, availableStorage, usedPercStorage, usedBytesStorage);
+        this.ram = new Ram(totalRam, availableRam, freeRam, usedPercRam, usedBytesRam);
         this.cpuUsage = cpuUsage;
         this.bandwidth = new Bandwidth(uploadSize, downloadSize, uploadSpeed, downloadSpeed);
-        this.location = location;
+        this.location = new Location(location, locationName, elevation);
         this.timestamp = timestamp;
     }
 
     /**
      * Constructor used for passing a device to the front-end.
      */
-    public Device(boolean online, String name, String location, double totalStorage, double availableStorage,
-                  double totalRam, double availableRam, double freeRam) {
+    public Device(boolean online, String name, String location, String locationName, String elevation,
+                  double totalStorage, double availableStorage, double usedPercStorage, double usedBytesStorage,
+                  double totalRam, double availableRam, double freeRam, double usedPercRam, double usedBytesRam) {
         this.online = online;
         this.name = name;
-        this.location = location;
-        this.storage = new Storage(totalStorage, availableStorage);
-        this.ram = new Ram(totalRam, availableRam, freeRam);
+        this.location = new Location(location, locationName, elevation);
+        this.storage = new Storage(totalStorage, availableStorage, usedPercStorage, usedBytesStorage);
+        this.ram = new Ram(totalRam, availableRam, freeRam, usedPercRam, usedBytesRam);
     }
 
     /**

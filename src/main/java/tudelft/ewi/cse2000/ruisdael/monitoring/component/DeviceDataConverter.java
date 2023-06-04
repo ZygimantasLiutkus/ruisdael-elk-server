@@ -41,8 +41,15 @@ public class DeviceDataConverter {
             ArrayList<Double> location = (ArrayList<Double>) values.get("location.coordinates");
             String locationAsString = String.format("%4.2f, %4.2f", location.get(0), location.get(1));
 
-            return new Device(name, online, storageTotal, storageFree, ramTotal, ramAvailable, ramFree, cpu,
-                    uploadSize, downloadSize, uploadSpeed, downloadSpeed, locationAsString, timestamp);
+            // Client added data:
+            String givenName = values.get("instrument.name").toString();
+            String type = values.get("instrument.type").toString();
+            String locationName = values.get("location.name").toString();
+            String elevation = values.get("location.elevation").toString();
+
+            return new Device(givenName, type, online, storageTotal, storageFree, storageUsedPerc, storageUsedBytes,
+                    ramTotal, ramAvailable, ramFree, ramUsedPerc, ramUsedBytes, cpu, uploadSize, downloadSize,
+                    uploadSpeed, downloadSpeed, locationAsString, locationName, elevation, timestamp);
         } catch (Exception e) {
             throw new IllegalArgumentException("Unable to convert data");
         }
