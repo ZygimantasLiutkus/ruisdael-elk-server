@@ -54,6 +54,7 @@ public class Device {
      *        }
      * The Device Entity should resemble it.
      */
+    private String indexSuffix;
     private String name;
     private String type;
     private boolean online;
@@ -72,6 +73,7 @@ public class Device {
     /**
      *  All argument constructor.
      *
+     * @param indexSuffix      - The index suffix of the device. For retrieval from Elasticsearch.
      * @param name             - Name of the device.
      * @param type             - Type of the device.
      * @param online           - Status of the device, if the device is online then it is true, otherwise false.
@@ -94,10 +96,12 @@ public class Device {
      * @param elevation        - The elevation of the device.
      * @param timestamp        - The timestamp of the device's iteration's creation.
      */
-    public Device(String name, String type, boolean online, double totalStorage, double availableStorage, double usedPercStorage,
-                  double usedBytesStorage, double totalRam, double availableRam, double freeRam, double usedPercRam,
-                  double usedBytesRam, double cpuUsage, double uploadSize, double downloadSize, double uploadSpeed,
-                  double downloadSpeed, String location, String locationName, String elevation, String timestamp) {
+    public Device(String indexSuffix, String name, String type, boolean online, double totalStorage, double availableStorage,
+                  double usedPercStorage, double usedBytesStorage, double totalRam, double availableRam, double freeRam,
+                  double usedPercRam, double usedBytesRam, double cpuUsage, double uploadSize, double downloadSize,
+                  double uploadSpeed, double downloadSpeed, String location, String locationName, String elevation,
+                  String timestamp) {
+        this.indexSuffix = indexSuffix;
         this.name = name;
         this.type = type;
         this.online = online;

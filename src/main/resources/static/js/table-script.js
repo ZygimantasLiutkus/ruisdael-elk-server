@@ -1,6 +1,6 @@
 var table = document.getElementById("device-table");
 var isAsc = true;
-var devicesPerPage = 10;
+var devicesPerPage = 2;
 var currentPage = 1;
 
 function sortCol(colNum) {
@@ -9,7 +9,7 @@ function sortCol(colNum) {
         changePage(1);
     }
 
-    let col = document.getElementById("metric-"+colNum.toString()).innerHTML;
+    let col = document.getElementById("metric-"+colNum.toString()).innerText;
 
     if (devices.length === 0) return 0;
 
@@ -29,36 +29,51 @@ function sortCol(colNum) {
     }
     isAsc = !isAsc
 
-    for (let i = 0; i < devices.length; i++) {
-        let device = devices[i];
-        let row = table.rows[i + 1];
-
-        row.cells[0].innerText = parseField(device, document.getElementById("metric-0").innerHTML);
-        row.cells[1].innerText = parseField(device, document.getElementById("metric-1").innerHTML);
-        row.cells[2].innerText = parseField(device, document.getElementById("metric-2").innerHTML);
-
-        // In order to change the colors
-        setStatusColorAll(device, row);
-    }
+    updateTable();
 }
 
 function createTable() {
     let start = devicesPerPage * (currentPage - 1);
     let end = start + devicesPerPage;
     let selectedDevices = devices.slice(start, end);
+    let tbody = table.getElementsByTagName("tbody")[0];
 
-    while (table.rows.length > 1) {
-        table.deleteRow(1);
+    while (tbody.rows.length > 0) {
+        tbody.deleteRow(0);
     }
 
     for (let i = 0; i < selectedDevices.length; i++) {
-        let row = table.insertRow(table.rows.length);
+        let row = tbody.insertRow(tbody.rows.length-1);
         let device = selectedDevices[i];
-        row.insertCell(0).innerHTML = `<td><a class="node-link" href="/node/`+ device.name +`">`+ device.name +`</a></td>`;
-        row.insertCell(1).innerHTML = `<td>` + device.location.coordinates + `</td>`;
+        row.insertCell(0).innerText = device.name ;
+        row.insertCell(1).innerText = device.location.coordinates;
         let cell3 = row.insertCell(2);
         cell3.innerText = device.online ? "Online" : "Offline";
         setStatusColor(device, cell3);
+
+        row.addEventListener("click", () => {
+           window.location.href = "/node/"+device.indexSuffix;
+        });
+    }
+}
+
+function updateTable() {
+    let tbody = table.getElementsByTagName("tbody")[0];
+
+    for (let i = 0; i < devices.length; i++) {
+        let device = devices[i];
+        let row = tbody.rows[i];
+
+        row.cells[0].innerHTML = parseField(device, document.getElementById("metric-0").innerText);
+        row.cells[1].innerText = parseField(device, document.getElementById("metric-1").innerText);
+        row.cells[2].innerText = parseField(device, document.getElementById("metric-2").innerText);
+
+        // In order to change the colors
+        setStatusColorAll(device, row);
+
+        row.addEventListener("click", () => {
+            window.location.href = "/node/"+device.indexSuffix;
+        });
     }
 }
 
@@ -104,17 +119,9 @@ function lastPage() {
 
 function setCol(colNum, metric) {
     let button = document.getElementById("metric-"+colNum.toString());
-    button.innerHTML = metric;
-    for (let i = 0; i < devices.length; i++) {
-        let device = devices[i];
-        let row = table.rows[i+1];
+    button.innerText = metric;
 
-        row.cells[0].innerHTML = parseField(device, document.getElementById("metric-0").innerHTML);
-        row.cells[1].innerHTML = parseField(device, document.getElementById("metric-1").innerHTML);
-        row.cells[2].innerHTML = parseField(device, document.getElementById("metric-2").innerHTML);
-
-        setStatusColorAll(device, row);
-    }
+    updateTable();
 }
 
 function parseField(device, field) {
@@ -183,19 +190,19 @@ function setStatusColor(device, cell) {
 }
 
 function setStatusColorAll(device, row) {
-    if (document.getElementById("metric-0").innerHTML === "Status") {
+    if (document.getElementById("metric-0").innerText === "Status") {
         setStatusColor(device, row.cells[0]);
     } else {
         row.cells[0].style.color = "#ffffff";
     }
 
-    if (document.getElementById("metric-1").innerHTML === "Status") {
+    if (document.getElementById("metric-1").innerText === "Status") {
         setStatusColor(device, row.cells[1]);
     } else {
         row.cells[1].style.color = "#ffffff";
     }
 
-    if (document.getElementById("metric-2").innerHTML === "Status") {
+    if (document.getElementById("metric-2").innerText === "Status") {
         setStatusColor(device, row.cells[2]);
     } else {
         row.cells[2].style.color = "#ffffff";

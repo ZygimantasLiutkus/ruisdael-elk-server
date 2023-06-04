@@ -47,7 +47,7 @@ public class DeviceDataConverter {
             String locationName = values.get("location.name").toString();
             String elevation = values.get("location.elevation").toString();
 
-            return new Device(givenName, type, online, storageTotal, storageFree, storageUsedPerc, storageUsedBytes,
+            return new Device(name, givenName, type, online, storageTotal, storageFree, storageUsedPerc, storageUsedBytes,
                     ramTotal, ramAvailable, ramFree, ramUsedPerc, ramUsedBytes, cpu, uploadSize, downloadSize,
                     uploadSpeed, downloadSpeed, locationAsString, locationName, elevation, timestamp);
         } catch (Exception e) {
