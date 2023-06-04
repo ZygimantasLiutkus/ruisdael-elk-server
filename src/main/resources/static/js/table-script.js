@@ -3,23 +3,28 @@ var isAsc = true;
 var devicesPerPage = 10;
 var currentPage = 1;
 
-function sortCol(col) {
+function sortCol(colNum) {
 
     if (currentPage !== 1) {
         changePage(1);
     }
 
+    let col = document.getElementById("metric-"+colNum.toString()).innerHTML;
+
+    if (devices.length === 0) return 0;
+
     if (isAsc) {
-        if (col === "online") {
-            devices = devices.sort((a, b) => a["online"] - b["online"]);
+        if (isNaN(parseField(devices[0], col))) {
+            devices = devices.sort((a, b) => parseField(a, col).localeCompare(parseField(b, col), undefined, {numeric: true}));
+
         } else {
-            devices = devices.sort((a, b) => a[col].localeCompare(b[col], undefined, {numeric: true}));
+            devices = devices.sort((a, b) => parseField(a, col) - parseField(b, col));
         }
     } else {
-        if (col === "online") {
-            devices = devices.sort((a, b) => b["online"] - a["online"]);
+        if (isNaN(parseField(devices[0], col))) {
+            devices = devices.sort((a, b) => parseField(b, col).localeCompare(parseField(a, col), undefined, { numeric: true }));
         } else {
-            devices = devices.sort((a, b) => b[col].localeCompare(a[col], undefined, { numeric: true }));
+            devices = devices.sort((a, b) => parseField(b, col) - parseField(a, col));
         }
     }
     isAsc = !isAsc
@@ -28,12 +33,12 @@ function sortCol(col) {
         let device = devices[i];
         let row = table.rows[i + 1];
 
-        row.cells[0].innerText = device.name;
-        row.cells[1].innerText = device.location.coordinates;
-        row.cells[2].innerText = device.online ? "Online" : "Offline";
+        row.cells[0].innerText = parseField(device, document.getElementById("metric-0").innerHTML);
+        row.cells[1].innerText = parseField(device, document.getElementById("metric-1").innerHTML);
+        row.cells[2].innerText = parseField(device, document.getElementById("metric-2").innerHTML);
 
         // In order to change the colors
-        setStatusColor(device, row.cells[2]);
+        setStatusColorAll(device, row);
     }
 }
 
@@ -108,23 +113,7 @@ function setCol(colNum, metric) {
         row.cells[1].innerHTML = parseField(device, document.getElementById("metric-1").innerHTML);
         row.cells[2].innerHTML = parseField(device, document.getElementById("metric-2").innerHTML);
 
-        if (document.getElementById("metric-0").innerHTML === "Status") {
-            setStatusColor(device, row.cells[0]);
-        } else {
-            row.cells[0].style.color = "#ffffff";
-        }
-
-        if (document.getElementById("metric-1").innerHTML === "Status") {
-            setStatusColor(device, row.cells[1]);
-        } else {
-            row.cells[1].style.color = "#ffffff";
-        }
-
-        if (document.getElementById("metric-2").innerHTML === "Status") {
-            setStatusColor(device, row.cells[2]);
-        } else {
-            row.cells[2].style.color = "#ffffff";
-        }
+        setStatusColorAll(device, row);
     }
 }
 
@@ -190,5 +179,25 @@ function setStatusColor(device, cell) {
         cell.style.color = "#4eb940";
     } else {
         cell.style.color = "#ad2626";
+    }
+}
+
+function setStatusColorAll(device, row) {
+    if (document.getElementById("metric-0").innerHTML === "Status") {
+        setStatusColor(device, row.cells[0]);
+    } else {
+        row.cells[0].style.color = "#ffffff";
+    }
+
+    if (document.getElementById("metric-1").innerHTML === "Status") {
+        setStatusColor(device, row.cells[1]);
+    } else {
+        row.cells[1].style.color = "#ffffff";
+    }
+
+    if (document.getElementById("metric-2").innerHTML === "Status") {
+        setStatusColor(device, row.cells[2]);
+    } else {
+        row.cells[2].style.color = "#ffffff";
     }
 }
