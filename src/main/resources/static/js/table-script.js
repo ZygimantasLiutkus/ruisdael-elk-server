@@ -29,7 +29,7 @@ function sortCol(colNum) {
     }
     isAsc = !isAsc
 
-    updateTable();
+    createTable();
 }
 
 function createTable() {
@@ -43,36 +43,15 @@ function createTable() {
     }
 
     for (let i = 0; i < selectedDevices.length; i++) {
-        let row = tbody.insertRow(tbody.rows.length-1);
+        let row = tbody.insertRow(tbody.rows.length);
         let device = selectedDevices[i];
-        row.insertCell(0).innerText = device.name ;
-        row.insertCell(1).innerText = device.location.coordinates;
-        let cell3 = row.insertCell(2);
-        cell3.innerText = device.online ? "Online" : "Offline";
-        setStatusColor(device, cell3);
-
-        row.addEventListener("click", () => {
-           window.location.href = "/node/"+device.indexSuffix;
-        });
-    }
-}
-
-function updateTable() {
-    let tbody = table.getElementsByTagName("tbody")[0];
-
-    for (let i = 0; i < devices.length; i++) {
-        let device = devices[i];
-        let row = tbody.rows[i];
-
-        row.cells[0].innerHTML = parseField(device, document.getElementById("metric-0").innerText);
-        row.cells[1].innerText = parseField(device, document.getElementById("metric-1").innerText);
-        row.cells[2].innerText = parseField(device, document.getElementById("metric-2").innerText);
-
-        // In order to change the colors
+        row.insertCell(0).innerText = parseField(device, document.getElementById("metric-0").innerText);
+        row.insertCell(1).innerText = parseField(device, document.getElementById("metric-1").innerText);
+        row.insertCell(2).innerText = parseField(device, document.getElementById("metric-2").innerText);
         setStatusColorAll(device, row);
 
         row.addEventListener("click", () => {
-            window.location.href = "/node/"+device.indexSuffix;
+           window.location.href = "/node/"+device.indexSuffix;
         });
     }
 }
@@ -121,7 +100,7 @@ function setCol(colNum, metric) {
     let button = document.getElementById("metric-"+colNum.toString());
     button.innerText = metric;
 
-    updateTable();
+    createTable();
 }
 
 function parseField(device, field) {
