@@ -1,6 +1,6 @@
 var table = document.getElementById("device-table");
 var isAsc = true;
-var devicesPerPage = 2;
+var devicesPerPage = 10;
 var currentPage = 1;
 
 function sortCol(colNum) {
@@ -64,7 +64,7 @@ function updatePaginate() {
 
     for (let i = 1; i < listItems.length - 1; i++) {
         if (i === currentPage) {
-            continue;
+            // continue
         } else {
             listItems.item(i).style.backgroundColor = "transparent";
             listItems.item(i).style.color = "white";
