@@ -15,6 +15,7 @@ public class Location {
     private double latitude;
     private String elevation;
     private String name;
+
     public String getHumanreadableCoordinates() {
         return String.format("%4.2f, %4.2f", longitude, latitude);
     }

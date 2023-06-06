@@ -14,6 +14,8 @@ import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Storage;
 @Component
 public class DeviceDataConverter {
 
+    private static final String parseErrorMessage = "Provided values contain invalid or missing data.";
+
     /**
      * Parses a map of values from elastic to create a {@link Device} object with said data.
      *
@@ -44,17 +46,27 @@ public class DeviceDataConverter {
         }
     }
 
+    /**
+     * Extract the instrument values from the elastic provided value map.
+     * @return {@link Instrument}
+     * @throws IllegalArgumentException On invalid or missing data.
+     */
     public static Instrument extractInstrumentData(Map values) throws IllegalArgumentException {
         try {
             String instrumentName = values.get("instrument.name").toString();
             String instrumentType = values.get("instrument.type").toString();
 
             return new Instrument(instrumentName, instrumentType);
-        } catch(Exception e) {
-            throw new IllegalArgumentException("Provided values contain invalid or missing data.", e.getCause());
+        } catch (Exception e) {
+            throw new IllegalArgumentException(parseErrorMessage, e.getCause());
         }
     }
 
+    /**
+     * Extract the location values from the elastic provided value map.
+     * @return {@link Location}
+     * @throws IllegalArgumentException On invalid or missing data.
+     */
     public static Location extractLocationData(Map values) throws IllegalArgumentException {
         try {
             ArrayList<Double> location = (ArrayList<Double>) values.get("location.coordinates");
@@ -62,11 +74,16 @@ public class DeviceDataConverter {
             String locationName = values.get("location.name").toString();
 
             return new Location(location.get(0), location.get(1), elevation, locationName);
-        } catch(Exception e) {
-            throw new IllegalArgumentException("Provided values contain invalid or missing data.", e.getCause());
+        } catch (Exception e) {
+            throw new IllegalArgumentException(parseErrorMessage, e.getCause());
         }
     }
 
+    /**
+     * Extract the storage values from the elastic provided value map.
+     * @return {@link Storage}
+     * @throws IllegalArgumentException On invalid or missing data.
+     */
     public static Storage extractStorageData(Map values) throws IllegalArgumentException {
         try {
             long storageTotal = Long.parseLong(values.get("storage.total").toString());
@@ -75,11 +92,16 @@ public class DeviceDataConverter {
             double storageUsedPerc = Double.parseDouble(values.get("storage.used.perc").toString());
 
             return new Storage(storageTotal, storageFree);
-        } catch(Exception e) {
-            throw new IllegalArgumentException("Provided values contain invalid or missing data.", e.getCause());
+        } catch (Exception e) {
+            throw new IllegalArgumentException(parseErrorMessage, e.getCause());
         }
     }
 
+    /**
+     * Extract the memory values from the elastic provided value map.
+     * @return {@link Ram}
+     * @throws IllegalArgumentException On invalid or missing data.
+     */
     public static Ram extractRamData(Map values) throws IllegalArgumentException {
         try {
             long ramTotal = Long.parseLong(values.get("RAM.total").toString());
@@ -89,11 +111,16 @@ public class DeviceDataConverter {
             long ramFree = Long.parseLong(values.get("RAM.free").toString());
 
             return new Ram(ramTotal, ramAvailable, ramFree);
-        } catch(Exception e) {
-            throw new IllegalArgumentException("Provided values contain invalid or missing data.", e.getCause());
+        } catch (Exception e) {
+            throw new IllegalArgumentException(parseErrorMessage, e.getCause());
         }
     }
 
+    /**
+     * Extract the network values from the elastic provided value map.
+     * @return {@link Bandwidth}
+     * @throws IllegalArgumentException On invalid or missing data.
+     */
     public static Bandwidth extractBandwithData(Map values) throws IllegalArgumentException {
         try {
             long uploadSize = Long.parseLong(values.get("upload.size").toString());
@@ -102,11 +129,17 @@ public class DeviceDataConverter {
             double downloadSpeed = Double.parseDouble(values.get("download.speed").toString());
 
             return new Bandwidth(uploadSize, downloadSize, uploadSpeed, downloadSpeed);
-        } catch(Exception e) {
-            throw new IllegalArgumentException("Provided values contain invalid or missing data.", e.getCause());
+        } catch (Exception e) {
+            throw new IllegalArgumentException(parseErrorMessage, e.getCause());
         }
     }
 
+    /**
+     * Extract the custom values from the elastic provided value map.
+     * All keys prefixed with "custom." will be included in the returned map, without the prefix.
+     * @return A Map of the custom fields, all parsed as strings.
+     * @throws IllegalArgumentException On invalid data.
+     */
     public static Map<String, String> extractCustomData(Map values) throws IllegalArgumentException {
         try {
             Map<String, String> data = new HashMap<>();
@@ -115,11 +148,11 @@ public class DeviceDataConverter {
                     .filter(key -> key.toString().startsWith("custom."))
                     .forEach(key -> {
                         data.put(key.toString().replace("custom.", ""),
-                                (String) values.get(key));
+                                String.valueOf(values.get(key)));
                     });
 
             return data;
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException("Provided values contain invalid data.", e.getCause());
         }
     }

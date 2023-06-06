@@ -128,8 +128,37 @@ public class Device {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
+
         Device device = (Device) o;
-        return this.name.equals(device.getName()) && this.name.equals(device.location);
+
+        if (online != device.online) {
+            return false;
+        }
+        if (Double.compare(device.cpuUsage, cpuUsage) != 0) {
+            return false;
+        }
+        if (!Objects.equals(name, device.name)) {
+            return false;
+        }
+        if (!Objects.equals(instrument, device.instrument)) {
+            return false;
+        }
+        if (!Objects.equals(location, device.location)) {
+            return false;
+        }
+        if (!Objects.equals(storage, device.storage)) {
+            return false;
+        }
+        if (!Objects.equals(ram, device.ram)) {
+            return false;
+        }
+        if (!Objects.equals(bandwidth, device.bandwidth)) {
+            return false;
+        }
+        if (!Objects.equals(timestamp, device.timestamp)) {
+            return false;
+        }
+        return Objects.equals(customFields, device.customFields);
     }
 
     @Override
