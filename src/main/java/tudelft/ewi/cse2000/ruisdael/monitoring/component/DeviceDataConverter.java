@@ -1,6 +1,7 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import org.springframework.stereotype.Component;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Bandwidth;
@@ -34,7 +35,10 @@ public class DeviceDataConverter {
             double cpu = Double.parseDouble(values.get("CPU").toString());
             Bandwidth bandwidth = extractBandwithData(values);
 
-            return new Device(name, instrument, location, online, storage, ram, cpu, bandwidth, timestamp);
+            //Custom Metrics
+            Map<String, String> data = extractCustomData(values);
+
+            return new Device(name, instrument, location, online, storage, ram, cpu, bandwidth, timestamp, data);
         } catch (Exception e) {
             throw new IllegalArgumentException("Unable to convert data");
         }
@@ -100,6 +104,23 @@ public class DeviceDataConverter {
             return new Bandwidth(uploadSize, downloadSize, uploadSpeed, downloadSpeed);
         } catch(Exception e) {
             throw new IllegalArgumentException("Provided values contain invalid or missing data.", e.getCause());
+        }
+    }
+
+    public static Map<String, String> extractCustomData(Map values) throws IllegalArgumentException {
+        try {
+            Map<String, String> data = new HashMap<>();
+
+            values.keySet().stream()
+                    .filter(key -> key.toString().startsWith("custom."))
+                    .forEach(key -> {
+                        data.put(key.toString().replace("custom.", ""),
+                                (String) values.get(key));
+                    });
+
+            return data;
+        } catch(Exception e) {
+            throw new IllegalArgumentException("Provided values contain invalid data.", e.getCause());
         }
     }
 }

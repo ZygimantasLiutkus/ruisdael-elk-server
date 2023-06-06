@@ -25,6 +25,12 @@
                 Instrument Name: <span th:text="${device.getInstrument().getName()}">Unknown</span><br />
                 Instrument Type: <span th:text="${device.getInstrument().getType()}">Unknown</span><br />
             </p>
+            <div th:if="${device.getCustomFields().size() > 0}">
+                <hr />
+                <div th:each="field : ${device.getCustomFields()}">
+                    <span th:text="${field.key} + ': ' + ${field.value}"></span><br />
+                </div>
+            </div>
             <div style="position:absolute; bottom: 0;">
                 <p>Last Update: <span th:text="${device.getTimestamp()}">Unknown</span></p>
             </div>

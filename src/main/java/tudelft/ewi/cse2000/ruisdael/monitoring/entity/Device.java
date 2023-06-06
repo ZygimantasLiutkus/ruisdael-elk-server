@@ -1,6 +1,8 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.entity;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -70,6 +72,9 @@ public class Device {
 
     //Metadata
     private String timestamp;
+
+    //Custom Metrics
+    private Map<String, String> customFields;
 
     /**
      * Constructor used for passing a device to the front-end.
