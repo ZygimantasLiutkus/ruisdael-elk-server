@@ -139,7 +139,7 @@ function parseField(device, field) {
         case "download": return parseBandwidthField(device, "d"+partition[1]);
         case "@timestamp": return device.timestamp;
         case "location": return parseLocationField(device, partition[1]);
-        case "instrument": return partition[1] === "name" ? device.name : partition[1] === "type" ? device.type : "NaN";
+        case "instrument": return partition[1] === "name" ? device.instrument.name : partition[1] === "type" ? device.instrument.type : "NaN";
         default: return "NaN";
     }
 }
