@@ -14,16 +14,15 @@ import lombok.Setter;
  * Author: Dean Polimac.
  * Date:23/05/2023
  * <p>
- *     This class contains all the attributes of a instrument in the Ruisdael network. The attributes of the class
- *     represent all the data which needs to be monitored at each instrument in the network. The data collection
- *     instruments in the Ruisdael network, which are to be monitored, can be referred to as "device", "node", or
- *     "instrument".
+ * This class contains all the attributes of a instrument in the Ruisdael network. The attributes of the class
+ * represent all the data which needs to be monitored at each instrument in the network. The data collection
+ * instruments in the Ruisdael network, which are to be monitored, can be referred to as "device", "node", or
+ * "instrument".
  * </p>
  * Notes:
  * <p>
  *     The combination of name + location should be unique for each device.
  * </p>
- *
  */
 @Getter
 @Setter
@@ -80,12 +79,13 @@ public class Device {
      * Constructor used for passing a device to the front-end.
      */
     public Device(boolean online, String name, Location location, double totalStorage, double availableStorage,
-                  double totalRam, double availableRam, double freeRam) {
+        double usedPercStorage, double usedBytesStorage, double totalRam, double availableRam, double freeRam,
+        double usedPercRam, double usedBytesRam) {
         this.online = online;
         this.name = name;
         this.location = location;
-        this.storage = new Storage(totalStorage, availableStorage);
-        this.ram = new Ram(totalRam, availableRam, freeRam);
+        this.storage = new Storage(totalStorage, availableStorage, usedPercStorage, usedBytesStorage);
+        this.ram = new Ram(totalRam, availableRam, freeRam, usedPercRam, usedBytesRam);
     }
 
     /**
@@ -118,7 +118,7 @@ public class Device {
     /**
      * Method is used to compare a Device instance with another Object.
      * @param o - Instance of an object
-     * @return true, iff the o is an instance of Device, and the name and location are the same, otherwise false.
+     * @return true, iff the o is an instance of Device, and all values are equal, otherwise false.
      */
     @Override
     public boolean equals(Object o) {

@@ -1,5 +1,6 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.entity;
 
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,34 +26,32 @@ public class Location {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (o == null || o.getClass() != getClass()) {
             return false;
         }
-
         Location location = (Location) o;
-
-        if (Double.compare(location.longitude, longitude) != 0) {
-            return false;
-        }
-        if (Double.compare(location.latitude, latitude) != 0) {
-            return false;
-        }
-        if (!elevation.equals(location.elevation)) {
-            return false;
-        }
-        return name.equals(location.name);
+        return location.longitude == this.longitude && location.latitude == this.latitude
+                && location.name.equals(this.name) && location.elevation.equals(this.elevation);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
-        int result;
-        long temp;
-        temp = Double.doubleToLongBits(longitude);
-        result = (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(latitude);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + elevation.hashCode();
-        result = 31 * result + name.hashCode();
-        return result;
+        return Objects.hash(longitude, latitude, name, elevation);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return "Location{"
+                + "longitude=" + longitude
+                + ", latitude=" + latitude
+                + ", name=" + name
+                + ", elevation=" + elevation
+                + "}";
     }
 }

@@ -91,7 +91,7 @@ public class DeviceDataConverter {
             long storageFree = Long.parseLong(values.get("storage.free").toString());
             double storageUsedPerc = Double.parseDouble(values.get("storage.used.perc").toString());
 
-            return new Storage(storageTotal, storageFree);
+            return new Storage(storageTotal, storageFree, storageUsedPerc, storageUsedBytes);
         } catch (Exception e) {
             throw new IllegalArgumentException(parseErrorMessage, e.getCause());
         }
@@ -110,7 +110,7 @@ public class DeviceDataConverter {
             long ramUsedBytes = Long.parseLong(values.get("RAM.used.bytes").toString());
             long ramFree = Long.parseLong(values.get("RAM.free").toString());
 
-            return new Ram(ramTotal, ramAvailable, ramFree);
+            return new Ram(ramTotal, ramAvailable, ramFree, ramUsedPerc, ramUsedBytes);
         } catch (Exception e) {
             throw new IllegalArgumentException(parseErrorMessage, e.getCause());
         }

@@ -1,9 +1,11 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.component;
 
+import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +19,29 @@ import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Storage;
 @SuppressWarnings("PMD.AvoidDuplicateLiterals") //Map keys are causing this to pop up, this is necessary.
 public class DeviceDataConverterTest {
 
+    private static final Map<String, Object> VALUES = Map.ofEntries(
+            entry("RAM.total", "8192"),
+            entry("RAM.available", "4096"),
+            entry("RAM.used.perc", "50.0"),
+            entry("RAM.used.bytes", "4096"),
+            entry("RAM.free", "4096"),
+            entry("storage.total", "102400"),
+            entry("storage.used.bytes", "51200"),
+            entry("storage.free", "51200"),
+            entry("storage.used.perc", "50.0"),
+            entry("CPU", "0.5"),
+            entry("upload.size", "1024"),
+            entry("download.size", "2048"),
+            entry("upload.speed", "10.0"),
+            entry("download.speed", "20.0"),
+            entry("@timestamp", "2023-05-26T12:00:00"),
+            entry("location.coordinates", new ArrayList<Double>(List.of(52.0124, 4.8521))),
+            entry("instrument.name", "Instrument 1"),
+            entry("instrument.type", "Type 1"),
+            entry("location.name", "Location 1"),
+            entry("location.elevation", "10.0")
+    );
+    
     @DisplayName("Test valid instrument data extraction")
     @Test
     void testExtractInstrumentData() {
@@ -82,7 +107,7 @@ public class DeviceDataConverterTest {
         // Setup
         final Map<String, Object> values = Map.of("storage.total", 20L, "storage.used.bytes", 3L,
                 "storage.free", 10L, "storage.used.perc", 50.0);
-        final Storage expectedResult = new Storage(20L, 10L);
+        final Storage expectedResult = new Storage(20L, 10L, 50.0, 3L);
 
         // Run the test
         final Storage result = DeviceDataConverter.extractStorageData(values);
@@ -110,7 +135,7 @@ public class DeviceDataConverterTest {
         // Setup
         final Map<String, Object> values = Map.of("RAM.total", 60L, "RAM.available", 20L,
                 "RAM.used.bytes", 10L, "RAM.used.perc", 50.0, "RAM.free", 30L);
-        final Ram expectedResult = new Ram(60L, 20L, 30L);
+        final Ram expectedResult = new Ram(60L, 20L, 30L, 50.0, 10L);
 
         // Run the test
         final Ram result = DeviceDataConverter.extractRamData(values);
@@ -208,22 +233,15 @@ public class DeviceDataConverterTest {
     @Test
     void testCreateDeviceFromElasticData() {
         //Setup
-        ArrayList<Double> coords = new ArrayList<>();
-        coords.add(1.0);
-        coords.add(2.0);
-
-        Map<String, Object> values = new java.util.HashMap<>(Map.of("instrument.name", "bucket", "instrument.type", "sensor",
-                "location.name", "ewi", "location.elevation", "2m", "location.coordinates", coords,
-                "storage.total", 20L, "storage.used.bytes", 3L, "storage.free", 10L, "storage.used.perc", 50.0, "CPU", "10.0"));
-        values.putAll(Map.of("RAM.total", 60L, "RAM.available", 20L, "RAM.used.bytes", 10L,
-                "RAM.used.perc", 50.0, "RAM.free", 30L, "upload.size", 60L, "upload.speed", 10.0,
-                "download.size", 10L, "download.speed", 50.0, "@timestamp", "today"));
-        Device expectedResult = new Device("node", new Instrument("bucket", "sensor"), new Location(1.0, 2.0, "2m", "ewi"), true,
-                new Storage(20L, 10L), new Ram(60L, 20L, 30L), 10.0, new Bandwidth(60L, 10L, 10.0, 50.0),
-                "today", Map.of());
+        Device expectedResult = new Device("node", new Instrument("Instrument 1", "Type 1"),
+                new Location(52.0124, 4.8521, "10.0", "Location 1"), true,
+                new Storage(102400, 51200, 50.0, 51200),
+                new Ram(8192, 4096, 4096, 50.0, 4096), 0.5,
+                new Bandwidth(1024, 2048, 10.0, 20.0),
+                "2023-05-26T12:00:00", Map.of());
 
         // Run the test
-        Device result = DeviceDataConverter.createDeviceFromElasticData("node", true, values);
+        Device result = DeviceDataConverter.createDeviceFromElasticData("node", true, VALUES);
 
         // Verify the results
         assertEquals(expectedResult, result);

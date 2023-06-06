@@ -46,12 +46,48 @@
                         <h2 style="color: white">List of Devices</h2>
 
                         <!-- The table representing devices -->
-                        <table class="table table-dark" id="device-table">
+                        <table class="table table-hover table-dark" id="device-table">
                             <thead>
                             <tr>
-                                <th><button type="button" class="btn btn-primary" th:onclick="sortCol([[\'name\']])">Instrument Name</button></th>
-                                <th><button type="button" class="btn btn-primary" th:onclick="sortCol([[\'location.humanreadableCoordinates\']])">Location</button></th>
-                                <th><button type="button" class="btn btn-primary" th:onclick="sortCol([[\'online\']])">Status</button></th>
+                                <th>
+                                    <div class="select-metric">
+                                        <div class="dropdown">
+                                            <button id="metric-0" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Instrument Name</button>
+                                            <ul class="dropdown-menu dropdown-scrollbar">
+                                                <li th:each="metric : ${metrics}"><button class="dropdown-item" th:text="${metric}" th:onclick="setCol(0, [[${metric}]])"></button></li>
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <button type="button" class="btn btn-primary" title="Sort" th:onclick="sortCol(0)">^</button>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="select-metric">
+                                        <div class="dropdown">
+                                            <button id="metric-1" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Location Coordinates</button>
+                                            <ul class="dropdown-menu dropdown-scrollbar">
+                                                <li th:each="metric : ${metrics}"><button class="dropdown-item" th:text="${metric}" th:onclick="setCol(1, [[${metric}]])"></button></li>
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <button type="button" class="btn btn-primary" title="Sort" th:onclick="sortCol(1)">^</button>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="select-metric">
+                                        <div class="dropdown">
+                                            <button id="metric-2" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Status</button>
+                                            <ul class="dropdown-menu dropdown-scrollbar">
+                                                <li th:each="metric : ${metrics}"><button class="dropdown-item" th:text="${metric}" th:onclick="setCol(2, [[${metric}]])"></button></li>
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <button type="button" class="btn btn-primary" title="Sort" th:onclick="sortCol(2)">^</button>
+                                        </div>
+                                    </div>
+                                </th>
                             </tr>
                             </thead>
                             <tbody>

@@ -5,13 +5,11 @@ import co.elastic.clients.elasticsearch._types.SortOptions;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
-
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -99,4 +97,43 @@ public class ElasticsearchService {
         }
     }
 
+    /**
+     * Retrieves a list of all metric names sent from the client.
+     *
+     * @return A list of all metric field names.
+     */
+    public List<String> getMetricTypes() {
+        try {
+            Optional<String> optionalIndex = client.indices().stats().indices().keySet()
+                    .stream().filter(i -> i.startsWith(INDEXPREFIX)).findFirst();
+            if (optionalIndex.isPresent()) {
+                String exampleIndex = optionalIndex.get();
+
+                SearchResponse<Map> response = client.search(s -> s
+                        .index(exampleIndex)
+                        .sort(build -> build.field(f -> f.field("@timestamp").order(SortOrder.Desc))),
+                        Map.class);
+
+                List<Hit<Map>> hits = response.hits().hits();
+
+                if (hits.size() == 0) {
+                    return List.of();
+                }
+
+                List<String> metrics = new ArrayList<String>(hits.get(0)
+                        .source()
+                        .keySet()
+                        .stream().toList());
+
+                metrics.add(0, "Status");
+
+                return metrics;
+            } else {
+                return List.of();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return List.of();
+        }
+    }
 }

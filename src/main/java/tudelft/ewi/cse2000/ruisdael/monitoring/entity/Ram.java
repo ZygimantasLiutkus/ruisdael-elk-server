@@ -23,7 +23,8 @@ public class Ram {
     private double total;   // Represents the total RAM the device has
     private double available;   // Represents the readily available RAM
     private double free;    // Represents the RAM which is free, but not immediately available.
-
+    private double usedPerc;
+    private double usedBytes;
 
     /**
      * Used to represent the RAM used as a percentage.
