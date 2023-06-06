@@ -15,6 +15,8 @@ public class Storage {
 
     private double totalStorage;
     private double freeStorage;
+    private double usedPercStorage;
+    private double usedBytesStorage;
 
     /**
      * Equals method used to check if an instance of the Storage class is the same as a passed object.

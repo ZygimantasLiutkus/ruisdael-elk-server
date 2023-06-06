@@ -1,15 +1,13 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.controller;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import static java.util.Map.entry;
 
+import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
 import org.springframework.web.bind.annotation.PathVariable;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
 import tudelft.ewi.cse2000.ruisdael.monitoring.service.ElasticsearchService;
@@ -23,6 +21,29 @@ public class DeviceController {
     @Autowired
     private ElasticsearchService elasticsearchService;
 
+    private static final Map<String, String> METRIC_MAPPING = Map.ofEntries(
+            entry("Status", "Status"),
+            entry("RAM.total", "Total RAM"),
+            entry("RAM.available", "Available RAM"),
+            entry("RAM.used.perc", "Used RAM (%)"),
+            entry("RAM.used.bytes", "Used RAM (B)"),
+            entry("RAM.free", "Free RAM"),
+            entry("storage.total", "Total Storage"),
+            entry("storage.used.bytes", "Used Storage (B)"),
+            entry("storage.free", "Free Storage"),
+            entry("storage.used.perc", "Used Storage (%)"),
+            entry("CPU", "CPU"),
+            entry("upload.size", "Upload Size"),
+            entry("download.size", "Download Size"),
+            entry("upload.speed", "Upload Speed"),
+            entry("download.speed", "Download Speed"),
+            entry("@timestamp", "Latest Timestamp"),
+            entry("location.coordinates", "Location Coordinates"),
+            entry("location.elevation", "Location Elevation"),
+            entry("instrument.name", "Instrument Name"),
+            entry("location.name", "Location Name"),
+            entry("instrument.type", "Instrument Type"));
+
     /**
      * Handler for the /overview page on the dashboard.
      *
@@ -33,6 +54,11 @@ public class DeviceController {
         //Use for Production
         model.addAttribute("devices", elasticsearchService.getAllDevices());
 
+        List<String> metrics = elasticsearchService.getMetricTypes().stream()
+                .map(METRIC_MAPPING::get)
+                .toList();
+
+        model.addAttribute("metrics", metrics);
         /* For testing purposes
         List<Device> devices = new ArrayList<>();
         List<String> locations = (Arrays.asList("Rotterdam", "Delft", "Den Haag", "Amsterdam", "Eindhoven", "Leiden",
@@ -74,6 +100,7 @@ public class DeviceController {
 
     /**
      * This method is used to send data to the Device Controller page.
+     *
      * @param model - The model through which the data is fed to the Thymeleaf template.
      * @return See Thymeleaf device-list template.
      */
