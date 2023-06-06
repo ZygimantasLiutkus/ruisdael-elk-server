@@ -147,7 +147,7 @@ public class DeviceDataConverter {
             values.keySet().stream()
                     .filter(key -> key.toString().startsWith("custom."))
                     .forEach(key -> {
-                        data.put(key.toString().replace("custom.", ""),
+                        data.put(key.toString().replaceFirst("custom.", ""),
                                 String.valueOf(values.get(key)));
                     });
 

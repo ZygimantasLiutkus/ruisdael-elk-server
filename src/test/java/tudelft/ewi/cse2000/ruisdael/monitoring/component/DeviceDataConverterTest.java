@@ -176,6 +176,20 @@ public class DeviceDataConverterTest {
         assertEquals(expectedResult, result);
     }
 
+    @DisplayName("Test valid custom data does not overwrite more than one prefix")
+    @Test
+    void testExtractCustomDataPrefix() {
+        // Setup
+        final Map<String, Object> values = Map.of("custom.custom.power", "230V AC", "custom.power.custom.voltage", 110);
+        final Map<String, String> expectedResult = Map.of("custom.power", "230V AC", "power.custom.voltage", "110");
+
+        // Run the test
+        final Map<String, String> result = DeviceDataConverter.extractCustomData(values);
+
+        // Verify the results
+        assertEquals(expectedResult, result);
+    }
+
     /**
      * Any custom data sent is parsed, so a null value should raise an exception.
      * The method will normally always have map provided ,otherwise the calling method would have failed.
