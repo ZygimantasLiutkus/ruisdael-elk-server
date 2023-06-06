@@ -74,7 +74,7 @@ function createTable() {
         setStatusColorAll(device, row);
 
         row.addEventListener("click", () => {
-           window.location.href = "/node/"+device.indexSuffix;
+           window.location.href = "/node/"+device.name;
         });
     }
 }
@@ -139,7 +139,7 @@ function parseField(device, field) {
         case "download": return parseBandwidthField(device, "d"+partition[1]);
         case "@timestamp": return device.timestamp;
         case "location": return parseLocationField(device, partition[1]);
-        case "instrument": return partition[1] === "name" ? device.name : partition[1] === "type" ? device.type : "NaN";
+        case "instrument": return partition[1] === "name" ? device.instrument.name : partition[1] === "type" ? device.instrument.type : "NaN";
         default: return "NaN";
     }
 }
@@ -177,7 +177,7 @@ function parseBandwidthField(device, field) {
 
 function parseLocationField(device, field) {
     switch (field) {
-        case "coordinates": return device.location.coordinates;
+        case "coordinates": return device.location.humanreadableCoordinates;
         case "name": return device.location.name;
         case "elevation": return device.location.elevation;
         default: return  "NaN";

@@ -8,7 +8,9 @@ import co.elastic.clients.elasticsearch.core.search.Hit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tudelft.ewi.cse2000.ruisdael.monitoring.component.DeviceDataConverter;
@@ -69,6 +71,7 @@ public class ElasticsearchService {
 
         return distinctIndexNames.stream()
                 .map(this::getDeviceDetailsFromName)
+                .filter(Objects::nonNull)
                 .toList();
     }
 

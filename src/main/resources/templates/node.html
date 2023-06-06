@@ -16,7 +16,21 @@
         <h1 style="color: white;" th:text="${device.getName()}">Unknown Node</h1>
         <div class="col-3 node-box">
             <p style="margin-top: 15px;">Status: <span th:text="${device.isOnline() ? 'ONLINE' : 'OFFLINE'}"></span></p>
-            <p>Location: <span th:text="${device.getLocation()}">Unknown</span></p>
+            <p>
+                Location: <span th:text="${device.getLocation().getName()}">Unknown</span><br />
+                Elevation: <span th:text="${device.getLocation().getElevation()}">Unknown</span><br/>
+                Coordinates: <span th:text="${device.getLocation().getHumanreadableCoordinates()}">Unknown</span>
+            </p>
+            <p>
+                Instrument Name: <span th:text="${device.getInstrument().getName()}">Unknown</span><br />
+                Instrument Type: <span th:text="${device.getInstrument().getType()}">Unknown</span><br />
+            </p>
+            <div th:if="${device.getCustomFields().size() > 0}">
+                <hr />
+                <div th:each="field : ${device.getCustomFields()}">
+                    <span th:text="${field.key} + ': ' + ${field.value}"></span><br />
+                </div>
+            </div>
             <div style="position:absolute; bottom: 0;">
                 <p>Last Update: <span th:text="${device.getTimestamp()}">Unknown</span></p>
             </div>
