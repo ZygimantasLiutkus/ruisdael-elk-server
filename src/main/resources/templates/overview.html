@@ -40,8 +40,26 @@
 
                 <div class="row">
                     <div class="col-4">
-                        <div id="map"></div>
-                    </div>
+                        <div>
+                            <fieldset>
+                                <div class="some-class">
+                                  <input type="radio" class="radio" name="metric" id="upStatus" checked="checked" onchange="mapFilter('upStatus')" />
+                                  <label for="y">ON/OFF</label>
+                                  <input type="radio" class="radio" name="metric" id="cpu" onchange="mapFilter('cpuStatus')"/>
+                                  <label for="z">CPU/RAM</label>
+                                  <input type="radio" class="radio" name="metric" id="storage" onchange="mapFilter('storageStatus')"/>
+                                  <label for="z">Storage</label>
+                                  <!-- <input type="radio" class="radio" name="metric" value="z" id="ram" onchange="mapFilter('ramStatus')"/>
+                                  <label for="z">RAM</label> -->
+                                  <input type="radio" class="radio" name="metric" id="network" onchange="mapFilter('networkSatus')"/>
+                                  <label for="z">Network</label>
+                                </div>
+                            </fieldset>
+                            <div id="map">
+    
+                            </div>
+                            
+                        </div>
                     <div class="col-8">
                         <h2 style="color: white">List of Devices</h2>
 
