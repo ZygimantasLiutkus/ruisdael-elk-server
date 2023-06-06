@@ -52,7 +52,7 @@
                                 <th>
                                     <div class="select-metric">
                                         <div class="dropdown">
-                                            <button id="metric-0" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">instrument.name</button>
+                                            <button id="metric-0" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Instrument Name</button>
                                             <ul class="dropdown-menu dropdown-scrollbar">
                                                 <li th:each="metric : ${metrics}"><button class="dropdown-item" th:text="${metric}" th:onclick="setCol(0, [[${metric}]])"></button></li>
                                             </ul>
@@ -65,7 +65,7 @@
                                 <th>
                                     <div class="select-metric">
                                         <div class="dropdown">
-                                            <button id="metric-1" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">location.coordinates</button>
+                                            <button id="metric-1" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Location Coordinates</button>
                                             <ul class="dropdown-menu dropdown-scrollbar">
                                                 <li th:each="metric : ${metrics}"><button class="dropdown-item" th:text="${metric}" th:onclick="setCol(1, [[${metric}]])"></button></li>
                                             </ul>

@@ -2,6 +2,29 @@ var table = document.getElementById("device-table");
 var isAsc = true;
 var devicesPerPage = 10;
 var currentPage = 1;
+const metricMapping = new Map([
+    ["Status", "Status"],
+    ["Total RAM", "RAM.total"],
+    ["Available RAM", "RAM.available"],
+    ["Used RAM (%)", "RAM.used.perc"],
+    ["Used RAM (B)", "RAM.used.bytes"],
+    ["Free RAM", "RAM.free"],
+    ["Total Storage", "storage.total"],
+    ["Used Storage (B)", "storage.used.bytes"],
+    ["Free Storage", "storage.free"],
+    ["Used Storage (%)", "storage.used.perc"],
+    ["CPU", "CPU"],
+    ["Upload Size", "upload.size"],
+    ["Download Size", "download.size"],
+    ["Upload Speed", "upload.speed"],
+    ["Download Speed", "download.speed"],
+    ["Latest Timestamp", "@timestamp"],
+    ["Location Coordinates", "location.coordinates"],
+    ["Location Elevation", "location.elevation"],
+    ["Instrument Name", "instrument.name"],
+    ["Location Name", "location.name"],
+    ["Instrument Type", "instrument.type"]
+]);
 
 function sortCol(colNum) {
 
@@ -104,7 +127,8 @@ function setCol(colNum, metric) {
 }
 
 function parseField(device, field) {
-    let partition = field.split(".");
+    const mapped = metricMapping.get(field);
+    const partition = mapped.split(".");
 
     switch (partition[0]) {
         case "Status": return device.online ? "Online" : "Offline";
