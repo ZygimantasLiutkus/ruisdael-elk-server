@@ -37,43 +37,28 @@ class StorageTest {
     }
 
     @Test
-    void getFreeStorage_ReturnsDouble() {
-        assertEquals(1.0, storage.getFreeStorage());
-    }
-
-    @Test
-    void getUsedPercStorage_ReturnsDouble() {
-        assertEquals(3.0, storage.getUsedPercStorage());
-    }
-
-    @Test
-    void getUsedBytesStorage_ReturnsDouble() {
-        assertEquals(4.0, storage.getUsedBytesStorage());
-    }
-
-    @Test
-    void setTotalStorage_Test() {
+    void setGet_TotalStorage_Test() {
         storage.setTotalStorage(5.0);
 
         assertEquals(5.0, storage.getTotalStorage());
     }
 
     @Test
-    void setFreeStorage_Test() {
+    void setGet_FreeStorage_Test() {
         storage.setFreeStorage(6.0);
 
         assertEquals(6.0, storage.getFreeStorage());
     }
 
     @Test
-    void setUsedPercStorage_Test() {
+    void setGet_UsedPercStorage_Test() {
         storage.setUsedPercStorage(7.0);
 
         assertEquals(7.0, storage.getUsedPercStorage());
     }
 
     @Test
-    void setUsedBytesStorage_Test() {
+    void setGet_UsedBytesStorage_Test() {
         storage.setUsedBytesStorage(8.0);
 
         assertEquals(8.0, storage.getUsedBytesStorage());
@@ -100,6 +85,15 @@ class StorageTest {
         Storage storage1 = new Storage(2.0, 1.0, 3.0, 4.0);
 
         assertTrue(storage.equals(storage1));
+    }
+
+    @Test
+    void equals_False_DifferentStorages() {
+        Storage storage1 = new Storage(1.0, 1.0, 3.0, 4.0);
+        assertFalse(storage.equals(storage1));
+
+        Storage storage2 = new Storage(2.0, 2.0, 3.0, 4.0);
+        assertFalse(storage.equals(storage2));
     }
 
     @Test

@@ -31,56 +31,28 @@ class BandwidthTest {
     }
 
     @Test
-    void getUploadSize_ReturnsDouble() {
-        double us = bandwidth.getUploadSize();
-
-        assertEquals(1.0, us);
-    }
-
-    @Test
-    void getDownloadSize_ReturnsDouble() {
-        double ds = bandwidth.getDownloadSize();
-
-        assertEquals(2.0, ds);
-    }
-
-    @Test
-    void getUploadSpeed_ReturnsDouble() {
-        double us = bandwidth.getUploadSpeed();
-
-        assertEquals(3.0, us);
-    }
-
-    @Test
-    void getDownloadSpeed_ReturnsDouble() {
-        double ds = bandwidth.getDownloadSpeed();
-
-        assertEquals(ds, 4.0);
-    }
-
-    @Test
-    void setUploadSize_Test() {
+    void setGet_UploadSize_Test() {
         bandwidth.setUploadSize(5.0);
 
         assertEquals(5.0, bandwidth.getUploadSize());
     }
 
     @Test
-    void setDownloadSize_Test() {
+    void setGet_DownloadSize_Test() {
         bandwidth.setDownloadSize(6.0);
 
         assertEquals(6.0, bandwidth.getDownloadSize());
     }
 
     @Test
-    void setUploadSpeed_Test() {
+    void setGet_UploadSpeed_Test() {
         bandwidth.setUploadSpeed(7.0);
 
         assertEquals(7.0, bandwidth.getUploadSpeed());
     }
 
     @Test
-    void setDownloadSpeed_Test() {
+    void setGet_DownloadSpeed_Test() {
         bandwidth.setDownloadSpeed(8.0);
 
         assertEquals(8.0, bandwidth.getDownloadSpeed());
@@ -107,6 +79,21 @@ class BandwidthTest {
         Bandwidth other = new Bandwidth(1.0, 2.0, 3.0, 4.0);
 
         assertTrue(bandwidth.equals(other));
+    }
+
+    @Test
+    void equals_False_DifferentBandwidth() {
+        Bandwidth bandwidth1 = new Bandwidth(0.0, 2.0, 3.0, 4.0);
+        assertFalse(bandwidth.equals(bandwidth1));
+
+        Bandwidth bandwidth2 = new Bandwidth(1.0, 1.0, 3.0, 4.0);
+        assertFalse(bandwidth.equals(bandwidth2));
+
+        Bandwidth bandwidth3 = new Bandwidth(1.0, 2.0, 2.0, 4.0);
+        assertFalse(bandwidth.equals(bandwidth3));
+
+        Bandwidth bandwidth4 = new Bandwidth(1.0, 2.0, 3.0, 3.0);
+        assertFalse(bandwidth.equals(bandwidth4));
     }
 
     @Test

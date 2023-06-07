@@ -32,60 +32,35 @@ class RamTest {
     }
 
     @Test
-    void getTotal_ReturnsDouble() {
-        assertEquals(4.0, ram.getTotal());
-    }
-
-    @Test
-    void getAvailable_ReturnsDouble() {
-        assertEquals(2.0, ram.getAvailable());
-    }
-
-    @Test
-    void getFree_ReturnsDouble() {
-        assertEquals(1.0, ram.getFree());
-    }
-
-    @Test
-    void getUsedPerc_ReturnsDouble() {
-        assertEquals(4.0, ram.getUsedPerc());
-    }
-
-    @Test
-    void getUsedBytes_ReturnsDouble() {
-        assertEquals(5.0, ram.getUsedBytes());
-    }
-
-    @Test
-    void setTotal_Test() {
+    void setGet_Total_Test() {
         ram.setTotal(6.0);
 
         assertEquals(6.0, ram.getTotal());
     }
 
     @Test
-    void setAvailable_Test() {
+    void setGet_Available_Test() {
         ram.setAvailable(7.0);
 
         assertEquals(7.0, ram.getAvailable());
     }
 
     @Test
-    void setFree_Test() {
+    void setGet_Free_Test() {
         ram.setFree(8.0);
 
         assertEquals(8.0, ram.getFree());
     }
 
     @Test
-    void setUsedPerc_Test() {
+    void setGet_UsedPerc_Test() {
         ram.setUsedPerc(9.0);
 
         assertEquals(9.0, ram.getUsedPerc());
     }
 
     @Test
-    void setUsedBytes_Test() {
+    void setGet_UsedBytes_Test() {
         ram.setUsedBytes(10.0);
 
         assertEquals(10.0, ram.getUsedBytes());
@@ -127,6 +102,15 @@ class RamTest {
         Ram ram1 = new Ram(4.0, 2.0, 0.0, 0.0, 0.0);
 
         assertTrue(ram.equals(ram1));
+    }
+
+    @Test
+    void equals_False_DifferentRam() {
+        Ram ram1 = new Ram(3.0, 2.0, 0.0, 0.0, 0.0);
+        assertFalse(ram.equals(ram1));
+
+        Ram ram2 = new Ram(4.0, 3.0, 0.0, 0.0, 0.0);
+        assertFalse(ram.equals(ram2));
     }
 
     @Test

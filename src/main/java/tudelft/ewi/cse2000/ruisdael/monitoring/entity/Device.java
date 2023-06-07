@@ -1,7 +1,6 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.entity;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
@@ -176,7 +175,7 @@ public class Device {
                 + "ram=" + ram + ",\n"
                 + "cpuUsage=" + cpuUsage + ",\n"
                 + "bandwidth=" + bandwidth + ",\n"
-                + "location='" + location + ",\n"
+                + "location=" + location + ",\n"
                 + '}';
     }
 }
