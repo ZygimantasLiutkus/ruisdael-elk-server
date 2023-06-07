@@ -12,13 +12,15 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Location {
 
-    private String coordinates;
-    private String name;
+    private double longitude;
+    private double latitude;
     private String elevation;
+    private String name;
 
-    /**
-     * {@inheritDoc}
-     */
+    public String getHumanreadableCoordinates() {
+        return String.format("%4.2f, %4.2f", longitude, latitude);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -28,8 +30,8 @@ public class Location {
             return false;
         }
         Location location = (Location) o;
-        return location.coordinates.equals(this.coordinates) && location.name.equals(this.name)
-                && location.elevation.equals(this.elevation);
+        return location.longitude == this.longitude && location.latitude == this.latitude
+                && location.name.equals(this.name) && location.elevation.equals(this.elevation);
     }
 
     /**
@@ -37,7 +39,7 @@ public class Location {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(coordinates, name, elevation);
+        return Objects.hash(longitude, latitude, name, elevation);
     }
 
     /**
@@ -46,7 +48,8 @@ public class Location {
     @Override
     public String toString() {
         return "Location{"
-                + "coordinates=" + coordinates
+                + "longitude=" + longitude
+                + ", latitude=" + latitude
                 + ", name=" + name
                 + ", elevation=" + elevation
                 + "}";

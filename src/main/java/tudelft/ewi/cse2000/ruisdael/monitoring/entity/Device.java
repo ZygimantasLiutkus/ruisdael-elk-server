@@ -1,6 +1,8 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.entity;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,10 +21,7 @@ import lombok.Setter;
  * </p>
  * Notes:
  * <p>
- * 1. Currently the information that the device contains could be atomized by using other entities. Such an example
- * would be creating an entity for the RAM and Storage usage, as well as for the Upload/Download speeds.
- * 2. Another thing that should be noted is the format in which we will store the timestamp.
- * 3. The combination of name + location should be unique for each device.
+ *     The combination of name + location should be unique for each device.
  * </p>
  */
 @Getter
@@ -50,78 +49,41 @@ public class Device {
      *         'upload.speed': (sent - self.old_bytes_sent) / self.update_delay,  # B/s
      *         'download.speed': (rec - self.old_bytes_rec) / self.update_delay,  # B/s
      *         '@timestamp': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
-     *         'location': [loc.longitude, loc.latitude]
+     *         'location.coordinates': [device_details['longitude'], device_details['latitude']],
+     *         'location.elevation': device_details['elevation'],   # String
+     *         'instrument.name': device_details['instrument_name'],
+     *         'location.name': device_details['location'],
+     *         'instrument.type': device_details['instrument_type']
      *        }
      * The Device Entity should resemble it.
      */
-    private String indexSuffix;
+    //Identifiers
     private String name;
-    private String type;
+    private Instrument instrument;
+    private Location location;
+
+    //Metrics
     private boolean online;
-
     private Storage storage;
-
     private Ram ram;
-
     private double cpuUsage;
-
     private Bandwidth bandwidth;
 
-    private Location location;
+    //Metadata
     private String timestamp;
 
-    /**
-     *  All argument constructor.
-     *
-     * @param indexSuffix      - The index suffix of the device. For retrieval from Elasticsearch.
-     * @param name             - Name of the device.
-     * @param type             - Type of the device.
-     * @param online           - Status of the device, if the device is online then it is true, otherwise false.
-     * @param totalStorage     - The total memory storage the device has, in bytes.
-     * @param availableStorage - The memory storage which is available, in bytes.
-     * @param usedPercStorage  - The percentage of memory storage that is used.
-     * @param usedBytesStorage - The amount of memory storage that is used in bytes.
-     * @param totalRam         - The total RAM of the device, in bytes.
-     * @param availableRam     - The RAM being readily available, in bytes.
-     * @param freeRam          - The RAM which is not allocated towards any process, but is not readily available yet.
-     * @param usedPercRam      - The percentage of RAM being used.
-     * @param usedBytesRam     - The amount of RAM being used in bytes.
-     * @param cpuUsage         - The current CPU usage of the device, represented as a percentage.
-     * @param uploadSize       - The size of the information the device is sending to the server, represented as bytes.
-     * @param downloadSize     - The size of the information the device is downloading, represented as bytes.
-     * @param uploadSpeed      - The upload speed of the device in terms of bytes.
-     * @param downloadSpeed    - The download speed of the device in terms of bytes.
-     * @param location         - The location of the device in coordinates.
-     * @param locationName     - The name of the device's location provided by Ruisdael.
-     * @param elevation        - The elevation of the device.
-     * @param timestamp        - The timestamp of the device's iteration's creation.
-     */
-    public Device(String indexSuffix, String name, String type, boolean online, double totalStorage, double availableStorage,
-                  double usedPercStorage, double usedBytesStorage, double totalRam, double availableRam, double freeRam,
-                  double usedPercRam, double usedBytesRam, double cpuUsage, double uploadSize, double downloadSize,
-                  double uploadSpeed, double downloadSpeed, String location, String locationName, String elevation,
-                  String timestamp) {
-        this.indexSuffix = indexSuffix;
-        this.name = name;
-        this.type = type;
-        this.online = online;
-        this.storage = new Storage(totalStorage, availableStorage, usedPercStorage, usedBytesStorage);
-        this.ram = new Ram(totalRam, availableRam, freeRam, usedPercRam, usedBytesRam);
-        this.cpuUsage = cpuUsage;
-        this.bandwidth = new Bandwidth(uploadSize, downloadSize, uploadSpeed, downloadSpeed);
-        this.location = new Location(location, locationName, elevation);
-        this.timestamp = timestamp;
-    }
+    //Custom Metrics
+    private Map<String, String> customFields;
 
     /**
      * Constructor used for passing a device to the front-end.
      */
-    public Device(boolean online, String name, String location, String locationName, String elevation,
-                  double totalStorage, double availableStorage, double usedPercStorage, double usedBytesStorage,
-                  double totalRam, double availableRam, double freeRam, double usedPercRam, double usedBytesRam) {
+    public Device(boolean online, String name, Location location, double totalStorage, double availableStorage,
+        double usedPercStorage, double usedBytesStorage, double totalRam, double availableRam, double freeRam,
+        double usedPercRam, double usedBytesRam) {
         this.online = online;
         this.name = name;
-        this.location = new Location(location, locationName, elevation);
+        this.location = location;
         this.storage = new Storage(totalStorage, availableStorage, usedPercStorage, usedBytesStorage);
         this.ram = new Ram(totalRam, availableRam, freeRam, usedPercRam, usedBytesRam);
     }
@@ -156,7 +118,7 @@ public class Device {
     /**
      * Method is used to compare a Device instance with another Object.
      * @param o - Instance of an object
-     * @return true, iff the o is an instance of Device, and the name and location are the same, otherwise false.
+     * @return true, iff the o is an instance of Device, and all values are equal, otherwise false.
      */
     @Override
     public boolean equals(Object o) {
@@ -166,8 +128,37 @@ public class Device {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
+
         Device device = (Device) o;
-        return this.name.equals(device.getName()) && this.name.equals(device.location);
+
+        if (online != device.online) {
+            return false;
+        }
+        if (Double.compare(device.cpuUsage, cpuUsage) != 0) {
+            return false;
+        }
+        if (!Objects.equals(name, device.name)) {
+            return false;
+        }
+        if (!Objects.equals(instrument, device.instrument)) {
+            return false;
+        }
+        if (!Objects.equals(location, device.location)) {
+            return false;
+        }
+        if (!Objects.equals(storage, device.storage)) {
+            return false;
+        }
+        if (!Objects.equals(ram, device.ram)) {
+            return false;
+        }
+        if (!Objects.equals(bandwidth, device.bandwidth)) {
+            return false;
+        }
+        if (!Objects.equals(timestamp, device.timestamp)) {
+            return false;
+        }
+        return Objects.equals(customFields, device.customFields);
     }
 
     @Override
