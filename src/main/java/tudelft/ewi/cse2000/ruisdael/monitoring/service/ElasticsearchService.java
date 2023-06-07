@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tudelft.ewi.cse2000.ruisdael.monitoring.component.DeviceDataConverter;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Status;
 
 /**
  * Service class for Elasticsearch operations.
@@ -54,7 +55,7 @@ public class ElasticsearchService {
             Hit<Map> lastHit = allHits.get(0); //Get latest result
             String deviceName = lastHit.index().replace(INDEXPREFIX, "");
 
-            return DeviceDataConverter.createDeviceFromElasticData(deviceName, true, lastHit.source());
+            return DeviceDataConverter.createDeviceFromElasticData(deviceName, Status.ONLINE, lastHit.source());
         } catch (Exception e) { //IOException or IllegalArgumentException
             return null;
         }
@@ -116,14 +117,13 @@ public class ElasticsearchService {
                 if (hits.size() == 0) {
                     return List.of();
                 }
-
+                assert !hits.isEmpty();
                 List<String> metrics = new ArrayList<String>(hits.get(0)
                         .source()
                         .keySet()
                         .stream().toList());
 
                 metrics.add(0, "Status");
-
                 return metrics;
             } else {
                 return List.of();

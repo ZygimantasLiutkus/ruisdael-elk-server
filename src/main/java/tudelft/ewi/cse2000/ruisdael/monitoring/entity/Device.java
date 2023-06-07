@@ -57,7 +57,7 @@ public class Device {
     private String indexSuffix;
     private String name;
     private String type;
-    private boolean online;
+    private Status status;
 
     private Storage storage;
 
@@ -76,7 +76,7 @@ public class Device {
      * @param indexSuffix      - The index suffix of the device. For retrieval from Elasticsearch.
      * @param name             - Name of the device.
      * @param type             - Type of the device.
-     * @param online           - Status of the device, if the device is online then it is true, otherwise false.
+     * @param status           - Status of the device, can be ONLINE, WARNING, OFFLINE.
      * @param totalStorage     - The total memory storage the device has, in bytes.
      * @param availableStorage - The memory storage which is available, in bytes.
      * @param usedPercStorage  - The percentage of memory storage that is used.
@@ -96,7 +96,7 @@ public class Device {
      * @param elevation        - The elevation of the device.
      * @param timestamp        - The timestamp of the device's iteration's creation.
      */
-    public Device(String indexSuffix, String name, String type, boolean online, double totalStorage, double availableStorage,
+    public Device(String indexSuffix, String name, String type, Status status, double totalStorage, double availableStorage,
                   double usedPercStorage, double usedBytesStorage, double totalRam, double availableRam, double freeRam,
                   double usedPercRam, double usedBytesRam, double cpuUsage, double uploadSize, double downloadSize,
                   double uploadSpeed, double downloadSpeed, String location, String locationName, String elevation,
@@ -104,7 +104,7 @@ public class Device {
         this.indexSuffix = indexSuffix;
         this.name = name;
         this.type = type;
-        this.online = online;
+        this.status = status;
         this.storage = new Storage(totalStorage, availableStorage, usedPercStorage, usedBytesStorage);
         this.ram = new Ram(totalRam, availableRam, freeRam, usedPercRam, usedBytesRam);
         this.cpuUsage = cpuUsage;
@@ -116,10 +116,10 @@ public class Device {
     /**
      * Constructor used for passing a device to the front-end.
      */
-    public Device(boolean online, String name, String location, String locationName, String elevation,
+    public Device(Status status, String name, String location, String locationName, String elevation,
                   double totalStorage, double availableStorage, double usedPercStorage, double usedBytesStorage,
                   double totalRam, double availableRam, double freeRam, double usedPercRam, double usedBytesRam) {
-        this.online = online;
+        this.status = status;
         this.name = name;
         this.location = new Location(location, locationName, elevation);
         this.storage = new Storage(totalStorage, availableStorage, usedPercStorage, usedBytesStorage);
@@ -127,7 +127,7 @@ public class Device {
     }
 
     /**
-     * Takes the supplied value (a double representing an amount of bytes) and devides it by 10 ^ 9, to get the amount in gigabytes.
+     * Takes the supplied value (a double representing an amount of bytes) and divides it by 10 ^ 9, to get the amount in gigabytes.
      * Then formats the value as XX.XX and returns this string.
      * This method is not marked static to easily access it in Thymeleaf.
      */
@@ -136,7 +136,7 @@ public class Device {
     }
 
     /**
-     * Takes the supplied value (a double representing an amount of bytes) and devides it by 10 ^ 6, to get the amount in megabytes.
+     * Takes the supplied value (a double representing an amount of bytes) and divides it by 10 ^ 6, to get the amount in megabytes.
      * Then formats the value as XX.XX and returns this string.
      * This method is not marked static to easily access it in Thymeleaf.
      */
@@ -145,7 +145,7 @@ public class Device {
     }
 
     /**
-     * Takes the supplied value (a double representing an amount of bytes) and devides it by 10 ^ 3, to get the amount in kilobytes.
+     * Takes the supplied value (a double representing an amount of bytes) and divides it by 10 ^ 3, to get the amount in kilobytes.
      * Then formats the value as XX.XX and returns this string.
      * This method is not marked static to easily access it in Thymeleaf.
      */
@@ -167,12 +167,12 @@ public class Device {
             return false;
         }
         Device device = (Device) o;
-        return this.name.equals(device.getName()) && this.name.equals(device.location);
+        return this.name.equals(device.getName()) && this.location.equals(device.location);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, online, storage, ram, cpuUsage, bandwidth, location);
+        return Objects.hash(name, status, storage, ram, cpuUsage, bandwidth, location);
     }
 
     @Override
@@ -180,7 +180,7 @@ public class Device {
     public String toString() {
         return "Device{"
                 + "name=" + name + ",\n"
-                + "online=" + online + ",\n"
+                + "online=" + status + ",\n"
                 + "storage=" + storage + ",\n"
                 + "ram=" + ram + ",\n"
                 + "cpuUsage=" + cpuUsage + ",\n"

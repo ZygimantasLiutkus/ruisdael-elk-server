@@ -8,7 +8,7 @@
         <link href="css/navbar.css" rel="stylesheet">
         <script src="/js/table-script.js" defer></script>
         <script th:inline="javascript">
-            var devices = /*[[${devices}]]*/ [];
+            const devices = /*[[${devices}]]*/ [];
         </script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -33,8 +33,9 @@
                 <!-- Used to represent the device grid -->
                 <div class="status-container">
                     <div class="status-div-container" th:each="device : ${devices}">
-                        <div class="status-div" th:title="${device.getName()}" th:if="${device.isOnline()}" style="background: #4eb940"><a class="status-div" href="#"></a></div>
-                        <div class="status-div" th:title="${device.getName()}" th:unless="${device.isOnline()}" style="background: #ad2626"><a class="status-div" href="#"></a></div>
+                        <div class="status-div" th:title="${device.getName()}" th:if="${device.getStatus().ONLINE}" style="background: #4eb940"><a class="status-div" href="#"></a></div>
+                        <div class="status-div" th:title="${device.getName()}" th:if="${device.getStatus().WARNING}" style="background: #b9a940"><a class="status-div" href="#"></a></div>
+                        <div class="status-div" th:title="${device.getName()}" th:unless="${device.getStatus().OFFLINE}" style="background: #ad2626"><a class="status-div" href="#"></a></div>
                     </div>
                 </div>
 
