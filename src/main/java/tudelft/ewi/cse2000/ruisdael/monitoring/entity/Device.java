@@ -1,6 +1,7 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.entity;
 
 import java.text.DecimalFormat;
+import java.util.Map;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,10 +20,7 @@ import lombok.Setter;
  * </p>
  * Notes:
  * <p>
- * 1. Currently the information that the device contains could be atomized by using other entities. Such an example
- * would be creating an entity for the RAM and Storage usage, as well as for the Upload/Download speeds.
- * 2. Another thing that should be noted is the format in which we will store the timestamp.
- * 3. The combination of name + location should be unique for each device.
+ *     The combination of name + location should be unique for each device.
  * </p>
  */
 @Getter
@@ -50,26 +48,31 @@ public class Device {
      *         'upload.speed': (sent - self.old_bytes_sent) / self.update_delay,  # B/s
      *         'download.speed': (rec - self.old_bytes_rec) / self.update_delay,  # B/s
      *         '@timestamp': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
-     *         'location': [loc.longitude, loc.latitude]
+     *         'location.coordinates': [device_details['longitude'], device_details['latitude']],
+     *         'location.elevation': device_details['elevation'],   # String
+     *         'instrument.name': device_details['instrument_name'],
+     *         'location.name': device_details['location'],
+     *         'instrument.type': device_details['instrument_type']
      *        }
      * The Device Entity should resemble it.
      */
-    private String indexSuffix;
+    //Identifiers
     private String name;
-    private String type;
-    private Status status;
+    private Instrument instrument;
+    private Location location;
 
+    //Metrics
+    private boolean online;
     private Storage storage;
-
     private Ram ram;
-
     private double cpuUsage;
-
     private Bandwidth bandwidth;
 
-    private Location location;
+    //Metadata
     private String timestamp;
 
+    //Custom Metrics
+    private Map<String, String> customFields;
     /**
      *  All argument constructor.
      *
@@ -91,7 +94,6 @@ public class Device {
      * @param downloadSize     - The size of the information the device is downloading, represented as bytes.
      * @param uploadSpeed      - The upload speed of the device in terms of bytes.
      * @param downloadSpeed    - The download speed of the device in terms of bytes.
-     * @param location         - The location of the device in coordinates.
      * @param locationName     - The name of the device's location provided by Ruisdael.
      * @param elevation        - The elevation of the device.
      * @param timestamp        - The timestamp of the device's iteration's creation.
@@ -112,6 +114,7 @@ public class Device {
         this.location = new Location(location, locationName, elevation);
         this.timestamp = timestamp;
     }
+     * @param location         - The location of the device in coordinates.
 
     /**
      * Constructor used for passing a device to the front-end.
@@ -121,7 +124,7 @@ public class Device {
                   double totalRam, double availableRam, double freeRam, double usedPercRam, double usedBytesRam) {
         this.status = status;
         this.name = name;
-        this.location = new Location(location, locationName, elevation);
+        this.location = location;
         this.storage = new Storage(totalStorage, availableStorage, usedPercStorage, usedBytesStorage);
         this.ram = new Ram(totalRam, availableRam, freeRam, usedPercRam, usedBytesRam);
     }
@@ -156,7 +159,7 @@ public class Device {
     /**
      * Method is used to compare a Device instance with another Object.
      * @param o - Instance of an object
-     * @return true, iff the o is an instance of Device, and the name and location are the same, otherwise false.
+     * @return true, iff the o is an instance of Device, and all values are equal, otherwise false.
      */
     @Override
     public boolean equals(Object o) {
@@ -166,8 +169,37 @@ public class Device {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
+
         Device device = (Device) o;
-        return this.name.equals(device.getName()) && this.location.equals(device.location);
+
+        if (online != device.online) {
+            return false;
+        }
+        if (Double.compare(device.cpuUsage, cpuUsage) != 0) {
+            return false;
+        }
+        if (!Objects.equals(name, device.name)) {
+            return false;
+        }
+        if (!Objects.equals(instrument, device.instrument)) {
+            return false;
+        }
+        if (!Objects.equals(location, device.location)) {
+            return false;
+        }
+        if (!Objects.equals(storage, device.storage)) {
+            return false;
+        }
+        if (!Objects.equals(ram, device.ram)) {
+            return false;
+        }
+        if (!Objects.equals(bandwidth, device.bandwidth)) {
+            return false;
+        }
+        if (!Objects.equals(timestamp, device.timestamp)) {
+            return false;
+        }
+        return Objects.equals(customFields, device.customFields);
     }
 
     @Override
@@ -185,7 +217,7 @@ public class Device {
                 + "ram=" + ram + ",\n"
                 + "cpuUsage=" + cpuUsage + ",\n"
                 + "bandwidth=" + bandwidth + ",\n"
-                + "location='" + location + ",\n"
+                + "location=" + location + ",\n"
                 + '}';
     }
 }
