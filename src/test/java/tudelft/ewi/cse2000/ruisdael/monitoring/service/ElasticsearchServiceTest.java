@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,12 +21,18 @@ import co.elastic.clients.elasticsearch.indices.IndicesStatsResponse;
 import co.elastic.clients.elasticsearch.indices.stats.IndicesStats;
 import co.elastic.clients.util.ObjectBuilder;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -53,6 +60,9 @@ class ElasticsearchServiceTest {
 
     @MockBean
     private SearchResponse mockResponse;
+
+    @Mock
+    private Instant mockClock;
 
     @Autowired
     private ElasticsearchService elasticsearchService;
@@ -137,8 +147,8 @@ class ElasticsearchServiceTest {
                 .thenReturn(mockResponse);
 
         // Hits setup
-        HitsMetadata mockMetadata = Mockito.mock(HitsMetadata.class);
-        Hit mockHit = Mockito.mock(Hit.class);
+        HitsMetadata mockMetadata = mock(HitsMetadata.class);
+        Hit mockHit = mock(Hit.class);
         when(mockResponse.hits()).thenReturn(mockMetadata);
         when(mockMetadata.hits()).thenReturn(List.of(mockHit));
         when(mockHit.source()).thenReturn(Map.of("a", "a", "b", "b"));
@@ -175,7 +185,7 @@ class ElasticsearchServiceTest {
                 .thenReturn(mockResponse);
 
         // Hits metadata setup
-        HitsMetadata mockMetadata = Mockito.mock(HitsMetadata.class);
+        HitsMetadata mockMetadata = mock(HitsMetadata.class);
         when(mockResponse.hits()).thenReturn(mockMetadata);
         when(mockMetadata.hits()).thenReturn(List.of());
 
@@ -251,8 +261,8 @@ class ElasticsearchServiceTest {
         Hit mockHit2 = Mockito.mock(Hit.class);
         when(mockResponse.hits()).thenReturn(mockMetadata);
         when(mockMetadata.hits()).thenReturn(List.of(mockHit1, mockHit2));
-        when(mockHit1.source()).thenReturn(Map.of("a", "a", "b", "b"));
-        when(mockHit2.source()).thenReturn(Map.of("c", "c", "d", "d"));
+        when(mockHit1.source()).thenReturn(Map.of("a", "a", "@timestamp", "b"));
+        when(mockHit2.source()).thenReturn(Map.of("c", "c", "@timestamp", "d"));
         when(mockHit1.index()).thenReturn(MOCK_INDEX_1);
 
         Device device = new Device();
@@ -286,7 +296,7 @@ class ElasticsearchServiceTest {
                 any()))
                 .thenReturn(mockResponse);
 
-        HitsMetadata mockMetadata = Mockito.mock(HitsMetadata.class);
+        HitsMetadata mockMetadata = mock(HitsMetadata.class);
         when(mockResponse.hits()).thenReturn(mockMetadata);
         when(mockMetadata.hits()).thenReturn(List.of());
 
@@ -319,6 +329,45 @@ class ElasticsearchServiceTest {
                 any());
 
         assertThatExceptionOfType(IOException.class).isThrownBy(action);
+    }
+
+    @Test
+    void getStatus_Online() {
+        String currentTime = "2023-05-26 12:00:00";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        ZonedDateTime zonedDateTime = LocalDateTime.parse(currentTime, formatter).atZone(ZoneId.systemDefault());
+        long testTime = zonedDateTime.toEpochSecond();
+
+        mockClock = mock(Instant.class);
+        elasticsearchService.clockInstant = mockClock;
+        when(mockClock.getEpochSecond()).thenReturn(testTime);
+        assertEquals(Status.ONLINE, elasticsearchService.getStatus("2023-05-26T12:01:59"));
+    }
+
+    @Test
+    void getStatus_Warning() {
+        String currentTime = "2023-05-26 12:00:00";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        ZonedDateTime zonedDateTime = LocalDateTime.parse(currentTime, formatter).atZone(ZoneId.systemDefault());
+        long testTime = zonedDateTime.toEpochSecond();
+
+        mockClock = mock(Instant.class);
+        elasticsearchService.clockInstant = mockClock;
+        when(mockClock.getEpochSecond()).thenReturn(testTime);
+        assertEquals(Status.WARNING, elasticsearchService.getStatus("2023-05-26T12:02:02"));
+    }
+
+    @Test
+    void getStatus_Offline() {
+        String currentTime = "2023-05-26 12:00:00";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        ZonedDateTime zonedDateTime = LocalDateTime.parse(currentTime, formatter).atZone(ZoneId.systemDefault());
+        long testTime = zonedDateTime.toEpochSecond();
+
+        mockClock = mock(Instant.class);
+        elasticsearchService.clockInstant = mockClock;
+        when(mockClock.getEpochSecond()).thenReturn(testTime);
+        assertEquals(Status.OFFLINE, elasticsearchService.getStatus("2023-05-26T12:05:01"));
     }
 
 }

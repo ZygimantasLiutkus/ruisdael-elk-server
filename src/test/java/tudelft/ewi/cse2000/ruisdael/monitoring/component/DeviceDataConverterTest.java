@@ -9,7 +9,14 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.*;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Bandwidth;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Instrument;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Location;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Ram;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Status;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Storage;
+
 
 @SuppressWarnings("PMD.AvoidDuplicateLiterals") //Map keys are causing this to pop up, this is necessary.
 public class DeviceDataConverterTest {
@@ -30,7 +37,7 @@ public class DeviceDataConverterTest {
             entry("upload.speed", "10.0"),
             entry("download.speed", "20.0"),
             entry("@timestamp", "2023-05-26T12:00:00"),
-            entry("location.coordinates", new ArrayList<Double>(List.of(52.0124, 4.8521))),
+            entry("location.coordinates", new ArrayList<>(List.of(52.0124, 4.8521))),
             entry("instrument.name", "Instrument 1"),
             entry("instrument.type", "Type 1"),
             entry("location.name", "Location 1"),

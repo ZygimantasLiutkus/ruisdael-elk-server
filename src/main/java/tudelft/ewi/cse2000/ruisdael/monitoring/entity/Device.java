@@ -170,7 +170,7 @@ public class Device {
     public String toString() {
         return "Device{"
                 + "name=" + name + ",\n"
-                + "online=" + status + ",\n"
+                + "status=" + status + ",\n"
                 + "storage=" + storage + ",\n"
                 + "ram=" + ram + ",\n"
                 + "cpuUsage=" + cpuUsage + ",\n"

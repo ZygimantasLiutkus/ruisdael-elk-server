@@ -4,7 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.stereotype.Component;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.*;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Bandwidth;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Instrument;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Location;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Ram;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Status;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Storage;
 
 @Component
 public class DeviceDataConverter {

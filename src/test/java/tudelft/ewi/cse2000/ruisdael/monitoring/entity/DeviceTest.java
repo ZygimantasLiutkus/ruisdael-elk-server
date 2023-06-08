@@ -1,7 +1,8 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.entity;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -214,13 +215,13 @@ class DeviceTest {
 
     @Test
     void hashCode_ReturnsInt() {
-        assertEquals(Objects.hash(NAME, true, storage, ram, 1.0, bandwidth, location),
+        assertEquals(Objects.hash(NAME, Status.ONLINE, storage, ram, 1.0, bandwidth, location),
                 device.hashCode());
     }
 
     @Test
     void toString_ReturnsString() {
-        assertEquals("Device{name=name,\nonline=true,\nstorage=Storage{totalStorage=0.0, freeStorage=0.0},\n"
+        assertEquals("Device{name=name,\nstatus=ONLINE,\nstorage=Storage{totalStorage=0.0, freeStorage=0.0},\n"
                         + "ram=Ram{total=0.0, available=0.0, free=0.0},\ncpuUsage=1.0,\nbandwidth=Bandwidth{uploadSize=0.0, "
                         + "downloadSize=0.0, uploadSpeed=0.0, downloadSpeed=0.0},\nlocation=Location{longitude=1.0, latitude=2.0, "
                         + "name=ln, elevation=le},\n}",
