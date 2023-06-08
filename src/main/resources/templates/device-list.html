@@ -86,7 +86,7 @@
                         <thead>
                         <tr>
                             <th><button type="button" class="btn btn-primary" th:onclick="sortCol([[\'name\']])">Instrument Name</button></th>
-                            <th><button type="button" class="btn btn-primary" th:onclick="sortCol([[\'location\']])">Location</button></th>
+                            <th><button type="button" class="btn btn-primary" th:onclick="sortCol([[\'location.humanreadableCoordinates\']])">Location</button></th>
                             <th><button type="button" class="btn btn-primary" th:onclick="sortCol([[\'online\']])">Status</button></th>
                         </tr>
                         </thead>

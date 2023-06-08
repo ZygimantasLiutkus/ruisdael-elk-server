@@ -69,7 +69,7 @@ function createTable(devs) {
         let row = table.insertRow(table.rows.length);
         let device = selectedDevices[i];
         row.insertCell(0).innerHTML = `<td><a class="node-link" href="/node/`+ device.name +`">`+ device.name +`</a></td>`;
-        row.insertCell(1).innerHTML = `<td>` + device.location + `</td>`;
+        row.insertCell(1).innerHTML = `<td>` + device.location.humanreadableCoordinates + `</td>`;
         let cell3 = row.insertCell(2);
         cell3.innerText = device.online ? "Online" : "Offline";
         if (device.online) {
