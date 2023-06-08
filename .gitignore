@@ -41,5 +41,3 @@ __pycache__/
 ### H2 ###
 ruisdael-webui.mv.db
 ruisdael-webui.trace.db
-
-src/main/resources/application.properties
