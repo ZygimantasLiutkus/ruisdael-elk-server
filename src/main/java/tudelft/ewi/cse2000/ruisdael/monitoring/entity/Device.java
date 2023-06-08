@@ -62,7 +62,7 @@ public class Device {
     private Location location;
 
     //Metrics
-    private boolean online;
+    private Status status;
     private Storage storage;
     private Ram ram;
     private double cpuUsage;
@@ -73,53 +73,11 @@ public class Device {
 
     //Custom Metrics
     private Map<String, String> customFields;
-    /**
-     *  All argument constructor.
-     *
-     * @param indexSuffix      - The index suffix of the device. For retrieval from Elasticsearch.
-     * @param name             - Name of the device.
-     * @param type             - Type of the device.
-     * @param status           - Status of the device, can be ONLINE, WARNING, OFFLINE.
-     * @param totalStorage     - The total memory storage the device has, in bytes.
-     * @param availableStorage - The memory storage which is available, in bytes.
-     * @param usedPercStorage  - The percentage of memory storage that is used.
-     * @param usedBytesStorage - The amount of memory storage that is used in bytes.
-     * @param totalRam         - The total RAM of the device, in bytes.
-     * @param availableRam     - The RAM being readily available, in bytes.
-     * @param freeRam          - The RAM which is not allocated towards any process, but is not readily available yet.
-     * @param usedPercRam      - The percentage of RAM being used.
-     * @param usedBytesRam     - The amount of RAM being used in bytes.
-     * @param cpuUsage         - The current CPU usage of the device, represented as a percentage.
-     * @param uploadSize       - The size of the information the device is sending to the server, represented as bytes.
-     * @param downloadSize     - The size of the information the device is downloading, represented as bytes.
-     * @param uploadSpeed      - The upload speed of the device in terms of bytes.
-     * @param downloadSpeed    - The download speed of the device in terms of bytes.
-     * @param locationName     - The name of the device's location provided by Ruisdael.
-     * @param elevation        - The elevation of the device.
-     * @param timestamp        - The timestamp of the device's iteration's creation.
-     */
-    public Device(String indexSuffix, String name, String type, Status status, double totalStorage, double availableStorage,
-                  double usedPercStorage, double usedBytesStorage, double totalRam, double availableRam, double freeRam,
-                  double usedPercRam, double usedBytesRam, double cpuUsage, double uploadSize, double downloadSize,
-                  double uploadSpeed, double downloadSpeed, String location, String locationName, String elevation,
-                  String timestamp) {
-        this.indexSuffix = indexSuffix;
-        this.name = name;
-        this.type = type;
-        this.status = status;
-        this.storage = new Storage(totalStorage, availableStorage, usedPercStorage, usedBytesStorage);
-        this.ram = new Ram(totalRam, availableRam, freeRam, usedPercRam, usedBytesRam);
-        this.cpuUsage = cpuUsage;
-        this.bandwidth = new Bandwidth(uploadSize, downloadSize, uploadSpeed, downloadSpeed);
-        this.location = new Location(location, locationName, elevation);
-        this.timestamp = timestamp;
-    }
-     * @param location         - The location of the device in coordinates.
 
     /**
      * Constructor used for passing a device to the front-end.
      */
-    public Device(Status status, String name, String location, String locationName, String elevation,
+    public Device(Status status, String name, Location location,
                   double totalStorage, double availableStorage, double usedPercStorage, double usedBytesStorage,
                   double totalRam, double availableRam, double freeRam, double usedPercRam, double usedBytesRam) {
         this.status = status;
@@ -172,7 +130,7 @@ public class Device {
 
         Device device = (Device) o;
 
-        if (online != device.online) {
+        if (status != device.status) {
             return false;
         }
         if (Double.compare(device.cpuUsage, cpuUsage) != 0) {

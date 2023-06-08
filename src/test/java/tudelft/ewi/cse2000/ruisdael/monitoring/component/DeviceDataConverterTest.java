@@ -9,12 +9,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Bandwidth;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Instrument;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Location;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Ram;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Storage;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.*;
 
 @SuppressWarnings("PMD.AvoidDuplicateLiterals") //Map keys are causing this to pop up, this is necessary.
 public class DeviceDataConverterTest {
@@ -234,14 +229,14 @@ public class DeviceDataConverterTest {
     void testCreateDeviceFromElasticData() {
         //Setup
         Device expectedResult = new Device("node", new Instrument("Instrument 1", "Type 1"),
-                new Location(52.0124, 4.8521, "10.0", "Location 1"), true,
+                new Location(52.0124, 4.8521, "10.0", "Location 1"), Status.ONLINE,
                 new Storage(102400, 51200, 50.0, 51200),
                 new Ram(8192, 4096, 4096, 50.0, 4096), 0.5,
                 new Bandwidth(1024, 2048, 10.0, 20.0),
                 "2023-05-26T12:00:00", Map.of());
 
         // Run the test
-        Device result = DeviceDataConverter.createDeviceFromElasticData("node", true, VALUES);
+        Device result = DeviceDataConverter.createDeviceFromElasticData("node", Status.ONLINE, VALUES);
 
         // Verify the results
         assertEquals(expectedResult, result);
@@ -258,6 +253,6 @@ public class DeviceDataConverterTest {
                 "download.size", 10L, "download.speed", "");
 
         //Run the test
-        assertThrows(IllegalArgumentException.class, () -> DeviceDataConverter.createDeviceFromElasticData("name", true, values));
+        assertThrows(IllegalArgumentException.class, () -> DeviceDataConverter.createDeviceFromElasticData("name", Status.ONLINE, values));
     }
 }

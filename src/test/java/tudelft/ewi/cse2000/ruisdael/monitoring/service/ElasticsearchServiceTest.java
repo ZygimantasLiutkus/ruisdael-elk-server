@@ -34,6 +34,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import tudelft.ewi.cse2000.ruisdael.monitoring.component.DeviceDataConverter;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Status;
 
 @SpringBootTest
 class ElasticsearchServiceTest {
@@ -257,7 +258,7 @@ class ElasticsearchServiceTest {
         Device device = new Device();
 
         try (MockedStatic<DeviceDataConverter> mockConverter = Mockito.mockStatic(DeviceDataConverter.class)) {
-            mockConverter.when(() -> DeviceDataConverter.createDeviceFromElasticData("clone1", true,
+            mockConverter.when(() -> DeviceDataConverter.createDeviceFromElasticData("clone1", Status.ONLINE,
                             Map.of("a", "a", "b", "b")))
                     .thenReturn(device);
 
@@ -273,7 +274,7 @@ class ElasticsearchServiceTest {
             verify(mockMetadata, atLeastOnce()).hits();
             verify(mockHit1, atLeastOnce()).source();
             verify(mockHit2, never()).source();
-            mockConverter.verify(() -> DeviceDataConverter.createDeviceFromElasticData("clone1", true,
+            mockConverter.verify(() -> DeviceDataConverter.createDeviceFromElasticData("clone1", Status.ONLINE,
                     Map.of("a", "a", "b", "b")));
         }
     }

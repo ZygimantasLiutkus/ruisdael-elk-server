@@ -4,12 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.stereotype.Component;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Bandwidth;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Instrument;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Location;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Ram;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Storage;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.*;
 
 @Component
 public class DeviceDataConverter {
@@ -40,7 +35,7 @@ public class DeviceDataConverter {
             //Custom Metrics
             Map<String, String> data = extractCustomData(values);
 
-            return new Device(name, instrument, location, online, storage, ram, cpu, bandwidth, timestamp, data);
+            return new Device(name, instrument, location, status, storage, ram, cpu, bandwidth, timestamp, data);
         } catch (Exception e) {
             throw new IllegalArgumentException("Unable to convert data");
         }
