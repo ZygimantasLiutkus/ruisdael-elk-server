@@ -104,3 +104,16 @@ table {
     width : 100%;
     /*margin: 3% auto;*/
   }
+
+.select-metric {
+    display: inline-flex;
+}
+
+.dropdown-scrollbar {
+    height: 20vh;
+    overflow-y: scroll;
+}
+
+tbody>tr {
+    cursor: pointer;
+}

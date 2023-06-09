@@ -2,66 +2,80 @@ var table = document.getElementById("device-table");
 var isAsc = true;
 var devicesPerPage = 10;
 var currentPage = 1;
+const metricMapping = new Map([
+    ["Status", "Status"],
+    ["Total RAM", "RAM.total"],
+    ["Available RAM", "RAM.available"],
+    ["Used RAM (%)", "RAM.used.perc"],
+    ["Used RAM (B)", "RAM.used.bytes"],
+    ["Free RAM", "RAM.free"],
+    ["Total Storage", "storage.total"],
+    ["Used Storage (B)", "storage.used.bytes"],
+    ["Free Storage", "storage.free"],
+    ["Used Storage (%)", "storage.used.perc"],
+    ["CPU", "CPU"],
+    ["Upload Size", "upload.size"],
+    ["Download Size", "download.size"],
+    ["Upload Speed", "upload.speed"],
+    ["Download Speed", "download.speed"],
+    ["Latest Timestamp", "@timestamp"],
+    ["Location Coordinates", "location.coordinates"],
+    ["Location Elevation", "location.elevation"],
+    ["Instrument Name", "instrument.name"],
+    ["Location Name", "location.name"],
+    ["Instrument Type", "instrument.type"]
+]);
 
-function sortCol(col) {
+function sortCol(colNum) {
 
     if (currentPage !== 1) {
         changePage(1);
     }
 
+    let col = document.getElementById("metric-" + colNum.toString()).innerText;
+
+    if (devices.length === 0) return 0;
+
     if (isAsc) {
-        if (col === "online") {
-            devices = devices.sort((a, b) => a["online"] - b["online"]);
+        if (isNaN(parseField(devices[0], col))) {
+            devices.sort((a, b) => parseField(a, col).localeCompare(parseField(b, col), undefined, {numeric: true}));
+
         } else {
-            devices = devices.sort((a, b) => a[col].localeCompare(b[col], undefined, {numeric: true}));
+            devices.sort((a, b) => parseField(a, col) - parseField(b, col));
         }
     } else {
-        if (col === "online") {
-            devices = devices.sort((a, b) => b["online"] - a["online"]);
+        if (isNaN(parseField(devices[0], col))) {
+            devices.sort((a, b) => parseField(b, col).localeCompare(parseField(a, col), undefined, {numeric: true}));
         } else {
-            devices = devices.sort((a, b) => b[col].localeCompare(a[col], undefined, { numeric: true }));
+            devices.sort((a, b) => parseField(b, col) - parseField(a, col));
         }
     }
     isAsc = !isAsc
 
-    for (let i = 0; i < devices.length; i++) {
-        let device = devices[i];
-        let row = table.rows[i + 1];
-
-        row.cells[0].innerText = device.name;
-        row.cells[1].innerText = device.location;
-        row.cells[2].innerText = device.online ? "Online" : "Offline";
-
-        // In order to change the colors
-        if (device.online) {
-            row.cells[2].style.color = "#4eb940";
-        } else {
-            row.cells[2].style.color = "#ad2626";
-        }
-    }
+    createTable();
 }
 
 function createTable() {
     let start = devicesPerPage * (currentPage - 1);
     let end = start + devicesPerPage;
     let selectedDevices = devices.slice(start, end);
+    let tbody = table.getElementsByTagName("tbody")[0];
 
-    while (table.rows.length > 1) {
-        table.deleteRow(1);
+    while (tbody.rows.length > 0) {
+        tbody.deleteRow(0);
     }
 
     for (let i = 0; i < selectedDevices.length; i++) {
-        let row = table.insertRow(table.rows.length);
+        let row = tbody.insertRow(tbody.rows.length);
         let device = selectedDevices[i];
-        row.insertCell(0).innerHTML = `<td><a class="node-link" href="/node/`+ device.name +`">`+ device.name +`</a></td>`;
-        row.insertCell(1).innerHTML = `<td>` + device.location + `</td>`;
-        let cell3 = row.insertCell(2);
-        cell3.innerText = device.online ? "Online" : "Offline";
-        if (device.online) {
-            cell3.style.color = "#4eb940";
-        } else {
-            cell3.style.color = "#ad2626";
-        }
+        row.insertCell(0).innerText = parseField(device, document.getElementById("metric-0").innerText);
+        row.insertCell(1).innerText = parseField(device, document.getElementById("metric-1").innerText);
+        row.insertCell(2).innerText = parseField(device, document.getElementById("metric-2").innerText);
+        setStatusColorAll(device, row);
+
+        row.addEventListener("click", () => {
+            window.location.href = "/node/" + device.name;
+        });
     }
 }
 
@@ -73,7 +87,7 @@ function updatePaginate() {
 
     for (let i = 1; i < listItems.length - 1; i++) {
         if (i === currentPage) {
-            continue;
+            // continue
         } else {
             listItems.item(i).style.backgroundColor = "transparent";
             listItems.item(i).style.color = "white";
@@ -103,4 +117,132 @@ function nextPage() {
 function lastPage() {
     currentPage = Math.ceil(devices.length / devicesPerPage)
     changePage(currentPage)
+}
+
+function setCol(colNum, metric) {
+    let button = document.getElementById("metric-" + colNum.toString());
+    button.innerText = metric;
+
+    createTable();
+}
+
+function parseField(device, field) {
+    const mapped = metricMapping.get(field);
+    const partition = mapped.split(".");
+
+    switch (partition[0]) {
+        case "Status":
+            return device.status;
+        case "RAM":
+            return partition.length === 3 ? parseRamField(device, partition[2]) : parseRamField(device, partition[1]);
+        case "storage":
+            return partition.length === 3 ? parseStorageField(device, partition[2]) : parseStorageField(device, partition[1]);
+        case "CPU":
+            return device.cpuUsage;
+        case "upload":
+            return parseBandwidthField(device, "u" + partition[1]);
+        case "download":
+            return parseBandwidthField(device, "d" + partition[1]);
+        case "@timestamp":
+            return device.timestamp;
+        case "location":
+            return parseLocationField(device, partition[1]);
+        case "instrument":
+            return partition[1] === "name" ? device.instrument.name : partition[1] === "type" ? device.instrument.type : "NaN";
+        default:
+            return "NaN";
+    }
+}
+
+function parseRamField(device, field) {
+    switch (field) {
+        case "total":
+            return device.ram.total;
+        case "available":
+            return device.ram.available;
+        case "free":
+            return device.ram.free;
+        case "perc":
+            return device.ram.usedPerc;
+        case "bytes":
+            return device.ram.usedBytes;
+        default:
+            return "NaN";
+    }
+}
+
+function parseStorageField(device, field) {
+    switch (field) {
+        case "total":
+            return device.storage.totalStorage;
+        case "free":
+            return device.storage.freeStorage;
+        case "perc":
+            return device.storage.usedPercStorage;
+        case "bytes":
+            return device.storage.usedBytesStorage;
+        default:
+            return "NaN";
+    }
+}
+
+function parseBandwidthField(device, field) {
+    switch (field) {
+        case "usize":
+            return device.bandwidth.uploadSize;
+        case "uspeed":
+            return device.bandwidth.uploadSpeed;
+        case "dsize":
+            return device.bandwidth.downloadSize;
+        case "dspeed":
+            return device.bandwidth.downloadSpeed;
+        default:
+            return "NaN";
+    }
+}
+
+function parseLocationField(device, field) {
+    switch (field) {
+        case "coordinates":
+            return device.location.humanreadableCoordinates;
+        case "name":
+            return device.location.name;
+        case "elevation":
+            return device.location.elevation;
+        default:
+            return "NaN";
+    }
+}
+
+function setStatusColor(device, cell) {
+    if (device.status === "ONLINE") {
+        cell.innerText = "Online";
+        cell.style.color = "#4eb940";
+    } else if (device.status === "WARNING") {
+        cell.innerText = "Warning";
+        cell.style.color = "#b9a940ff";
+    } else {
+        cell.innerText = "Offline";
+        cell.style.color = "#ad2626";
+    }
+}
+
+function setStatusColorAll(device, row) {
+    if (document.getElementById("metric-0").innerText === "Status") {
+        setStatusColor(device, row.cells[0]);
+    } else {
+        row.cells[0].style.color = "#ffffff";
+    }
+
+    if (document.getElementById("metric-1").innerText === "Status") {
+        setStatusColor(device, row.cells[1]);
+    } else {
+        row.cells[1].style.color = "#ffffff";
+    }
+
+    if (document.getElementById("metric-2").innerText === "Status") {
+        setStatusColor(device, row.cells[2]);
+    } else {
+        row.cells[2].style.color = "#ffffff";
+    }
 }

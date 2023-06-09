@@ -4,6 +4,20 @@ var devicesPerPage = 10;
 var currentPage = 1;
 var isSorting = false;
 
+function setCellColors(device, row) {
+    // In order to change the colors
+    if (device.status === "ONLINE") {
+        row.cells[2].innerText = "Online";
+        row.cells[2].style.color = "#4eb940";
+    } else if (device.status === "WARNING") {
+        row.cells[2].innerText = "Warning";
+        row.cells[2].style.color = "#B9A940FF";
+    } else {
+        row.cells[2].innerText = "Offline";
+        row.cells[2].style.color = "#ad2626";
+    }
+}
+
 function sortCol(col) {
 
     if (currentPage !== 1) {
@@ -18,20 +32,20 @@ function sortCol(col) {
             deviceList.push({
                 "name": row.cells[0].innerText,
                 "location": row.cells[1].innerText,
-                "online": row.cells[2].innerText === "Online"
+                "status": row.cells[2].innerText
             });
         }
     }
 
     if (isAsc) {
-        if (col === "online") {
-            deviceList.sort((a, b) => a["online"] - b["online"]);
+        if (col === "location") {
+            deviceList.sort((a, b) => a[col].name.localeCompare(b[col].name, undefined, { numeric: true }));
         } else {
-            deviceList.sort((a, b) => a[col].localeCompare(b[col], undefined, {numeric: true}));
+            deviceList.sort((a, b) => a[col].localeCompare(b[col], undefined, { numeric: true }));
         }
     } else {
-        if (col === "online") {
-            deviceList.sort((a, b) => b["online"] - a["online"]);
+        if (col === "location") {
+            deviceList.sort((a, b) => b[col].name.localeCompare(a[col].name, undefined, { numeric: true }));
         } else {
             deviceList.sort((a, b) => b[col].localeCompare(a[col], undefined, { numeric: true }));
         }
@@ -42,16 +56,15 @@ function sortCol(col) {
         let device = deviceList[i];
         let row = table.rows[i + 1];
 
+        if (row === undefined) {
+            break;
+        }
+
         row.cells[0].innerText = device.name;
-        row.cells[1].innerText = device.location;
-        row.cells[2].innerText = device.online ? "Online" : "Offline";
+        row.cells[1].innerText = device.location.name;
 
         // In order to change the colors
-        if (device.online) {
-            row.cells[2].style.color = "#4eb940";
-        } else {
-            row.cells[2].style.color = "#ad2626";
-        }
+        setCellColors(device, row);
     }
 }
 
@@ -69,14 +82,9 @@ function createTable(devs) {
         let row = table.insertRow(table.rows.length);
         let device = selectedDevices[i];
         row.insertCell(0).innerHTML = `<td><a class="node-link" href="/node/`+ device.name +`">`+ device.name +`</a></td>`;
-        row.insertCell(1).innerHTML = `<td>` + device.location + `</td>`;
-        let cell3 = row.insertCell(2);
-        cell3.innerText = device.online ? "Online" : "Offline";
-        if (device.online) {
-            cell3.style.color = "#4eb940";
-        } else {
-            cell3.style.color = "#ad2626";
-        }
+        row.insertCell(1).innerHTML = `<td>` + device.location.name + `</td>`;
+        row.insertCell(2).innerHTML = ``;
+        setCellColors(device, row);
     }
 }
 
@@ -86,16 +94,16 @@ function search() {
     let radioButtons = document.getElementsByClassName("form-check-input");
     let tag = document.getElementById("search-tag").value.trim().toLowerCase();
     let found = [];
-    let filter = ""
+    let filter = "status";
     let checked = false;
     isSorting = true;
 
     if (radioButtons.item(2).checked) {
-        tag = "true";
-        filter = "online";
+        tag = "online";
     } else if (radioButtons.item(3).checked) {
-        tag = "false";
-        filter = "online";
+        tag = "warning";
+    } else if (radioButtons.item(4).checked) {
+        tag = "offline";
     } else if (tag === "") {
         isSorting = false;
         createTable();
@@ -116,8 +124,13 @@ function search() {
     }
 
     for (let i = 0; i < devices.length; i++) {
-        let deviceTag = devices[i][filter].toString().toLowerCase();
-        if (deviceTag.startsWith(tag)) {
+        let deviceTag = "";
+        if (filter === "location") {
+            deviceTag = devices[i][filter]["name"].toString().toLowerCase();
+        } else {
+            deviceTag = devices[i][filter].toString().toLowerCase();
+        }
+        if (deviceTag.startsWith(tag.trim().toLowerCase())) {
             found.push(devices[i]);
         }
     }
@@ -137,7 +150,6 @@ function updatePaginate() {
             listItems.item(i).style.color = "white";
         }
     }
-
 }
 
 function changePage(num) {

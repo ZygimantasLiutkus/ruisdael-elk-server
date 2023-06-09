@@ -1,0 +1,47 @@
+2023-04-25
+
+Meeting Notes with the TA:
+
+	- Teamwork & Technical writing assignments along the way
+	- Deadline at the end of week 2 with the Project Plan (final version)
+		submitted on brightspace, but can be modified along the way,
+		the changes have to be documented
+	- Meetings with the coach: ~5 times during the project
+	- Check the slides for the grading
+	- Technical writing lecturer grades, so we should focus on their
+		personal preference as that is all that matters
+	- Discuss expectations and responsibilites with the group
+	- What type of product and grade we aim for?
+	- 2 separate repositories on GitLab, should make a plan 
+		what we want to put in which repo, and which settings 
+		the repos should have 
+		(protecting branches, merge approvals, etc.)
+	- During the next client meeting, we should check if we need to
+		sync our repo with their repo
+	- GitLab pipelines, set up docker, for the docker image specify
+		the docker version so that it doesn't download everything
+		every time, grade depends on the complexity of the docker
+	- Do not make massive pipeline jobs, i.e. do not put complex
+		code on the pipeline
+	- Every week we during the meeting we shold give a presentation
+		of what we did and what we plan to do
+	- Meetings on Monday afternoon every week (flexible time)
+	- Week 8 final report draft, week 5 code review (pass/fail)
+	- Report should be written in LaTeX (Overleaf)
+	- Coach meeting: What their expertese is, what they can help with,
+		create an agenda, give off the impression that we are capable
+		of delivering the product
+	- Recommendations: Start working on the lits of requirements (MoSCOW),
+		Start writing some basic introduction for the project report,
+		add a project timeline using a timetable (chart)
+	- If we need data from the company we should request it early
+	- Divide the tasks into smaller groups, and then have smaller
+		groups can use the Waterfall methodology, while the overall
+		group uses Scrum
+	- We have a concensus for a grade between 7 and 8
+
+
+
+
+
+
