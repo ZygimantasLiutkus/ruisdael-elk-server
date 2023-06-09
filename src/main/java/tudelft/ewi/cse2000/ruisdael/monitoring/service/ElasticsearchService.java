@@ -175,7 +175,7 @@ public class ElasticsearchService {
         long currentTime = clockInstant.getEpochSecond();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-        String time = timestamp.replace("T", " ");
+        String time = timestamp.replace("T", " ").replace("Z", "");
         long deviceTime = LocalDateTime.parse(time, formatter).atZone(ZoneId.systemDefault()).toEpochSecond();
 
         if (Math.abs(currentTime - deviceTime) < warningInterval) {
