@@ -1,0 +1,85 @@
+Notes meeting 12/5
+
+cas
+	- assignments
+	- get elastic and kibana to talk to eachother
+	- set up remote port forwarding
+Dean
+	- elastic server
+	
+Quinten
+	- reinstall elastic
+	- install metric beat
+	- assignment
+Zigis
+	- install Kibana
+	- assignment
+Erfan
+	- install kibana/ elastic
+	- explore raspberrys
+		explore errors
+
+Points
+	- lack of meetings client
+		- happened 2x
+		- still comunication via gitlab and mail
+		- still want one in person
+		- scope still bit unclear
+	- ans meeting
+		- meetings canceled bit beforehand
+		- communication a bit rough
+		- Sugest online meeting -> did it already
+		- setup specific time slots 1h each
+		- You have to meet this week, without it can't proceed
+			- if canceled again, contact TA
+	- ans scope to small?
+		- not that much code to write
+			- only install premade software
+		- server only via documentation
+		- client via script
+		- doesn't look that complex at the moment
+		- Can we create our own metric beats? agrigation, talk about it with the client
+		- otherwise only ansible
+		- don't really know it this will be enough
+		- have meeting, look at requirements, TA will go to coordinators with them
+		- since project aproved, they are not gona fail us if it isn't difecult enough
+	- midterm meeting
+		- discuss, with client, and send to coach and TA
+		- can be online, not us
+		- slides, and working demo
+		- 1h in total feedback incl
+	- looks like we didn't do alot?
+		- TA understands
+	- knowledge on proxy jump ssh
+		- no
+	- not touching data/ data path
+		
+Ta quest
+	- met with coach?
+		- yes, has provided feedback
+	- used the feedback?
+		- yes
+	- Can send project plan to TA after client meeting
+	- probably need to code something like metric beats
+		- can use libraries
+	- data collected, and send
+		- monitor nodes that send data
+		- most likely do some analisys
+	
+gitlab feedback
+	- can split issues more?
+		- if with more people, or takes whole sprint
+	- add wheights or times to issues
+	- Use milestones
+		- use epic, because 2 repositories
+	- no mr, no code
+		- since no meeting with client
+
+deadlines
+	- monday buddycheck
+		- due friday
+	- 16/5 team work assignment deadline 
+
+	
+
+		

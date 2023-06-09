@@ -1,0 +1,101 @@
+Notes 9/6/23
+
+Zygis -> chair
+Quinten -> note taker
+
+What did we do?
+Zygis: 
+select which metrics you want to see in UI
+Testing on server side, to increase coverage
+Map, add real data instead of dummy data
+Quinten:
+Ansible stuff
+Dean:
+code refractoring, since location changed -> both code and ui
+different kind of status -> both code and ui
+Create automatic detection of a device beeing online or ofline
+Cas:
+add parsing for extra metrics, and displaying them
+Add tests
+Research NGinx to get kibana iframes to work
+user account stuff
+Erfan:
+Add option on of status map, cpu, ram and storage
+
+Demo:
+
+Questions
+Not that much discussion in MR?
+-> Part, not a lot of MR. A lot did not have a discussion, just great or looks good
+-> Have more of a conversation on Git
+Extra test for client side?
+-> Communication tests
+	-> mock what methods give you, and look that what is beeing send is what you expect
+	-> Already covered?
+Meetings?
+-> explained that we didn't know if the meeting would still happen
+
+TA:
+
+Go trough rubric
+-> prob analysis, explain whou we need the sol not this is the sol
+	-> also cover risks
+-> Research design/ methodology
+	-> explain why we did certain things, basicly how we got the solution
+
+-> soft Qualtity
+	-> how you insure code is good, explain testin in report
+-> design Quality
+	-> why choose certain technology
+-> Expectations
+	-> what the client wanted?
+-> Quality of doc
+	-> source code comments, readME
+	-> purpose, that they understand how things are oganized
+		-> find ceratin code, and have quick overvieuw
+		-> can continue codeing
+	-> where are the requirements (req.txt)
+	-> list of endpoints that get hit
+		-> how they react
+		-> con generate them
+
+-> Report -> Technical writing
+
+-> Planning
+	-> approach project, how use git, how you go from req to code
+	-> usage Gir
+	-> agendas
+-> Initiative/creativity
+	-> Create you own sol? or did the client give everything?
+-> interaction
+	-> how we communicate with everyone
+	-> engaged, at presentation
+	-> show good realation with everyone
+
+-> presentation
+	-> practice it
+-> Demo
+	-> sugestion: make bullet list
+-> Q&A
+	-> how you handle questions
+	-> sugestion: prepair questions
+		-> have slides that elaborate on questions
+			-> good impretion
+
+
+Deadlines:
+	Draft final report
+		next Wednesday -> email to coach and client
+		focus on content
+		Get feedback TA, Client, Coach, TW
+		sunday week 9 -> Technical writing , Thursday week 9 -> get read by people attending presentation
+		Email coordinators about coach beeing online
+
+Statistics
+-> client
+	-> Only Zygis and Quinten
+-> Server Side
+	-> Less of a differnce between parts
+
+-> TA will try to merge the 2 statistics
+-> try to incorporate wheight
