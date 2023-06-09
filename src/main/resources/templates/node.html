@@ -15,7 +15,7 @@
     <div class="row" style="margin-bottom: 4%;">
         <h1 style="color: white;" th:text="${device.getName()}">Unknown Node</h1>
         <div class="col-3 node-box">
-            <p style="margin-top: 15px;">Status: <span th:text="${device.isOnline() ? 'ONLINE' : 'OFFLINE'}"></span></p>
+            <p style="margin-top: 15px;">Status: <span th:text="${device.getStatus()}"></span></p>
             <p>
                 Location: <span th:text="${device.getLocation().getName()}">Unknown</span><br />
                 Elevation: <span th:text="${device.getLocation().getElevation()}">Unknown</span><br/>

@@ -60,7 +60,6 @@ public class DeviceController {
                 .toList();
 
         model.addAttribute("metrics", metrics);
-        model.addAttribute("hits", elasticsearchService.getDistinctIndexNames());
 
         /* For testing purposes
         List<Device> devices = new ArrayList<>();

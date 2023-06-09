@@ -346,7 +346,7 @@ class ElasticsearchServiceTest {
         long testTime = zonedDateTime.toEpochSecond();
 
         when(mockClock.getEpochSecond()).thenReturn(testTime);
-        assertEquals(Status.ONLINE, elasticsearchService.getStatus("2023-01-01T11:58:01"));
+        assertEquals(Status.ONLINE, elasticsearchService.getStatus("2023-01-01T11:58:01Z"));
     }
 
     @Test
@@ -355,7 +355,7 @@ class ElasticsearchServiceTest {
         long testTime = zonedDateTime.toEpochSecond();
 
         when(mockClock.getEpochSecond()).thenReturn(testTime);
-        assertEquals(Status.WARNING, elasticsearchService.getStatus("2023-01-01T11:57:59"));
+        assertEquals(Status.WARNING, elasticsearchService.getStatus("2023-01-01T11:57:59Z"));
     }
 
     @Test
@@ -364,7 +364,7 @@ class ElasticsearchServiceTest {
         long testTime = zonedDateTime.toEpochSecond();
 
         when(mockClock.getEpochSecond()).thenReturn(testTime);
-        assertEquals(Status.OFFLINE, elasticsearchService.getStatus("2023-01-01T11:54:59"));
+        assertEquals(Status.OFFLINE, elasticsearchService.getStatus("2023-01-01T11:54:59Z"));
     }
 
 }

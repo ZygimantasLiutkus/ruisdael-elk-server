@@ -33,6 +33,10 @@ public class ElasticsearchService {
 
     private final ElasticsearchClient client;
 
+    private static final long warningInterval = 121L;
+    private static final long offlineInterval = 301L;
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     protected Instant clockInstant = Clock.systemUTC().instant();
 
     /**
@@ -170,10 +174,7 @@ public class ElasticsearchService {
      *              request from the node, on the Elasticsearch server.
      */
     public Status getStatus(String timestamp) {
-        long warningInterval = 121L;
-        long offlineInterval = 301L;
         long currentTime = clockInstant.getEpochSecond();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         String time = timestamp.replace("T", " ").replace("Z", "");
         long deviceTime = LocalDateTime.parse(time, formatter).atZone(ZoneId.systemDefault()).toEpochSecond();
