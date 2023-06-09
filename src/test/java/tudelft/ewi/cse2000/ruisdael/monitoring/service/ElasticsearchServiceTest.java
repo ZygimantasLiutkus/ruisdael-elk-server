@@ -34,7 +34,6 @@ import java.util.function.Function;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -73,6 +72,8 @@ class ElasticsearchServiceTest {
     private static final String MOCK_INDEX_2 = "collector_clone2";
     private static final String MOCK_TIME = "2023-01-01 12:00:00";
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    private static final ZonedDateTime zonedDateTime = LocalDateTime.parse(MOCK_TIME, TIME_FORMATTER).atZone(ZoneId.of("UTC"));
 
     @BeforeEach
     public void setup() {
@@ -271,7 +272,6 @@ class ElasticsearchServiceTest {
         when(mockHit2.source()).thenReturn(Map.of("c", "c", timestampField, MOCK_TIME));
         when(mockHit1.index()).thenReturn(MOCK_INDEX_1);
 
-        ZonedDateTime zonedDateTime = LocalDateTime.parse(MOCK_TIME, TIME_FORMATTER).atZone(ZoneId.systemDefault());
         when(mockClock.getEpochSecond()).thenReturn(zonedDateTime.toEpochSecond());
 
         Device device = new Device();
@@ -342,7 +342,6 @@ class ElasticsearchServiceTest {
 
     @Test
     void getStatus_Online() {
-        ZonedDateTime zonedDateTime = LocalDateTime.parse(MOCK_TIME, TIME_FORMATTER).atZone(ZoneId.systemDefault());
         long testTime = zonedDateTime.toEpochSecond();
 
         when(mockClock.getEpochSecond()).thenReturn(testTime);
@@ -351,7 +350,6 @@ class ElasticsearchServiceTest {
 
     @Test
     void getStatus_Warning() {
-        ZonedDateTime zonedDateTime = LocalDateTime.parse(MOCK_TIME, TIME_FORMATTER).atZone(ZoneId.systemDefault());
         long testTime = zonedDateTime.toEpochSecond();
 
         when(mockClock.getEpochSecond()).thenReturn(testTime);
@@ -360,7 +358,6 @@ class ElasticsearchServiceTest {
 
     @Test
     void getStatus_Offline() {
-        ZonedDateTime zonedDateTime = LocalDateTime.parse(MOCK_TIME, TIME_FORMATTER).atZone(ZoneId.systemDefault());
         long testTime = zonedDateTime.toEpochSecond();
 
         when(mockClock.getEpochSecond()).thenReturn(testTime);

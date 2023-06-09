@@ -32,22 +32,22 @@ function sortCol(colNum) {
         changePage(1);
     }
 
-    let col = document.getElementById("metric-"+colNum.toString()).innerText;
+    let col = document.getElementById("metric-" + colNum.toString()).innerText;
 
     if (devices.length === 0) return 0;
 
     if (isAsc) {
         if (isNaN(parseField(devices[0], col))) {
-            devices = devices.sort((a, b) => parseField(a, col).localeCompare(parseField(b, col), undefined, {numeric: true}));
+            devices.sort((a, b) => parseField(a, col).localeCompare(parseField(b, col), undefined, {numeric: true}));
 
         } else {
-            devices = devices.sort((a, b) => parseField(a, col) - parseField(b, col));
+            devices.sort((a, b) => parseField(a, col) - parseField(b, col));
         }
     } else {
         if (isNaN(parseField(devices[0], col))) {
-            devices = devices.sort((a, b) => parseField(b, col).localeCompare(parseField(a, col), undefined, { numeric: true }));
+            devices.sort((a, b) => parseField(b, col).localeCompare(parseField(a, col), undefined, {numeric: true}));
         } else {
-            devices = devices.sort((a, b) => parseField(b, col) - parseField(a, col));
+            devices.sort((a, b) => parseField(b, col) - parseField(a, col));
         }
     }
     isAsc = !isAsc
@@ -74,7 +74,7 @@ function createTable() {
         setStatusColorAll(device, row);
 
         row.addEventListener("click", () => {
-           window.location.href = "/node/"+device.name;
+            window.location.href = "/node/" + device.name;
         });
     }
 }
@@ -120,7 +120,7 @@ function lastPage() {
 }
 
 function setCol(colNum, metric) {
-    let button = document.getElementById("metric-"+colNum.toString());
+    let button = document.getElementById("metric-" + colNum.toString());
     button.innerText = metric;
 
     createTable();
@@ -131,63 +131,98 @@ function parseField(device, field) {
     const partition = mapped.split(".");
 
     switch (partition[0]) {
-        case "Status": return device.online ? "Online" : "Offline";
-        case "RAM": return partition.length === 3 ? parseRamField(device, partition[2]) : parseRamField(device, partition[1]);
-        case "storage": return partition.length === 3 ? parseStorageField(device, partition[2]) : parseStorageField(device, partition[1]);
-        case "CPU": return device.cpuUsage;
-        case "upload": return parseBandwidthField(device,"u"+partition[1]);
-        case "download": return parseBandwidthField(device, "d"+partition[1]);
-        case "@timestamp": return device.timestamp;
-        case "location": return parseLocationField(device, partition[1]);
-        case "instrument": return partition[1] === "name" ? device.instrument.name : partition[1] === "type" ? device.instrument.type : "NaN";
-        default: return "NaN";
+        case "Status":
+            return device.status;
+        case "RAM":
+            return partition.length === 3 ? parseRamField(device, partition[2]) : parseRamField(device, partition[1]);
+        case "storage":
+            return partition.length === 3 ? parseStorageField(device, partition[2]) : parseStorageField(device, partition[1]);
+        case "CPU":
+            return device.cpuUsage;
+        case "upload":
+            return parseBandwidthField(device, "u" + partition[1]);
+        case "download":
+            return parseBandwidthField(device, "d" + partition[1]);
+        case "@timestamp":
+            return device.timestamp;
+        case "location":
+            return parseLocationField(device, partition[1]);
+        case "instrument":
+            return partition[1] === "name" ? device.instrument.name : partition[1] === "type" ? device.instrument.type : "NaN";
+        default:
+            return "NaN";
     }
 }
 
 function parseRamField(device, field) {
     switch (field) {
-        case "total": return device.ram.total;
-        case "available": return device.ram.available;
-        case "free": return device.ram.free;
-        case "perc": return device.ram.usedPerc;
-        case "bytes": return device.ram.usedBytes;
-        default: return "NaN";
+        case "total":
+            return device.ram.total;
+        case "available":
+            return device.ram.available;
+        case "free":
+            return device.ram.free;
+        case "perc":
+            return device.ram.usedPerc;
+        case "bytes":
+            return device.ram.usedBytes;
+        default:
+            return "NaN";
     }
 }
 
 function parseStorageField(device, field) {
     switch (field) {
-        case "total": return device.storage.totalStorage;
-        case "free": return device.storage.freeStorage;
-        case "perc": return device.storage.usedPercStorage;
-        case "bytes": return device.storage.usedBytesStorage;
-        default: return "NaN";
+        case "total":
+            return device.storage.totalStorage;
+        case "free":
+            return device.storage.freeStorage;
+        case "perc":
+            return device.storage.usedPercStorage;
+        case "bytes":
+            return device.storage.usedBytesStorage;
+        default:
+            return "NaN";
     }
 }
 
 function parseBandwidthField(device, field) {
     switch (field) {
-        case "usize": return device.bandwidth.uploadSize;
-        case "uspeed": return device.bandwidth.uploadSpeed;
-        case "dsize": return device.bandwidth.downloadSize;
-        case "dspeed": return device.bandwidth.downloadSpeed;
-        default: return "NaN";
+        case "usize":
+            return device.bandwidth.uploadSize;
+        case "uspeed":
+            return device.bandwidth.uploadSpeed;
+        case "dsize":
+            return device.bandwidth.downloadSize;
+        case "dspeed":
+            return device.bandwidth.downloadSpeed;
+        default:
+            return "NaN";
     }
 }
 
 function parseLocationField(device, field) {
     switch (field) {
-        case "coordinates": return device.location.humanreadableCoordinates;
-        case "name": return device.location.name;
-        case "elevation": return device.location.elevation;
-        default: return  "NaN";
+        case "coordinates":
+            return device.location.humanreadableCoordinates;
+        case "name":
+            return device.location.name;
+        case "elevation":
+            return device.location.elevation;
+        default:
+            return "NaN";
     }
 }
 
 function setStatusColor(device, cell) {
-    if (device.online) {
+    if (device.status === "ONLINE") {
+        cell.innerText = "Online";
         cell.style.color = "#4eb940";
+    } else if (device.status === "WARNING") {
+        cell.innerText = "Warning";
+        cell.style.color = "#b9a940ff";
     } else {
+        cell.innerText = "Offline";
         cell.style.color = "#ad2626";
     }
 }

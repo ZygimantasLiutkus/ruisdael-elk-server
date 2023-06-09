@@ -91,8 +91,6 @@ public class ElasticsearchService {
                 .map(this::getDeviceDetailsFromName)
                 .filter(Objects::nonNull)
                 .toList());
-        // Sets the status of the device depending on the timestamp
-        distinctIndexNames.forEach(device -> device.setStatus(getStatus(device.getTimestamp())));
         distinctIndexNames.sort(Comparator.comparing(Device::getName));
         return distinctIndexNames;
     }
@@ -177,7 +175,7 @@ public class ElasticsearchService {
         long currentTime = clockInstant.getEpochSecond();
 
         String time = timestamp.replace("T", " ").replace("Z", "");
-        long deviceTime = LocalDateTime.parse(time, formatter).atZone(ZoneId.systemDefault()).toEpochSecond();
+        long deviceTime = LocalDateTime.parse(time, formatter).atZone(ZoneId.of("UTC")).toEpochSecond();
 
         if (Math.abs(currentTime - deviceTime) < warningInterval) {
             return Status.ONLINE;
