@@ -47,7 +47,7 @@ public class Device {
      *         'download.size': rec,  # B
      *         'upload.speed': (sent - self.old_bytes_sent) / self.update_delay,  # B/s
      *         'download.speed': (rec - self.old_bytes_rec) / self.update_delay,  # B/s
-     *         '@timestamp': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
+     *         '@timestamp': datetime.utcnow().strftime('yyyy-MM-ddTHH:mm:ssZ'),
      *         'location.coordinates': [device_details['longitude'], device_details['latitude']],
      *         'location.elevation': device_details['elevation'],   # String
      *         'instrument.name': device_details['instrument_name'],
@@ -62,7 +62,7 @@ public class Device {
     private Location location;
 
     //Metrics
-    private boolean online;
+    private Status status;
     private Storage storage;
     private Ram ram;
     private double cpuUsage;
@@ -77,10 +77,10 @@ public class Device {
     /**
      * Constructor used for passing a device to the front-end.
      */
-    public Device(boolean online, String name, Location location, double totalStorage, double availableStorage,
-        double usedPercStorage, double usedBytesStorage, double totalRam, double availableRam, double freeRam,
-        double usedPercRam, double usedBytesRam) {
-        this.online = online;
+    public Device(Status status, String name, Location location,
+                  double totalStorage, double availableStorage, double usedPercStorage, double usedBytesStorage,
+                  double totalRam, double availableRam, double freeRam, double usedPercRam, double usedBytesRam) {
+        this.status = status;
         this.name = name;
         this.location = location;
         this.storage = new Storage(totalStorage, availableStorage, usedPercStorage, usedBytesStorage);
@@ -88,7 +88,7 @@ public class Device {
     }
 
     /**
-     * Takes the supplied value (a double representing an amount of bytes) and devides it by 10 ^ 9, to get the amount in gigabytes.
+     * Takes the supplied value (a double representing an amount of bytes) and divides it by 10 ^ 9, to get the amount in gigabytes.
      * Then formats the value as XX.XX and returns this string.
      * This method is not marked static to easily access it in Thymeleaf.
      */
@@ -97,7 +97,7 @@ public class Device {
     }
 
     /**
-     * Takes the supplied value (a double representing an amount of bytes) and devides it by 10 ^ 6, to get the amount in megabytes.
+     * Takes the supplied value (a double representing an amount of bytes) and divides it by 10 ^ 6, to get the amount in megabytes.
      * Then formats the value as XX.XX and returns this string.
      * This method is not marked static to easily access it in Thymeleaf.
      */
@@ -106,7 +106,7 @@ public class Device {
     }
 
     /**
-     * Takes the supplied value (a double representing an amount of bytes) and devides it by 10 ^ 3, to get the amount in kilobytes.
+     * Takes the supplied value (a double representing an amount of bytes) and divides it by 10 ^ 3, to get the amount in kilobytes.
      * Then formats the value as XX.XX and returns this string.
      * This method is not marked static to easily access it in Thymeleaf.
      */
@@ -130,7 +130,7 @@ public class Device {
 
         Device device = (Device) o;
 
-        if (online != device.online) {
+        if (status != device.status) {
             return false;
         }
         if (Double.compare(device.cpuUsage, cpuUsage) != 0) {
@@ -162,7 +162,7 @@ public class Device {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, online, storage, ram, cpuUsage, bandwidth, location);
+        return Objects.hash(name, status, storage, ram, cpuUsage, bandwidth, location);
     }
 
     @Override
@@ -170,7 +170,7 @@ public class Device {
     public String toString() {
         return "Device{"
                 + "name=" + name + ",\n"
-                + "online=" + online + ",\n"
+                + "status=" + status + ",\n"
                 + "storage=" + storage + ",\n"
                 + "ram=" + ram + ",\n"
                 + "cpuUsage=" + cpuUsage + ",\n"

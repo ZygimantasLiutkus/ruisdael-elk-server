@@ -9,6 +9,7 @@ import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Instrument;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Location;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Ram;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Status;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Storage;
 
 @Component
@@ -19,12 +20,12 @@ public class DeviceDataConverter {
     /**
      * Parses a map of values from elastic to create a {@link Device} object with said data.
      *
-     * @param name Name of the Node
-     * @param online Whether the node is online
-     * @param values ElasticSearch provided set of values
+     * @param name  - Name of the Node
+     * @param status - Whether the node is Online, in a Warning state or Offline
+     * @param values - ElasticSearch provided set of values
      * @throws IllegalArgumentException If the map of values from ElasticSearch contains invalid or missing data.
      */
-    public static Device createDeviceFromElasticData(String name, boolean online, Map values) throws IllegalArgumentException {
+    public static Device createDeviceFromElasticData(String name, Status status, Map values) throws IllegalArgumentException {
         try {
             //Identifiers and Metadata
             String timestamp = values.get("@timestamp").toString();
@@ -40,7 +41,7 @@ public class DeviceDataConverter {
             //Custom Metrics
             Map<String, String> data = extractCustomData(values);
 
-            return new Device(name, instrument, location, online, storage, ram, cpu, bandwidth, timestamp, data);
+            return new Device(name, instrument, location, status, storage, ram, cpu, bandwidth, timestamp, data);
         } catch (Exception e) {
             throw new IllegalArgumentException("Unable to convert data");
         }

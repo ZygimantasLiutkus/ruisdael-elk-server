@@ -5,7 +5,14 @@ import co.elastic.clients.elasticsearch._types.SortOptions;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -15,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tudelft.ewi.cse2000.ruisdael.monitoring.component.DeviceDataConverter;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Status;
 
 /**
  * Service class for Elasticsearch operations.
@@ -24,6 +32,12 @@ public class ElasticsearchService {
     private static final String INDEXPREFIX = "collector_";
 
     private final ElasticsearchClient client;
+
+    private static final long warningInterval = 121L;
+    private static final long offlineInterval = 301L;
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    protected Instant clockInstant = Clock.systemUTC().instant();
 
     /**
      * Constructs an instance of ElasticsearchService with the specified Elasticsearch client.
@@ -44,8 +58,9 @@ public class ElasticsearchService {
         try {
             SearchResponse<Map> response = client.search(s -> s
                     .index(INDEXPREFIX + nodeIndexName)
-                    .sort(new SortOptions.Builder().field(field -> field.field("@timestamp").order(SortOrder.Desc)).build()),
-                    Map.class);
+                    .sort(new SortOptions.Builder()
+                            .field(field -> field.field("@timestamp").order(SortOrder.Desc))
+                            .build()), Map.class);
 
             List<Hit<Map>> allHits = response.hits().hits();
 
@@ -55,24 +70,29 @@ public class ElasticsearchService {
 
             Hit<Map> lastHit = allHits.get(0); //Get latest result
             String deviceName = lastHit.index().replace(INDEXPREFIX, "");
+            // The following line is added so that the Status of the node can be determined before creation,
+            // the method `getStatus()` is at the bottom of the ElasticsearchService class.
+            String timestamp = lastHit.source().get("@timestamp").toString();
 
-            return DeviceDataConverter.createDeviceFromElasticData(deviceName, true, lastHit.source());
+            return DeviceDataConverter.createDeviceFromElasticData(deviceName, getStatus(timestamp), lastHit.source());
         } catch (Exception e) { //IOException or IllegalArgumentException
             return null;
         }
     }
 
     /**
-     * Queries elastic to receive data on all nodes, but the order of nodes is not guaranteed.
+     * Queries elastic to receive data on all nodes, the order of devices will be according to their names.
+     * In order to obtain a list of devices with their appropriate statuses, this method should be used.
      * @return A list of all nodes with the latest data in a {@link Device} object.
      */
     public List<Device> getAllDevices() {
-        List<String> distinctIndexNames = getDistinctIndexNames();
-
-        return distinctIndexNames.stream()
+        List<Device> distinctIndexNames = new ArrayList<>(getDistinctIndexNames()
+                .stream()
                 .map(this::getDeviceDetailsFromName)
                 .filter(Objects::nonNull)
-                .toList();
+                .toList());
+        distinctIndexNames.sort(Comparator.comparing(Device::getName));
+        return distinctIndexNames;
     }
 
     /**
@@ -105,7 +125,10 @@ public class ElasticsearchService {
     public List<String> getMetricTypes() {
         try {
             Optional<String> optionalIndex = client.indices().stats().indices().keySet()
-                    .stream().filter(i -> i.startsWith(INDEXPREFIX)).findFirst();
+                    .stream()
+                    .filter(i -> i.startsWith(INDEXPREFIX))
+                    .findFirst();
+
             if (optionalIndex.isPresent()) {
                 String exampleIndex = optionalIndex.get();
 
@@ -123,10 +146,9 @@ public class ElasticsearchService {
                 List<String> metrics = new ArrayList<String>(hits.get(0)
                         .source()
                         .keySet()
-                        .stream().toList());
-
+                        .stream()
+                        .toList());
                 metrics.add(0, "Status");
-
                 return metrics;
             } else {
                 return List.of();
@@ -135,5 +157,33 @@ public class ElasticsearchService {
             e.printStackTrace();
             return List.of();
         }
+    }
+
+    /**
+     * This method takes in a Device instance, and depending on its most recent timestamp, determines the devices
+     * status which can either be Online, Warning, or Offline. The status is determined based on the following:
+     * |responseTime - currentTime| < 2min (in milliseconds) -> Online
+     * |responseTime - currentTime| < 5min (in milliseconds) -> Warning
+     * |responseTime - currentTime| > 5min (in milliseconds) -> Offline
+     *
+     * @param timestamp - Timestamp representing the most recent time of receiving a server request from a Device.
+     *                  The format of the timestamp is expected to be "yyyy-MM-dd'T'HH:mm:ss".
+     * @return Status of the device, being Online, Warning, or Offline depending on the latest time of receiving a
+     *              request from the node, on the Elasticsearch server.
+     */
+    public Status getStatus(String timestamp) {
+        long currentTime = clockInstant.getEpochSecond();
+
+        String time = timestamp.replace("T", " ").replace("Z", "");
+        long deviceTime = LocalDateTime.parse(time, formatter).atZone(ZoneId.of("UTC")).toEpochSecond();
+
+        if (Math.abs(currentTime - deviceTime) < warningInterval) {
+            return Status.ONLINE;
+        } else if (Math.abs(currentTime - deviceTime) < offlineInterval) {
+            // If the device did not send a request to the server in the last 2 minutes, set its status to WARNING
+            return Status.WARNING;
+        }
+        // If the device did not send a request to the server in the last 5 minutes, set its status to OFFLINE
+        return Status.OFFLINE;
     }
 }

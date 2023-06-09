@@ -2,8 +2,7 @@ package tudelft.ewi.cse2000.ruisdael.monitoring.entity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +30,7 @@ class DeviceTest {
         ram = new Ram(0.0, 0.0, 0.0, 0.0, 0.0);
         bandwidth = new Bandwidth(0.0, 0.0, 0.0, 0.0);
         custom = Map.of();
-        device = new Device(NAME, instrument, location, true, storage, ram,
+        device = new Device(NAME, instrument, location, Status.ONLINE, storage, ram,
                 1.0, bandwidth, "t", custom);
     }
 
@@ -49,7 +48,7 @@ class DeviceTest {
 
     @Test
     void deviceConstructor_ReturnsDevice() {
-        Device d = new Device(true, NAME, new Location(), 1.0, 2.0,
+        Device d = new Device(Status.ONLINE, NAME, new Location(), 1.0, 2.0,
                 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
 
         assertThat(d).isNotNull();
@@ -95,9 +94,9 @@ class DeviceTest {
 
     @Test
     void setGet_Online_Test() {
-        device.setOnline(false);
+        device.setStatus(Status.OFFLINE);
 
-        assertFalse(device.isOnline());
+        assertNotEquals(device.getStatus(), Status.ONLINE);
     }
 
     @Test
@@ -148,81 +147,81 @@ class DeviceTest {
 
     @Test
     void equals_True_SameObjects() {
-        assertTrue(device.equals(device));
+        assertEquals(device, device);
     }
 
     @Test
     @SuppressWarnings("PMD.EqualsNull")
     void equals_False_Null() {
-        assertFalse(device.equals(null));
+        assertNotEquals(null, device);
     }
 
     @Test
     void equals_False_DifferentClass() {
-        assertFalse(device.equals("device"));
+        assertNotEquals("device", device);
     }
 
     @Test
     void equals_True_DifferentDevices() {
         Device device1 = new Device(NAME, new Instrument("in", "it"), new Location(1.0, 2.0, "le", "ln"),
-                true, new Storage(0.0, 0.0, 0.0, 0.0), new Ram(0.0, 0.0, 0.0, 0.0, 0.0),
+                Status.ONLINE, new Storage(0.0, 0.0, 0.0, 0.0), new Ram(0.0, 0.0, 0.0, 0.0, 0.0),
                 1.0, new Bandwidth(0.0, 0.0, 0.0, 0.0), "t", Map.of());
 
-        assertTrue(device.equals(device1));
+        assertEquals(device, device1);
     }
 
     @Test
     void equals_False_DifferentDevices() {
-        Device device1 = new Device(NAME, instrument, location, true, storage, ram,
+        Device device1 = new Device(NAME, instrument, location, Status.ONLINE, storage, ram,
                 1.0, bandwidth, "t", null);
-        assertFalse(device.equals(device1));
+        assertNotEquals(device, device1);
 
-        Device device2 = new Device(NAME, instrument, location, true, storage, ram,
+        Device device2 = new Device(NAME, instrument, location, Status.ONLINE, storage, ram,
                 1.0, bandwidth, "time", custom);
-        assertFalse(device.equals(device2));
+        assertNotEquals(device, device2);
 
-        Device device3 = new Device(NAME, instrument, location, true, storage, ram,
+        Device device3 = new Device(NAME, instrument, location, Status.ONLINE, storage, ram,
                 1.0, null, "t", custom);
-        assertFalse(device.equals(device3));
+        assertNotEquals(device, device3);
 
-        Device device4 = new Device(NAME, instrument, location, true, storage, ram,
+        Device device4 = new Device(NAME, instrument, location, Status.ONLINE, storage, ram,
                 0.0, bandwidth, "t", custom);
-        assertFalse(device.equals(device4));
+        assertNotEquals(device, device4);
 
-        Device device5 = new Device(NAME, instrument, location, true, storage, null,
+        Device device5 = new Device(NAME, instrument, location, Status.ONLINE, storage, null,
                 1.0, bandwidth, "t", custom);
-        assertFalse(device.equals(device5));
+        assertNotEquals(device, device5);
 
-        Device device6 = new Device(NAME, instrument, location, true, null, ram,
+        Device device6 = new Device(NAME, instrument, location, Status.ONLINE, null, ram,
                 1.0, bandwidth, "t", custom);
-        assertFalse(device.equals(device6));
+        assertNotEquals(device, device6);
 
-        Device device7 = new Device(NAME, instrument, location, false, storage, ram,
+        Device device7 = new Device(NAME, instrument, location, Status.OFFLINE, storage, ram,
                 1.0, bandwidth, "t", custom);
-        assertFalse(device.equals(device7));
+        assertNotEquals(device, device7);
 
-        Device device8 = new Device(NAME, instrument, null, true, storage, ram,
+        Device device8 = new Device(NAME, instrument, null, Status.ONLINE, storage, ram,
                 1.0, bandwidth, "t", custom);
-        assertFalse(device.equals(device8));
+        assertNotEquals(device, device8);
 
-        Device device9 = new Device(NAME, null, location, true, storage, ram,
+        Device device9 = new Device(NAME, null, location, Status.ONLINE, storage, ram,
                 1.0, bandwidth, "t", custom);
-        assertFalse(device.equals(device9));
+        assertNotEquals(device, device9);
 
-        Device device10 = new Device("", instrument, location, true, storage, ram,
+        Device device10 = new Device("", instrument, location, Status.ONLINE, storage, ram,
                 1.0, bandwidth, "t", custom);
-        assertFalse(device.equals(device10));
+        assertNotEquals(device, device10);
     }
 
     @Test
     void hashCode_ReturnsInt() {
-        assertEquals(Objects.hash(NAME, true, storage, ram, 1.0, bandwidth, location),
+        assertEquals(Objects.hash(NAME, Status.ONLINE, storage, ram, 1.0, bandwidth, location),
                 device.hashCode());
     }
 
     @Test
     void toString_ReturnsString() {
-        assertEquals("Device{name=name,\nonline=true,\nstorage=Storage{totalStorage=0.0, freeStorage=0.0},\n"
+        assertEquals("Device{name=name,\nstatus=ONLINE,\nstorage=Storage{totalStorage=0.0, freeStorage=0.0},\n"
                         + "ram=Ram{total=0.0, available=0.0, free=0.0},\ncpuUsage=1.0,\nbandwidth=Bandwidth{uploadSize=0.0, "
                         + "downloadSize=0.0, uploadSpeed=0.0, downloadSpeed=0.0},\nlocation=Location{longitude=1.0, latitude=2.0, "
                         + "name=ln, elevation=le},\n}",

@@ -4,6 +4,7 @@ import static java.util.Map.entry;
 
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -51,7 +52,7 @@ public class DeviceController {
      */
     @GetMapping("/overview")
     public String getOverview(Model model) {
-        //Use for Production
+        /* Use for Production */
         model.addAttribute("devices", elasticsearchService.getAllDevices());
 
         List<String> metrics = elasticsearchService.getMetricTypes().stream()
@@ -59,25 +60,30 @@ public class DeviceController {
                 .toList();
 
         model.addAttribute("metrics", metrics);
+
         /* For testing purposes
         List<Device> devices = new ArrayList<>();
+        List<String> metrics = METRIC_MAPPING.values().stream().toList();
         List<String> locations = (Arrays.asList("Rotterdam", "Delft", "Den Haag", "Amsterdam", "Eindhoven", "Leiden",
                 "Utrecht"));
 
         for (int i = 0; i < 45; i++) {
             Device d = new Device();
             d.setName("Device " + (i + 1));
-            d.setLocation(locations.get(new Random().nextInt(locations.size())));
-            d.setOnline(true);
+            Location location = new Location();
+            location.setName(locations.get(new Random().nextInt(locations.size())));
+            d.setLocation(location);
+            d.setStatus(Status.ONLINE);
             if (i % 4 == 0) {
-                d.setOnline(false);
+                d.setStatus(Status.OFFLINE);
+            } else if (i % 3 == 0) {
+                d.setStatus(Status.WARNING);
             }
             devices.add(d);
         }
 
         model.addAttribute("devices", devices);
-        model.addAttribute("hits", elasticsearchService.getDistinctIndexNames());
-        */
+        model.addAttribute("metrics", metrics); */
         return "overview";
     }
 
@@ -106,25 +112,30 @@ public class DeviceController {
      */
     @GetMapping("/device-list")
     public String getDeviceList(Model model) {
-        //Use for Production
+        /* Use for Production */
         model.addAttribute("devices", elasticsearchService.getAllDevices());
 
-        /* Left for testing purposes
+        /* For Testing Purposes
         List<Device> devices = new ArrayList<>();
         List<String> locations = (Arrays.asList("Rotterdam", "Delft", "Den Haag", "Amsterdam", "Eindhoven", "Leiden",
                 "Utrecht"));
+
         for (int i = 0; i < 45; i++) {
             Device d = new Device();
             d.setName("Device " + (i + 1));
-            d.setLocation(locations.get(new Random().nextInt(locations.size())));
-            d.setOnline(true);
+            Location location = new Location();
+            location.setName(locations.get(new Random().nextInt(locations.size())));
+            d.setLocation(location);
+            d.setStatus(Status.ONLINE);
             if (i % 4 == 0) {
-                d.setOnline(false);
+                d.setStatus(Status.OFFLINE);
+            } else if (i % 3 == 0) {
+                d.setStatus(Status.WARNING);
             }
             devices.add(d);
         }
-        model.addAttribute("devices", devices);
-        */
+        model.addAttribute("devices", devices); */
+
         return "device-list";
     }
 
