@@ -1,5 +1,10 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.controller;
 
+import static java.util.Map.entry;
+
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,10 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
 import tudelft.ewi.cse2000.ruisdael.monitoring.service.ElasticsearchService;
 
-import java.util.List;
-import java.util.Map;
-
-import static java.util.Map.entry;
 
 @Controller
 public class DeviceController {
