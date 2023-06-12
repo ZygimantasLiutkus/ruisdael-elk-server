@@ -180,7 +180,7 @@ public class DeviceDataConverterTest {
      */
     @DisplayName("Test invalid instrument data extraction")
     @Test
-    void testExtractBandwithDataThrowsException() {
+    void testExtractBandwidthDataThrowsException() {
         //Setup
         final Map<String, Object> values = Map.of("upload.size", 60L, "upload.speed", 10.0,
                 "download.size", 10L, "download.speed", "");
