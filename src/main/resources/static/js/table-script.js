@@ -1,7 +1,9 @@
-var table = document.getElementById("device-table");
-var isAsc = true;
-var devicesPerPage = 10;
-var currentPage = 1;
+import { setUp } from "./pagination.js";
+
+const table = document.getElementById("device-table");
+let isAsc = true;
+let currentPage = 1;
+const devicesPerPage = 10;
 const metricMapping = new Map([
     ["Status", "Status"],
     ["Total RAM", "RAM.total"],
@@ -26,33 +28,28 @@ const metricMapping = new Map([
     ["Instrument Type", "instrument.type"]
 ]);
 
-function sortCol(colNum) {
+window.addEventListener("load", init);
 
-    if (currentPage !== 1) {
-        changePage(1);
+// The initialize function sets up all the event listeners for the elements in the HTML page, and calls the
+// createTable() function, as well as the setUp() function which initializes the Pagination.
+function init() {
+    document.getElementById("sort-arrow-col-0").addEventListener("click", () => sortCol(0));
+    document.getElementById("sort-arrow-col-1").addEventListener("click", () => sortCol(1));
+    document.getElementById("sort-arrow-col-2").addEventListener("click", () => sortCol(2));
+
+    for (let element of document.getElementsByClassName("dropdown-item zero")) {
+        element.addEventListener("click", () => setCol(0, element.innerText));
     }
-
-    let col = document.getElementById("metric-" + colNum.toString()).innerText;
-
-    if (devices.length === 0) return 0;
-
-    if (isAsc) {
-        if (isNaN(parseField(devices[0], col))) {
-            devices.sort((a, b) => parseField(a, col).localeCompare(parseField(b, col), undefined, {numeric: true}));
-
-        } else {
-            devices.sort((a, b) => parseField(a, col) - parseField(b, col));
-        }
-    } else {
-        if (isNaN(parseField(devices[0], col))) {
-            devices.sort((a, b) => parseField(b, col).localeCompare(parseField(a, col), undefined, {numeric: true}));
-        } else {
-            devices.sort((a, b) => parseField(b, col) - parseField(a, col));
-        }
+    for (let element of document.getElementsByClassName("dropdown-item one")) {
+        element.addEventListener("click", () => setCol(1, element.innerText));
     }
-    isAsc = !isAsc
-
+    for (let element of document.getElementsByClassName("dropdown-item two")) {
+        element.addEventListener("click", () => setCol(2, element.innerText));
+    }
     createTable();
+    // Use to compute the number of overall pages
+    const pageNum = Math.round(Math.max(1, (devices.length + devices.length % 10.0) / 10.0));
+    setUp(pageNum);
 }
 
 function createTable() {
@@ -79,44 +76,44 @@ function createTable() {
     }
 }
 
-function updatePaginate() {
-    let listItems = document.getElementsByClassName("page-link");
-    let currentItem = listItems.item(currentPage);
-    currentItem.style.backgroundColor = "white";
-    currentItem.style.color = "#0a58ca";
+function sortCol(colNum) {
 
-    for (let i = 1; i < listItems.length - 1; i++) {
-        if (i === currentPage) {
-            // continue
+    if (currentPage !== 1) {
+        changePage(1);
+    }
+    let col = document.getElementById("metric-" + colNum.toString()).innerText;
+
+    if (devices.length === 0) {
+        return;
+    }
+
+    if (isAsc) {
+        if (isNaN(parseField(devices[0], col))) {
+            devices.sort((a, b) => parseField(a, col).localeCompare(parseField(b, col), undefined, {numeric: true}));
+
         } else {
-            listItems.item(i).style.backgroundColor = "transparent";
-            listItems.item(i).style.color = "white";
+            devices.sort((a, b) => parseField(a, col) - parseField(b, col));
+        }
+    } else {
+        if (isNaN(parseField(devices[0], col))) {
+            devices.sort((a, b) => parseField(b, col).localeCompare(parseField(a, col), undefined, {numeric: true}));
+        } else {
+            devices.sort((a, b) => parseField(b, col) - parseField(a, col));
         }
     }
-
-}
-
-function changePage(num) {
-    currentPage = num;
+    // Changes the arrows from up to down, and vice versa
+    if (isAsc) {
+        document.getElementById("sort-arrow-col-" + colNum.toString()).innerHTML = `<i class="bi bi-arrow-up"></i>`;
+    } else {
+        document.getElementById("sort-arrow-col-" + colNum.toString()).innerHTML = `<i class="bi bi-arrow-down"></i>`;
+    }
+    isAsc = !isAsc
     createTable();
-    updatePaginate();
 }
 
-function prevPage() {
-    if (currentPage > 1) {
-        changePage(--currentPage);
-    }
-}
-
-function nextPage() {
-    if (currentPage < (devices.length / devicesPerPage)) {
-        changePage(++currentPage);
-    }
-}
-
-function lastPage() {
-    currentPage = Math.ceil(devices.length / devicesPerPage)
-    changePage(currentPage)
+export function updatePaginate(curPage) {
+    currentPage = curPage;
+    createTable();
 }
 
 function setCol(colNum, metric) {
