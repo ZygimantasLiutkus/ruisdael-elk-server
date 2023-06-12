@@ -37,8 +37,6 @@ public class ElasticsearchService {
     private static final long offlineInterval = 301L;
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    protected Instant clockInstant = Clock.systemUTC().instant();
-
     /**
      * Constructs an instance of ElasticsearchService with the specified Elasticsearch client.
      *
@@ -172,6 +170,7 @@ public class ElasticsearchService {
      *              request from the node, on the Elasticsearch server.
      */
     public Status getStatus(String timestamp) {
+        Instant clockInstant = Clock.systemUTC().instant();
         long currentTime = clockInstant.getEpochSecond();
 
         String time = timestamp.replace("T", " ").replace("Z", "");
