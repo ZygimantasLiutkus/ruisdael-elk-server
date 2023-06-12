@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,6 +23,7 @@ import co.elastic.clients.elasticsearch.indices.stats.IndicesStats;
 import co.elastic.clients.util.ObjectBuilder;
 
 import java.io.IOException;
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -35,7 +37,6 @@ import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -63,7 +64,10 @@ class ElasticsearchServiceTest {
     private SearchResponse mockResponse;
 
     @MockBean
-    private Instant mockClock;
+    private Clock mockClock;
+
+    @MockBean
+    private Instant mockInstant;
 
     @Autowired
     private ElasticsearchService elasticsearchService;
@@ -78,7 +82,7 @@ class ElasticsearchServiceTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
-        elasticsearchService.clockInstant = mockClock;
+        when(mockClock.instant()).thenReturn(mockInstant);
     }
 
     @Test
@@ -257,44 +261,50 @@ class ElasticsearchServiceTest {
 
     @Test
     void getDeviceDetailsFromName_WithQueryResponse_ReturnsDevice() throws Exception {
-        // Arrange
-        when(mockClient.search((Function<SearchRequest.Builder, ObjectBuilder<SearchRequest>>) any(),
-                any()))
-                .thenReturn(mockResponse);
 
-        HitsMetadata mockMetadata = Mockito.mock(HitsMetadata.class);
-        Hit mockHit1 = Mockito.mock(Hit.class);
-        Hit mockHit2 = Mockito.mock(Hit.class);
-        when(mockResponse.hits()).thenReturn(mockMetadata);
-        when(mockMetadata.hits()).thenReturn(List.of(mockHit1, mockHit2));
-        String timestampField = "@timestamp";
-        when(mockHit1.source()).thenReturn(Map.of("a", "a", timestampField, MOCK_TIME));
-        when(mockHit2.source()).thenReturn(Map.of("c", "c", timestampField, MOCK_TIME));
-        when(mockHit1.index()).thenReturn(MOCK_INDEX_1);
+        try (MockedStatic<Clock> mockedStatic = mockStatic(Clock.class)) {
+            mockedStatic.when(Clock::systemUTC).thenReturn(mockClock);
+            mockInstant = mockClock.instant();
 
-        when(mockClock.getEpochSecond()).thenReturn(zonedDateTime.toEpochSecond());
+            // Arrange
+            when(mockClient.search((Function<SearchRequest.Builder, ObjectBuilder<SearchRequest>>) any(),
+                    any()))
+                    .thenReturn(mockResponse);
 
-        Device device = new Device();
+            HitsMetadata mockMetadata = mock(HitsMetadata.class);
+            Hit mockHit1 = mock(Hit.class);
+            Hit mockHit2 = mock(Hit.class);
+            when(mockResponse.hits()).thenReturn(mockMetadata);
+            when(mockMetadata.hits()).thenReturn(List.of(mockHit1, mockHit2));
+            String timestampField = "@timestamp";
+            when(mockHit1.source()).thenReturn(Map.of("a", "a", timestampField, MOCK_TIME));
+            when(mockHit2.source()).thenReturn(Map.of("c", "c", timestampField, MOCK_TIME));
+            when(mockHit1.index()).thenReturn(MOCK_INDEX_1);
 
-        try (MockedStatic<DeviceDataConverter> mockConverter = Mockito.mockStatic(DeviceDataConverter.class)) {
-            mockConverter.when(() -> DeviceDataConverter.createDeviceFromElasticData("clone1", Status.ONLINE,
-                            Map.of("a", "a", timestampField, MOCK_TIME)))
-                    .thenReturn(device);
+            when(mockInstant.getEpochSecond()).thenReturn(zonedDateTime.toEpochSecond());
 
-            // Act
+            Device device = new Device();
 
-            Device resultDevice = elasticsearchService.getDeviceDetailsFromName(MOCK_INDEX_1);
+            try (MockedStatic<DeviceDataConverter> mockConverter = mockStatic(DeviceDataConverter.class)) {
+                mockConverter.when(() -> DeviceDataConverter.createDeviceFromElasticData("clone1", Status.ONLINE,
+                                Map.of("a", "a", timestampField, MOCK_TIME)))
+                        .thenReturn(device);
 
-            // Assert
-            assertEquals(device, resultDevice);
-            verify(mockClient, atLeastOnce()).search((Function<SearchRequest.Builder, ObjectBuilder<SearchRequest>>) any(),
-                    any());
-            verify(mockResponse, atLeastOnce()).hits();
-            verify(mockMetadata, atLeastOnce()).hits();
-            verify(mockHit1, atLeastOnce()).source();
-            verify(mockHit2, never()).source();
-            mockConverter.verify(() -> DeviceDataConverter.createDeviceFromElasticData("clone1", Status.ONLINE,
-                    Map.of("a", "a", timestampField, MOCK_TIME)));
+                // Act
+
+                Device resultDevice = elasticsearchService.getDeviceDetailsFromName(MOCK_INDEX_1);
+
+                // Assert
+                assertEquals(device, resultDevice);
+                verify(mockClient, atLeastOnce()).search((Function<SearchRequest.Builder, ObjectBuilder<SearchRequest>>) any(),
+                        any());
+                verify(mockResponse, atLeastOnce()).hits();
+                verify(mockMetadata, atLeastOnce()).hits();
+                verify(mockHit1, atLeastOnce()).source();
+                verify(mockHit2, never()).source();
+                mockConverter.verify(() -> DeviceDataConverter.createDeviceFromElasticData("clone1", Status.ONLINE,
+                        Map.of("a", "a", timestampField, MOCK_TIME)));
+            }
         }
     }
 
@@ -342,26 +352,38 @@ class ElasticsearchServiceTest {
 
     @Test
     void getStatus_Online() {
-        long testTime = zonedDateTime.toEpochSecond();
+        try (MockedStatic<Clock> mockedStatic = mockStatic(Clock.class)) {
+            mockedStatic.when(Clock::systemUTC).thenReturn(mockClock);
+            mockInstant = mockClock.instant();
 
-        when(mockClock.getEpochSecond()).thenReturn(testTime);
-        assertEquals(Status.ONLINE, elasticsearchService.getStatus("2023-01-01T11:58:01Z"));
+            long testTime = zonedDateTime.toEpochSecond();
+            when(mockInstant.getEpochSecond()).thenReturn(testTime);
+            assertEquals(Status.ONLINE, elasticsearchService.getStatus("2023-01-01T11:58:01Z"));
+        }
     }
 
     @Test
     void getStatus_Warning() {
-        long testTime = zonedDateTime.toEpochSecond();
+        try (MockedStatic<Clock> mockedStatic = mockStatic(Clock.class)) {
+            mockedStatic.when(Clock::systemUTC).thenReturn(mockClock);
+            mockInstant = mockClock.instant();
 
-        when(mockClock.getEpochSecond()).thenReturn(testTime);
-        assertEquals(Status.WARNING, elasticsearchService.getStatus("2023-01-01T11:57:59Z"));
+            long testTime = zonedDateTime.toEpochSecond();
+            when(mockInstant.getEpochSecond()).thenReturn(testTime);
+            assertEquals(Status.WARNING, elasticsearchService.getStatus("2023-01-01T11:57:59Z"));
+        }
     }
 
     @Test
     void getStatus_Offline() {
-        long testTime = zonedDateTime.toEpochSecond();
+        try (MockedStatic<Clock> mockedStatic = mockStatic(Clock.class)) {
+            mockedStatic.when(Clock::systemUTC).thenReturn(mockClock);
+            mockInstant = mockClock.instant();
 
-        when(mockClock.getEpochSecond()).thenReturn(testTime);
-        assertEquals(Status.OFFLINE, elasticsearchService.getStatus("2023-01-01T11:54:59Z"));
+            long testTime = zonedDateTime.toEpochSecond();
+            when(mockInstant.getEpochSecond()).thenReturn(testTime);
+            assertEquals(Status.OFFLINE, elasticsearchService.getStatus("2023-01-01T11:54:59Z"));
+        }
     }
 
 }
