@@ -1,0 +1,56 @@
+---
+- name: Installing the monitoring software
+  hosts: all
+  tasks:
+    - name: Add the beats repository to apt
+      ansible.builtin.apt_key:
+        url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+        state: present
+      become: true
+    - name: Add a guest user with the viewer role
+      ansible.builtin.uri:
+        url: https://{{ elastic_url }}/_security/user/{{ guest_user }}
+        method: POST
+        headers:
+          Content-Type: "application/json"
+          Authorization: "Bearer {{ kibana_certificate }}"
+        body: '{"password" : "{{ guest_password }}", "roles" : [ "viewer" ]}'
+    - name: Install kibana
+      ansible.builtin.apt:
+        name: kibana
+      become: true
+    - name: Install nginx
+      ansible.builtin.apt:
+        name: nginx
+      become: true
+    - name: Edit the kibana.yml to link up with elastic search
+      template:
+        src: kibana.yml.j2
+        dest: /etc/kibana/kibana.yml
+      become: true
+    - name: execute a daemon reload
+      ansible.builtin.systemd:
+        daemon_reload: true
+      become: true
+    - name: enable the kibana
+      ansible.builtin.systemd:
+        name: kibana
+        enabled: true
+      become: true
+    - name: start the kibana
+      ansible.builtin.systemd:
+        name: kibana
+        state: started
+      become: true
+    - name: Add a nginx configuration to create access to kibana via port 8050
+      template:
+        src: kibana.conf.j2
+        dest: /etc/nginx/conf.d/kibana.conf
+      become: true
+    - name: restart nginx
+      ansible.builtin.systemd:
+        name: nginx
+        state: restarted
+      become: true
+
+
