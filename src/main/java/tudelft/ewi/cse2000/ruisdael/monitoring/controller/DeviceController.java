@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -139,4 +141,10 @@ public class DeviceController {
         return "device-list";
     }
 
+
+    @MessageMapping("/devices") // /app/devices
+    @SendTo("/topic/devices")
+    public List<Device> updateDevices() {
+        return elasticsearchService.getAllDevices();
+    }
 }
