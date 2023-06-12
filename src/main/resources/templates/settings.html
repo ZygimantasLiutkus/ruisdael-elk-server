@@ -23,9 +23,9 @@
                     <h1 style="margin-top: 2%">General Settings</h1>
                     <p>Logged in as <span sec:authentication="name"></span></p>
                     <br />
-                    <h3 th:if="${param.get('unequal') != null}">Passwords do not match.</h3>
-                    <h3 th:if="${param.get('wrong') != null}">Old password was incorrect.</h3>
-                    <h3 th:if="${param.get('error') != null}">An unknown error occurred.</h3>
+                    <p th:if="${param.get('user_unequal') != null}">Passwords do not match.</p>
+                    <p th:if="${param.get('user_wrong') != null}">Old password was incorrect.</p>
+                    <p th:if="${param.get('user_error') != null}">An unspecified error occurred.</p>
                 </div>
 
                 <form th:action="@{/change-password}" th:object="${passworddto}" method="post" id="password-form">
@@ -41,12 +41,37 @@
 
                 <hr />
 
-                <div sec:authorize="hasAuthority('ADMIN')">
+                <div class="white-text" sec:authorize="hasAuthority('ADMIN')">
+
+                    <h1 style="color: white;">Create Account</h1>
+                    <p th:if="${param.get('create_exists') != null}">This username already exists.</p>
+                    <p th:if="${param.get('create_error') != null}">An unspecified error occurred.</p>
+
+                    <form th:action="@{/create-account}" th:object="${usercreation}" method="post" id="account-form">
+                        <input th:field="*{username}" type="password" placeholder="username">
+                        <br />
+                        <input th:field="*{password}" type="password" placeholder="password">
+                        <br />
+                        <label>Enable Admin Access</label>
+                        <input th:field="*{admin}" type="checkbox">
+                    </form>
+                    <br />
+                    <button type="submit" form="account-form" class="btn btn-outline-secondary"
+                            style="margin-top: 10px;">Create Account</button>
+
+                    <hr />
+
                     <h1 style="color: white;">User List</h1>
+                    <p th:if="${param.get('account_error') != null}">An unspecified error occured.</p>
+                    <p th:if="${param.get('account_adminchange') != null}">This action is not allowed on the admin account.</p>
+                    <p th:if="${param.get('account_ownchange') != null}">You cannot edit your own account.</p>
+                    <p th:if="${param.get('account_pass') != null}">Reset the password to <span style="color:#aec4e5;" th:text="${param.account_pass}"></span>. Please change it now.</p>
+
                     <table class="table table-dark" id="device-table">
                         <thead>
                         <tr>
                             <th><button type="button" class="btn btn-primary">Username</button></th>
+                            <th><button type="button" class="btn btn-primary">Enabled</button></th>
                             <th><button type="button" class="btn btn-primary">Groups</button></th>
                             <th><button type="button" class="btn btn-primary">Options</button></th>
                         </tr>
@@ -54,9 +79,31 @@
                         <tbody>
                             <tr th:each="user : ${users}">
                                 <td><span th:text="${user.getUsername()}">Username</span></td>
+                                <td><span th:text="${user.isEnabled() ? 'Enabled' : 'Disabled'}">Unknown</span></td>
                                 <td><span th:each="authority,status : ${user.getAuthorities()}" th:text="${authority.getAuthority() + (status.last ? '' : ', ')}">Group</span></td>
                                 <td>
-                                    Todo
+                                    <button type="button" class="btn btn-outline-secondary"
+                                            th:unless="${user.isAdmin()}"
+                                            th:data-url="'/admin-access/' + ${user.getUsername()} + '/true'"
+                                            onclick="window.location.href=this.getAttribute('data-url')">Enable Admin</button>
+                                    <button type="button" class="btn btn-outline-secondary"
+                                            th:if="${user.isAdmin()}"
+                                            th:data-url="'/admin-access/' + ${user.getUsername()} + '/false'"
+                                            onclick="window.location.href=this.getAttribute('data-url')">Disable Admin</button>
+                                    <button type="button" class="btn btn-outline-secondary"
+                                            th:data-url="'/reset-password/' + ${user.getUsername()}"
+                                            onclick="window.location.href=this.getAttribute('data-url')">Reset Password</button>
+                                    <button type="button" class="btn btn-outline-secondary"
+                                            th:unless="${user.isEnabled()}"
+                                            th:data-url="'/disable-account/' + ${user.getUsername()} + '/true'"
+                                            onclick="window.location.href=this.getAttribute('data-url')">Enable Account</button>
+                                    <button type="button" class="btn btn-outline-secondary"
+                                            th:if="${user.isEnabled()}"
+                                            th:data-url="'/disable-account/' + ${user.getUsername()} + '/false'"
+                                            onclick="window.location.href=this.getAttribute('data-url')">Disable Account</button>
+                                    <button type="button" class="btn btn-outline-secondary"
+                                            th:data-url="'/delete-account/' + ${user.getUsername()}"
+                                            onclick="window.location.href=this.getAttribute('data-url')">Delete Account</button>
                                 </td>
                             </tr>
                         </tbody>

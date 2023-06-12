@@ -9,7 +9,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserSettingsDTO {
+public class UserCreationDTO {
 
     private String username;
+    private String password;
+    private boolean admin;
 }
