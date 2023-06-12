@@ -1,3 +1,4 @@
+let savedMetric = 'Up Status'
 // map object
 const map = L.map('map').setView([51.90511, 4.37233], 9);
 
@@ -8,7 +9,14 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
 }).addTo(map);
 
-nodes = devices.map(d => deviceToNode(d));
+let nodes = devices.map(d => deviceToNode(d));
+
+/**
+ * Function to reload the nodes.
+ */
+function reloadNodes() {
+    nodes = devices.map(d => deviceToNode(d));
+}
 
 // Dummy data for the nodes
 // [
@@ -284,8 +292,16 @@ function nodeToMarker(node, metric){
 
 
 // An array of all markers, default is upStatus
-markersArray = nodes.map(loc => nodeToMarker(loc, 'Up Status'));
+let markersArray = nodes.map(loc => nodeToMarker(loc, 'Up Status'));
 
+/**
+ * Function to reload markers with the given metric.
+ * @param metric the metric to reload with.
+ */
+function reloadMarkers(metric) {
+    reloadNodes();
+    markersArray = nodes.map(loc => nodeToMarker(loc, metric));
+}
 
 function fillMap(array){
     array.forEach(marker => map.addLayer(marker));
@@ -304,6 +320,7 @@ fillMap(markersArray);
 function mapFilter(metric) {
     emptyMap();
     fillMap(nodes.map(loc=>nodeToMarker(loc, metric)));
+    savedMetric = metric;
 }
 
 /**

@@ -53,6 +53,9 @@ function connect() {
             sortCol(lastSorted);            // view reset to page 1 every minute, current
             sortCol(lastSorted);            // page is saved.
             changePage(tempPage);
+            // Reload map
+            reloadMarkers(savedMetric);
+            mapFilter(savedMetric);
         });
     });
 }
