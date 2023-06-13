@@ -67,7 +67,7 @@ public class DeviceController {
         List<String> metrics = METRIC_MAPPING.values().stream().toList();
         List<String> locations = (Arrays.asList("Rotterdam", "Delft", "Den Haag", "Amsterdam", "Eindhoven", "Leiden",
                 "Utrecht"));
-
+        List<Status> statuses = new ArrayList<>(Arrays.asList(Status.ONLINE, Status.WARNING, Status.OFFLINE));
         Location location = new Location(1.0, 2.0, "le", "ln");
         Storage storage = new Storage(0.0, 0.0, 0.0, 0.0);
         Ram ram = new Ram(0.0, 0.0, 0.0, 0.0, 0.0);
@@ -76,7 +76,8 @@ public class DeviceController {
         for (int i = 0; i < 25; i++) {
             location.setName(locations.get(new Random().nextInt(locations.size())));
             Instrument instrument = new Instrument("instrument" + (i + 1), "it");
-            devices.add(new Device("device" + (i + 1), instrument, location, Status.ONLINE, storage, ram,
+            Status s = statuses.get(new Random().nextInt(statuses.size()));
+            devices.add(new Device("device" + (i + 1), instrument, location, s, storage, ram,
                     1.0, bandwidth, "t", null));
         }
 
