@@ -77,10 +77,6 @@ function createTable() {
 }
 
 function sortCol(colNum) {
-
-    if (currentPage !== 1) {
-        changePage(1);
-    }
     let col = document.getElementById("metric-" + colNum.toString()).innerText;
 
     if (devices.length === 0) {
