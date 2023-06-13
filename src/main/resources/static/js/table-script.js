@@ -31,8 +31,7 @@ let interval = null;
 let socket = new SockJS('/device-update');
 let client = Stomp.over(socket);
 
-// Runs the `connect()` function on load to create a connection with the websockets
-connect();
+window.addEventListener("load", init);
 
 /**
  * Function that connects to the websockets and sends messages to the '/app/devices'
@@ -69,16 +68,12 @@ function disconnect() {
     interval = null;
 }
 
-/**
- * Function to sort the columns of the device table.
- * @param colNum the column number which to sort.
- */
-function sortCol(colNum) {
-window.addEventListener("load", init);
-
 // The initialize function sets up all the event listeners for the elements in the HTML page, and calls the
 // createTable() function, as well as the setUp() function which initializes the Pagination.
 function init() {
+
+    // Runs the `connect()` function on load to create a connection with the websockets
+    connect();
 
     if (document.title === "Device List") {
         document.getElementById("btn-reset-table").addEventListener("click", () => {
@@ -135,8 +130,8 @@ function createTable(devs) {
     }
 }
 
- /* Function to update the view of the page control (number row under the table).
- */
+/* Function to update the view of the page control (number row under the table).
+*/
 function sortCol(colNum) {
     let col = document.getElementById("metric-" + colNum.toString()).innerText;
 
@@ -403,9 +398,9 @@ function createStatuses() {
         let style = devices[i].status === "ONLINE" ? "#4eb940" :
             devices[i].status === "WARNING" ? "#b9a940" :
                 "#ad2626";
-        innerHTML+=`<div class="status-div-container"><div class="status-div" title="`+devices[i].name+`" style="background: `+style+`">
-                    <a class="status-div" href="/node/`+devices[i].name+`"></a>
-                    </div></div>`;
+        innerHTML += `<div class="status-div-container"><div class="status-div" title="` + devices[i].name + `" style="background: ` + style + `">
+                <a class="status-div" href="/node/` + devices[i].name + `"></a>
+                </div></div>`;
     }
     container.innerHTML = innerHTML;
 }
