@@ -53,7 +53,7 @@ function connect() {
             let tempPage = currentPage;     // Sorting switches page to 1. To not have the
             sortCol(lastSorted);            // view reset to page 1 every minute, current
             sortCol(lastSorted);            // page is saved.
-            changePage(tempPage);
+            updatePaginate(tempPage);
             // Reload map
             reloadMarkers(savedMetric);
             mapFilter(savedMetric);
