@@ -33,6 +33,15 @@ window.addEventListener("load", init);
 // The initialize function sets up all the event listeners for the elements in the HTML page, and calls the
 // createTable() function, as well as the setUp() function which initializes the Pagination.
 function init() {
+
+    if (document.title === "Device List") {
+        document.getElementById("btn-reset-table").addEventListener("click", () => {
+            currentPage = 1;
+            createTable();
+        });
+        document.getElementById("btn-search").addEventListener("click", () => search());
+    }
+
     document.getElementById("sort-arrow-col-0").addEventListener("click", () => sortCol(0));
     document.getElementById("sort-arrow-col-1").addEventListener("click", () => sortCol(1));
     document.getElementById("sort-arrow-col-2").addEventListener("click", () => sortCol(2));
@@ -48,14 +57,15 @@ function init() {
     }
     createTable();
     // Use to compute the number of overall pages
-    const pageNum = Math.round(Math.max(1, (devices.length + devices.length % 10.0) / 10.0));
+    const pageNum = Math.round(Math.ceil(devices.length / 10.0));
     setUp(pageNum);
 }
 
-function createTable() {
+function createTable(devs) {
+    let deviceList = (devs != null) ? devs : devices;
     let start = devicesPerPage * (currentPage - 1);
     let end = start + devicesPerPage;
-    let selectedDevices = devices.slice(start, end);
+    let selectedDevices = deviceList.slice(start, end);
     let tbody = table.getElementsByTagName("tbody")[0];
 
     while (tbody.rows.length > 0) {
@@ -238,4 +248,50 @@ function setStatusColorAll(device, row) {
     } else {
         row.cells[2].style.color = "#ffffff";
     }
+}
+
+function search() {
+    let radioButtons = document.getElementsByClassName("form-check-input");
+    let tag = document.getElementById("search-tag").value.trim().toLowerCase();
+    let found = [];
+    let filter = "status";
+    let checked = false;
+
+    if (radioButtons.item(2).checked) {
+        tag = "online";
+    } else if (radioButtons.item(3).checked) {
+        tag = "warning";
+    } else if (radioButtons.item(4).checked) {
+        tag = "offline";
+    } else if (tag === "") {
+        createTable();
+        return;
+    } else {
+        for (let i = 0; i < radioButtons.length - 2; i++) {
+            let radioButton = radioButtons.item(i);
+            if (radioButton.checked) {
+                filter = radioButton.value;
+                checked = true;
+                break;
+            }
+        }
+        if (!checked) {
+            return;
+        }
+    }
+
+    for (let i = 0; i < devices.length; i++) {
+        let deviceTag = "";
+        if (filter === "location") {
+            deviceTag = devices[i][filter]["name"].toString().toLowerCase();
+        } else if (filter === "name") {
+            deviceTag = devices[i]["instrument"][filter].toString().toLowerCase();
+        } else if (filter === "status") {
+            deviceTag = deviceTag[i]["STATUS"].toString().toLowerCase();
+        }
+        if (deviceTag.startsWith(tag.trim().toLowerCase())) {
+            found.push(devices[i]);
+        }
+    }
+    createTable(found)
 }
