@@ -293,5 +293,6 @@ function search() {
             found.push(devices[i]);
         }
     }
-    createTable(found)
+    setUp(Math.round(Math.ceil(found.length / 10.0)));
+    createTable(found);
 }
