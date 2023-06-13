@@ -2,26 +2,16 @@ package tudelft.ewi.cse2000.ruisdael.monitoring.controller;
 
 import static java.util.Map.entry;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Bandwidth;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Instrument;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Location;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Ram;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Status;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Storage;
 import tudelft.ewi.cse2000.ruisdael.monitoring.service.ElasticsearchService;
-
 
 @Controller
 public class DeviceController {
@@ -63,15 +53,15 @@ public class DeviceController {
     @GetMapping("/overview")
     public String getOverview(Model model) {
         /* Use for Production */
-//        model.addAttribute("devices", elasticsearchService.getAllDevices());
-//
-//        List<String> metrics = elasticsearchService.getMetricTypes().stream()
-//                .map(METRIC_MAPPING::get)
-//                .toList();
-//
-//        model.addAttribute("metrics", metrics);
+        model.addAttribute("devices", elasticsearchService.getAllDevices());
 
-        /* For testing purposes */
+        List<String> metrics = elasticsearchService.getMetricTypes().stream()
+                .map(METRIC_MAPPING::get)
+                .toList();
+
+        model.addAttribute("metrics", metrics);
+
+        /* For testing purposes
         List<Device> devices = new ArrayList<>();
         List<String> metrics = METRIC_MAPPING.values().stream().toList();
         List<String> locations = (Arrays.asList("Rotterdam", "Delft", "Den Haag", "Amsterdam", "Eindhoven", "Leiden",
@@ -91,7 +81,7 @@ public class DeviceController {
         }
 
         model.addAttribute("devices", devices);
-        model.addAttribute("metrics", metrics);
+        model.addAttribute("metrics", metrics); */
 
         return "overview";
     }
@@ -122,9 +112,9 @@ public class DeviceController {
     @GetMapping("/device-list")
     public String getDeviceList(Model model) {
         /* Use for Production */
-//        model.addAttribute("devices", elasticsearchService.getAllDevices());
+        model.addAttribute("devices", elasticsearchService.getAllDevices());
 
-        /* For testing purposes */
+        /* For testing purposes
         List<Device> devices = new ArrayList<>();
         List<String> metrics = METRIC_MAPPING.values().stream().toList();
         List<String> locations = (Arrays.asList("Rotterdam", "Delft", "Den Haag", "Amsterdam", "Eindhoven", "Leiden",
@@ -143,7 +133,7 @@ public class DeviceController {
         }
 
         model.addAttribute("devices", devices);
-        model.addAttribute("metrics", metrics);
+        model.addAttribute("metrics", metrics); */
 
         return "device-list";
     }
