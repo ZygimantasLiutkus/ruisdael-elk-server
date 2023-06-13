@@ -3,6 +3,7 @@ import { setUp } from "./pagination.js";
 const table = document.getElementById("device-table");
 let isAsc = true;
 let currentPage = 1;
+let lastSorted = 0;
 const devicesPerPage = 10;
 const metricMapping = new Map([
     ["Status", "Status"],
@@ -160,6 +161,7 @@ function sortCol(colNum) {
         document.getElementById("sort-arrow-col-" + colNum.toString()).innerHTML = `<i class="bi bi-arrow-down"></i>`;
     }
     isAsc = !isAsc
+    lastSorted = colNum;
     createTable();
 }
 
