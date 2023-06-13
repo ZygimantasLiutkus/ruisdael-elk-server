@@ -68,24 +68,23 @@ public class DeviceController {
         List<String> metrics = METRIC_MAPPING.values().stream().toList();
         List<String> locations = (Arrays.asList("Rotterdam", "Delft", "Den Haag", "Amsterdam", "Eindhoven", "Leiden",
                 "Utrecht"));
+        List<Status> statuses = new ArrayList<>(Arrays.asList(Status.ONLINE, Status.WARNING, Status.OFFLINE));
+        Location location = new Location(1.0, 2.0, "le", "ln");
+        Storage storage = new Storage(0.0, 0.0, 0.0, 0.0);
+        Ram ram = new Ram(0.0, 0.0, 0.0, 0.0, 0.0);
+        Bandwidth bandwidth = new Bandwidth(0.0, 0.0, 0.0, 0.0);
 
-        for (int i = 0; i < 45; i++) {
-            Device d = new Device();
-            d.setName("Device " + (i + 1));
-            Location location = new Location();
+        for (int i = 0; i < 25; i++) {
             location.setName(locations.get(new Random().nextInt(locations.size())));
-            d.setLocation(location);
-            d.setStatus(Status.ONLINE);
-            if (i % 4 == 0) {
-                d.setStatus(Status.OFFLINE);
-            } else if (i % 3 == 0) {
-                d.setStatus(Status.WARNING);
-            }
-            devices.add(d);
+            Instrument instrument = new Instrument("instrument" + (i + 1), "it");
+            Status s = statuses.get(new Random().nextInt(statuses.size()));
+            devices.add(new Device("device" + (i + 1), instrument, location, s, storage, ram,
+                    1.0, bandwidth, "t", null));
         }
 
         model.addAttribute("devices", devices);
         model.addAttribute("metrics", metrics); */
+
         return "overview";
     }
 
@@ -117,26 +116,26 @@ public class DeviceController {
         /* Use for Production */
         model.addAttribute("devices", elasticsearchService.getAllDevices());
 
-        /* For Testing Purposes
+        /* For testing purposes
         List<Device> devices = new ArrayList<>();
+        List<String> metrics = METRIC_MAPPING.values().stream().toList();
         List<String> locations = (Arrays.asList("Rotterdam", "Delft", "Den Haag", "Amsterdam", "Eindhoven", "Leiden",
                 "Utrecht"));
 
-        for (int i = 0; i < 45; i++) {
-            Device d = new Device();
-            d.setName("Device " + (i + 1));
-            Location location = new Location();
+        Location location = new Location(1.0, 2.0, "le", "ln");
+        Storage storage = new Storage(0.0, 0.0, 0.0, 0.0);
+        Ram ram = new Ram(0.0, 0.0, 0.0, 0.0, 0.0);
+        Bandwidth bandwidth = new Bandwidth(0.0, 0.0, 0.0, 0.0);
+
+        for (int i = 0; i < 25; i++) {
             location.setName(locations.get(new Random().nextInt(locations.size())));
-            d.setLocation(location);
-            d.setStatus(Status.ONLINE);
-            if (i % 4 == 0) {
-                d.setStatus(Status.OFFLINE);
-            } else if (i % 3 == 0) {
-                d.setStatus(Status.WARNING);
-            }
-            devices.add(d);
+            Instrument instrument = new Instrument("instrument" + (i + 1), "it");
+            devices.add(new Device("device" + (i + 1), instrument, location, Status.ONLINE, storage, ram,
+                    1.0, bandwidth, "t", null));
         }
-        model.addAttribute("devices", devices); */
+
+        model.addAttribute("devices", devices);
+        model.addAttribute("metrics", metrics); */
 
         return "device-list";
     }

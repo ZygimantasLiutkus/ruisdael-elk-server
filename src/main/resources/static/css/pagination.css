@@ -1,0 +1,77 @@
+/* Original CSS obtained from styles.css https://codesandbox.io/embed/dynamic-pagination-y5brt?file=/
+ * The CSS was modified to fit the overall theme of the page.
+*/
+.page-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    justify-content: space-evenly;
+    margin-top: 2rem;
+    box-shadow: 0 0 10px #0d6efd;
+    border-radius: 5px;
+    padding: 10px 15px;
+    align-content: center;
+    flex-direction: row;
+    background-color: var(--bs-table-bg);
+    border-bottom-width: 1px;
+}
+
+.btn-primary.disabled, .btn-primary:disabled {
+    color: #aaadc7;
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.page-container i {
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--color-dark);
+    pointer-events: none;
+}
+
+.page-container button {
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+}
+
+.page-container button:disabled i {
+    background-color: transparent;
+    color: #aaadc7;
+}
+
+#pagination {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+#pagination li {
+    list-style: none;
+    cursor: pointer;
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 0 3px;
+}
+#pagination li.active {
+    background-color: #39f;
+}
+#pagination li.active a {
+    color: #fff;
+}
+#pagination li a {
+    text-decoration: none;
+    font-weight: 600;
+    padding: 8px 13px;
+    display: inline-block;
+    line-height: 1;
+    color: #a9a9a9;
+    font-size: 20px;
+    pointer-events: none;
+}
+#pagination li:hover {
+    background-color: #39f;
+}
+#pagination li:hover a {
+    color: #fff;
+}

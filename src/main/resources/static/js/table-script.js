@@ -1,8 +1,10 @@
-var table = document.getElementById("device-table");
-var isAsc = true;
-var lastSorted = 0;
-var devicesPerPage = 10;
-var currentPage = 1;
+import { setUp } from "./pagination.js";
+
+const table = document.getElementById("device-table");
+let isAsc = true;
+let currentPage = 1;
+let lastSorted = 0;
+const devicesPerPage = 10;
 const metricMapping = new Map([
     ["Status", "Status"],
     ["Total RAM", "RAM.total"],
@@ -30,8 +32,7 @@ let interval = null;
 let socket = new SockJS('/device-update');
 let client = Stomp.over(socket);
 
-// Runs the `connect()` function on load to create a connection with the websockets
-connect();
+window.addEventListener("load", init);
 
 /**
  * Function that connects to the websockets and sends messages to the '/app/devices'
@@ -52,7 +53,7 @@ function connect() {
             let tempPage = currentPage;     // Sorting switches page to 1. To not have the
             sortCol(lastSorted);            // view reset to page 1 every minute, current
             sortCol(lastSorted);            // page is saved.
-            changePage(tempPage);
+            updatePaginate(tempPage);
             // Reload map
             reloadMarkers(savedMetric);
             mapFilter(savedMetric);
@@ -68,44 +69,48 @@ function disconnect() {
     interval = null;
 }
 
-/**
- * Function to sort the columns of the device table.
- * @param colNum the column number which to sort.
- */
-function sortCol(colNum) {
+// The initialize function sets up all the event listeners for the elements in the HTML page, and calls the
+// createTable() function, as well as the setUp() function which initializes the Pagination.
+function init() {
 
-    if (currentPage !== 1) {
-        changePage(1);
+    // Runs the `connect()` function on load to create a connection with the websockets
+    connect();
+
+    if (document.title === "Device List") {
+        document.getElementById("btn-reset-table").addEventListener("click", () => {
+            currentPage = 1;
+            createTable();
+        });
+        document.getElementById("btn-search").addEventListener("click", () => search());
     }
 
-    let col = document.getElementById("metric-" + colNum.toString()).innerText;
+    document.getElementById("sort-arrow-col-0").addEventListener("click", () => sortCol(0));
+    document.getElementById("sort-arrow-col-1").addEventListener("click", () => sortCol(1));
+    document.getElementById("sort-arrow-col-2").addEventListener("click", () => sortCol(2));
 
-    if (isAsc) {
-        if (isNaN(parseField(devices[0], col))) {
-            devices.sort((a, b) => parseField(a, col).localeCompare(parseField(b, col), undefined, {numeric: true}));
-
-        } else {
-            devices.sort((a, b) => parseField(a, col) - parseField(b, col));
-        }
-    } else {
-        if (isNaN(parseField(devices[0], col))) {
-            devices.sort((a, b) => parseField(b, col).localeCompare(parseField(a, col), undefined, {numeric: true}));
-        } else {
-            devices.sort((a, b) => parseField(b, col) - parseField(a, col));
-        }
+    for (let element of document.getElementsByClassName("dropdown-item zero")) {
+        element.addEventListener("click", () => setCol(0, element.innerText));
     }
-    isAsc = !isAsc
-    lastSorted = colNum;
+    for (let element of document.getElementsByClassName("dropdown-item one")) {
+        element.addEventListener("click", () => setCol(1, element.innerText));
+    }
+    for (let element of document.getElementsByClassName("dropdown-item two")) {
+        element.addEventListener("click", () => setCol(2, element.innerText));
+    }
     createTable();
+    // Use to compute the number of overall pages
+    const pageNum = Math.round(Math.ceil(devices.length / 10.0));
+    setUp(pageNum);
 }
 
 /**
  * Function to populate the table with information about devices.
  */
-function createTable() {
+function createTable(devs) {
+    let deviceList = (devs != null) ? devs : devices;
     let start = devicesPerPage * (currentPage - 1);
     let end = start + devicesPerPage;
-    let selectedDevices = devices.slice(start, end);
+    let selectedDevices = deviceList.slice(start, end);
     let tbody = table.getElementsByTagName("tbody")[0];
 
     while (tbody.rows.length > 0) {
@@ -126,60 +131,43 @@ function createTable() {
     }
 }
 
-/**
- * Function to update the view of the page control (number row under the table).
- */
-function updatePaginate() {
-    let listItems = document.getElementsByClassName("page-link");
-    let currentItem = listItems.item(currentPage);
-    currentItem.style.backgroundColor = "white";
-    currentItem.style.color = "#0a58ca";
+/* Function to update the view of the page control (number row under the table).
+*/
+function sortCol(colNum) {
+    let col = document.getElementById("metric-" + colNum.toString()).innerText;
 
-    for (let i = 1; i < listItems.length - 1; i++) {
-        if (i === currentPage) {
-            // continue
+    if (devices.length === 0) {
+        return;
+    }
+
+    if (isAsc) {
+        if (isNaN(parseField(devices[0], col))) {
+            devices.sort((a, b) => parseField(a, col).localeCompare(parseField(b, col), undefined, {numeric: true}));
+
         } else {
-            listItems.item(i).style.backgroundColor = "transparent";
-            listItems.item(i).style.color = "white";
+            devices.sort((a, b) => parseField(a, col) - parseField(b, col));
+        }
+    } else {
+        if (isNaN(parseField(devices[0], col))) {
+            devices.sort((a, b) => parseField(b, col).localeCompare(parseField(a, col), undefined, {numeric: true}));
+        } else {
+            devices.sort((a, b) => parseField(b, col) - parseField(a, col));
         }
     }
-
-}
-
-/**
- * Function to switch device table page number.
- * @param num the page number.
- */
-function changePage(num) {
-    currentPage = num;
+    // Changes the arrows from up to down, and vice versa
+    if (isAsc) {
+        document.getElementById("sort-arrow-col-" + colNum.toString()).innerHTML = `<i class="bi bi-arrow-up"></i>`;
+    } else {
+        document.getElementById("sort-arrow-col-" + colNum.toString()).innerHTML = `<i class="bi bi-arrow-down"></i>`;
+    }
+    isAsc = !isAsc
+    lastSorted = colNum;
     createTable();
-    updatePaginate();
 }
 
-/**
- * Function to switch to the previous page.
- */
-function prevPage() {
-    if (currentPage > 1) {
-        changePage(--currentPage);
-    }
-}
-
-/**
- * Function to switch to the next page.
- */
-function nextPage() {
-    if (currentPage < (devices.length / devicesPerPage)) {
-        changePage(++currentPage);
-    }
-}
-
-/**
- * Function to switch to the last page.
- */
-function lastPage() {
-    currentPage = Math.ceil(devices.length / devicesPerPage)
-    changePage(currentPage)
+export function updatePaginate(curPage) {
+    currentPage = curPage;
+    createTable();
 }
 
 /**
@@ -355,6 +343,53 @@ function setStatusColorAll(device, row) {
     }
 }
 
+function search() {
+    let radioButtons = document.getElementsByClassName("form-check-input");
+    let tag = document.getElementById("search-tag").value.trim().toLowerCase();
+    let found = [];
+    let filter = "status";
+    let checked = false;
+
+    if (radioButtons.item(2).checked) {
+        tag = "online";
+    } else if (radioButtons.item(3).checked) {
+        tag = "warning";
+    } else if (radioButtons.item(4).checked) {
+        tag = "offline";
+    } else if (tag === "") {
+        createTable();
+        return;
+    } else {
+        for (let i = 0; i < radioButtons.length - 2; i++) {
+            let radioButton = radioButtons.item(i);
+            if (radioButton.checked) {
+                filter = radioButton.value;
+                checked = true;
+                break;
+            }
+        }
+        if (!checked) {
+            return;
+        }
+    }
+
+    for (let i = 0; i < devices.length; i++) {
+        let deviceTag = "";
+        if (filter === "location") {
+            deviceTag = devices[i][filter]["name"].toString().toLowerCase();
+        } else if (filter === "name") {
+            deviceTag = devices[i]["instrument"][filter].toString().toLowerCase();
+        } else if (filter === "status") {
+            deviceTag = deviceTag[i]["STATUS"].toString().toLowerCase();
+        }
+        if (deviceTag.startsWith(tag.trim().toLowerCase())) {
+            found.push(devices[i]);
+        }
+    }
+    setUp(Math.round(Math.ceil(found.length / 10.0)));
+    createTable(found);
+}
+
 /**
  * Function to create/update the status squares and their colors.
  */
@@ -365,9 +400,9 @@ function createStatuses() {
         let style = devices[i].status === "ONLINE" ? "#4eb940" :
             devices[i].status === "WARNING" ? "#b9a940" :
                 "#ad2626";
-        innerHTML+=`<div class="status-div-container"><div class="status-div" title="`+devices[i].name+`" style="background: `+style+`">
-                    <a class="status-div" href="/node/`+devices[i].name+`"></a>
-                    </div></div>`;
+        innerHTML += `<div class="status-div-container"><div class="status-div" title="` + devices[i].name + `" style="background: ` + style + `">
+                <a class="status-div" href="/node/` + devices[i].name + `"></a>
+                </div></div>`;
     }
     container.innerHTML = innerHTML;
 }
