@@ -100,3 +100,28 @@ tbody>tr {
     height: 20vh;
     overflow-y: scroll;
 }
+fieldset {
+    overflow: hidden;
+    color : silver;
+  }
+
+  
+  .some-class {
+    float: left;
+    clear: none;
+  }
+  
+  label {
+    float: left;
+    clear: none;
+    display: block;
+    padding: 0px 1em 0px 8px;
+  }
+  
+  input[type=radio],
+  input.radio {
+    float: left;
+    clear: none;
+    margin: 2px 0 0 2px;
+}
+

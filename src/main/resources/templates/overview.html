@@ -7,10 +7,12 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css" rel="stylesheet">
         <link href="css/overview.css" rel="stylesheet">
         <link href="css/navbar.css" rel="stylesheet">
+        <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+        <script src="/webjars/stomp-websocket/stomp.min.js"></script>
         <link href="css/pagination.css" rel="stylesheet">
         <script th:type="module" src="/js/table-script.js" defer></script>
         <script th:inline="javascript">
-            const devices = /*[[${devices}]]*/ [];
+            let devices = /*[[${devices}]]*/ [];
         </script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -43,7 +45,25 @@
 
                 <div class="row">
                     <div class="col-4">
-                        <div id="map"></div>
+                        <div>
+                            <fieldset>
+                                <div class="some-class">
+                                  <input type="radio" class="radio" name="metric" id="upStatus" checked="checked" onchange="mapFilter('Up Status')" />
+                                  <label for="y">ON/OFF</label>
+                                  <input type="radio" class="radio" name="metric" id="cpu" onchange="mapFilter('CPU/RAM')"/>
+                                  <label for="z">CPU/RAM</label>
+                                  <input type="radio" class="radio" name="metric" id="storage" onchange="mapFilter('Storage (%)')"/>
+                                  <label for="z">Storage</label>
+                                  <!-- <input type="radio" class="radio" name="metric" value="z" id="ram" onchange="mapFilter('ramStatus')"/>
+                                  <label for="z">RAM</label> -->
+                                  <input type="radio" class="radio" name="metric" id="network" onchange="mapFilter('networkSatus')"/>
+                                  <label for="z">Network</label>
+                                </div>
+                            </fieldset>
+                            <div id="map">
+    
+                            </div>
+                        </div>
                     </div>
                     <div class="col-8">
                         <h2 style="color: white">List of Devices</h2>
