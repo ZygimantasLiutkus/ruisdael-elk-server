@@ -43,7 +43,7 @@
                 </div>
                 <div class="col-8 node-box">
                     <h3>Memory:</h3>
-                    <h2 class="text-center"><span th:text="${device.getHumanReadableValueGbs(device.getRam().getAvailable())}">???</span> GB / <span th:text="${device.getHumanReadableValueGbs(device.getRam().getTotal())}">???</span> GB (Used/Total)</h2>
+                    <h2 class="text-center"><span th:text="${device.getHumanReadableValueGbs(device.getRam().getUsedBytes())}">???</span> GB / <span th:text="${device.getHumanReadableValueGbs(device.getRam().getTotal())}">???</span> GB (Used/Total)</h2>
                 </div>
             </div>
             <div class="row">
