@@ -19,7 +19,7 @@ import tudelft.ewi.cse2000.ruisdael.monitoring.security.persistent.UserRepositor
 
 @Controller
 @SuppressWarnings("PMD.AvoidDuplicateLiterals") //Redirects links.
-public class SettingsController {
+public class AccountController {
 
     @Autowired
     private WebSecurityConfig config;
@@ -28,11 +28,11 @@ public class SettingsController {
     private UserRepository userRepository;
 
     /**
-     * Main settings page.
+     * Account management page.
      * Allows users to change their own passwords, and admins to create/manage accounts.
      */
-    @GetMapping("/settings")
-    public String settingsPage(Model model, Authentication authentication) {
+    @GetMapping("/account-management")
+    public String accountManagementPage(Model model, Authentication authentication) {
         model.addAttribute("passworddto", new PasswordDTO());
 
         if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))) {
@@ -40,7 +40,7 @@ public class SettingsController {
             model.addAttribute("usercreation", new UserCreationDTO());
         }
 
-        return "settings";
+        return "account-management";
     }
 
     /**
@@ -51,11 +51,11 @@ public class SettingsController {
     @PostMapping("/change-password")
     public String changePassword(@ModelAttribute PasswordDTO passworddto, Authentication authentication) {
         if (!config.encoder().matches(passworddto.getCurrentPassword(), ((User) authentication.getPrincipal()).getPassword())) {
-            return "redirect:/settings?user_wrong";
+            return "redirect:/account-management?user_wrong";
         }
 
         if (!passworddto.getNewPassword().equals(passworddto.getConfirmPassword())) {
-            return "redirect:/settings?user_unequal";
+            return "redirect:/account-management?user_unequal";
         }
 
         try {
@@ -65,7 +65,7 @@ public class SettingsController {
 
             return "redirect:/login?logout";
         } catch (Exception e) {
-            return "redirect:/settings?user_error";
+            return "redirect:/account-management?user_error";
         }
     }
 
@@ -73,7 +73,7 @@ public class SettingsController {
      * Toggles admin access for the specified account.
      * See the {@link #doAccountPreChecks(String, Authentication)} method for preconditions.
      *
-     * @return Redirect to the settings page with relevant error information.
+     * @return Redirect to the account management page with relevant error information.
      */
     @GetMapping("/admin-access/{username}/{enabled}")
     public String setAdminAccess(@PathVariable("username") String username, @PathVariable("enabled") boolean enabled,
@@ -89,17 +89,17 @@ public class SettingsController {
             user.setAdmin(enabled);
             userRepository.saveAndFlush(user);
         } catch (Exception e) {
-            return "redirect:/settings?account_error";
+            return "redirect:/account-management?account_error";
         }
 
-        return "redirect:/settings";
+        return "redirect:/account-management";
     }
 
     /**
      * Enables/Disables the specified account.
      * See the {@link #doAccountPreChecks(String, Authentication)} method for preconditions.
      *
-     * @return Redirect to the settings page with relevant error information.
+     * @return Redirect to the account management page with relevant error information.
      */
     @GetMapping("/disable-account/{username}/{enabled}")
     public String setAccountEnabled(@PathVariable("username") String username, @PathVariable("enabled") boolean enabled,
@@ -115,10 +115,10 @@ public class SettingsController {
             user.setEnabled(enabled);
             userRepository.saveAndFlush(user);
         } catch (Exception e) {
-            return "redirect:/settings?account_error";
+            return "redirect:/account-management?account_error";
         }
 
-        return "redirect:/settings";
+        return "redirect:/account-management";
     }
 
     /**
@@ -126,7 +126,7 @@ public class SettingsController {
      * A random password is generated, but should be changed by the user afterward.
      * See the {@link #doAccountPreChecks(String, Authentication)} method for preconditions.
      *
-     * @return Redirect to the settings page with relevant error information.
+     * @return Redirect to the account management page with relevant error information.
      */
     @GetMapping("/reset-password/{username}")
     public String resetPassword(@PathVariable("username") String username, Authentication authentication) {
@@ -141,9 +141,9 @@ public class SettingsController {
             String randomPass = getRandomPassword();
             user.setPassword(config.encoder().encode(randomPass));
             userRepository.saveAndFlush(user);
-            return "redirect:/settings?account_pass=" + randomPass;
+            return "redirect:/account-management?account_pass=" + randomPass;
         } catch (Exception e) {
-            return "redirect:/settings?account_error";
+            return "redirect:/account-management?account_error";
         }
     }
 
@@ -151,7 +151,7 @@ public class SettingsController {
      * Deletes the specified account.
      * See the {@link #doAccountPreChecks(String, Authentication)} method for preconditions.
      *
-     * @return Redirect to the settings page with relevant error information.
+     * @return Redirect to the account management page with relevant error information.
      */
     @GetMapping("/delete-account/{username}")
     public String deleteAccount(@PathVariable("username") String username, Authentication authentication) {
@@ -164,16 +164,16 @@ public class SettingsController {
         try {
             userRepository.delete(userRepository.findByUsername(username).get());
         } catch (Exception e) {
-            return "redirect:/settings?account_error";
+            return "redirect:/account-management?account_error";
         }
 
-        return "redirect:/settings";
+        return "redirect:/account-management";
     }
 
     /**
      * Create a new user account with the provided information.
      * Only administrators can call this method.
-     * @return A redirect to the settings page, where the new account will be shown.
+     * @return A redirect to the account management page, where the new account will be shown.
      */
     @PostMapping("/create-account")
     public String createAccount(@ModelAttribute UserCreationDTO usercreationdto, Authentication authentication) {
@@ -186,7 +186,7 @@ public class SettingsController {
         try {
             //Assert account doesnt already exist.
             if (userRepository.findByUsername(usercreationdto.getUsername()).isPresent()) {
-                return "redirect:/settings?create_exists";
+                return "redirect:/account-management?create_exists";
             }
 
             User newUser = new User(0L, usercreationdto.getUsername(),
@@ -194,9 +194,9 @@ public class SettingsController {
                     true, true, true, usercreationdto.isAdmin());
             userRepository.saveAndFlush(newUser);
 
-            return "redirect:/settings";
+            return "redirect:/account-management";
         } catch (Exception e) {
-            return "redirect:/settings?create_error";
+            return "redirect:/account-management?create_error";
         }
     }
 
@@ -218,11 +218,11 @@ public class SettingsController {
 
         //Protected superuser account
         if (username.equals("admin")) {
-            return "redirect:/settings?account_adminchange";
+            return "redirect:/account-management?account_adminchange";
         }
 
         if (username.equals(((User) authentication.getPrincipal()).getUsername())) {
-            return "redirect:/settings?account_ownchange";
+            return "redirect:/account-management?account_ownchange";
         }
 
         return null;
