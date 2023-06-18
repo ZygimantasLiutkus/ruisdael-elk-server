@@ -23,6 +23,7 @@
                     <h1 style="margin-top: 2%">Account Management</h1>
                     <p>Logged in as <span sec:authentication="name"></span></p>
                     <br />
+                    <h3>Change Password</h3>
                     <p th:if="${param.get('user_unequal') != null}">Passwords do not match.</p>
                     <p th:if="${param.get('user_wrong') != null}">Old password was incorrect.</p>
                     <p th:if="${param.get('user_error') != null}">An unspecified error occurred.</p>
@@ -43,7 +44,7 @@
 
                 <div class="white-text" sec:authorize="hasAuthority('ADMIN')">
 
-                    <h1 style="color: white;">Create Account</h1>
+                    <h3 style="color: white;">Create Account</h3>
                     <p th:if="${param.get('create_exists') != null}">This username already exists.</p>
                     <p th:if="${param.get('create_error') != null}">An unspecified error occurred.</p>
 
@@ -61,9 +62,10 @@
 
                     <hr />
 
-                    <h1 style="color: white;">User List</h1>
+                    <h3 style="color: white;">User List</h3>
                     <p th:if="${param.get('account_error') != null}">An unspecified error occured.</p>
                     <p th:if="${param.get('account_adminchange') != null}">This action is not allowed on the admin account.</p>
+                    <p th:if="${param.get('account_guestchange') != null}">This action is not allowed on the guest account.</p>
                     <p th:if="${param.get('account_ownchange') != null}">You cannot edit your own account.</p>
                     <p th:if="${param.get('account_pass') != null}">Reset the password to <span style="color:#aec4e5;" th:text="${param.account_pass}"></span>. Please change it now.</p>
 

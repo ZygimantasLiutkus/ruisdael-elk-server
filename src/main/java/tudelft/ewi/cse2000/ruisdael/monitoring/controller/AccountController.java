@@ -84,6 +84,10 @@ public class AccountController {
             return precheck;
         }
 
+        if (username.equals("guest")) {
+            return "redirect:/account-management?account_guestchange";
+        }
+
         try {
             User user = userRepository.findByUsername(username).get();
             user.setAdmin(enabled);
@@ -159,6 +163,10 @@ public class AccountController {
 
         if (precheck != null) {
             return precheck;
+        }
+
+        if (username.equals("guest")) {
+            return "redirect:/account-management?account_guestchange";
         }
 
         try {
