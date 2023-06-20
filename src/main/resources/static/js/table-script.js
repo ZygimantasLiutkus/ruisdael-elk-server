@@ -1,4 +1,5 @@
 import { setUp, reset, handleButton } from "./pagination.js";
+import { loadTextBox, loadStatuses, loadSlider, setLeftValue, setRightValue, hideAll } from "./filters.js";
 
 const table = document.getElementById("device-table");
 let isAsc = true;
@@ -86,7 +87,55 @@ function init() {
             resetTable();
             createTable();
         });
-        document.getElementById("btn-search").addEventListener("click", () => search());
+
+        document.getElementById("btn-search").addEventListener("click", search);
+        document.getElementById("dropdown-name").addEventListener("click", () => {
+            loadTextBox("Instrument Name");
+            });
+        document.getElementById("dropdown-location").addEventListener("click", () => {
+            loadTextBox("Location");
+        });
+        document.getElementById("dropdown-status").addEventListener("click", () => {
+            loadStatuses("Statuses");
+        });
+        document.getElementById("dropdown-storage").addEventListener("click", () => {
+            loadSlider("Storage");
+        });
+        document.getElementById("dropdown-ram").addEventListener("click", () => {
+            loadSlider("RAM");
+        });
+
+        let inputLeft = document.getElementById("input-left");
+        let inputRight = document.getElementById("input-right");
+        let thumbLeft = document.querySelector(".slider > .thumb.left");
+        let thumbRight = document.querySelector(".slider > .thumb.right");
+
+        inputLeft.addEventListener("input", setLeftValue);
+        inputRight.addEventListener("input", setRightValue);
+
+        inputLeft.addEventListener("mousedown", function() {
+            thumbLeft.classList.add("active");
+        });
+        inputLeft.addEventListener("mouseup", function() {
+            thumbLeft.classList.remove("active");
+        });
+
+        inputRight.addEventListener("mouseover", function() {
+            thumbRight.classList.add("hover");
+        });
+
+        inputRight.addEventListener("mouseout", function() {
+            thumbRight.classList.remove("hover");
+        });
+
+        inputRight.addEventListener("mousedown", function() {
+            thumbRight.classList.add("active");
+        });
+
+        inputRight.addEventListener("mouseup", function() {
+            thumbRight.classList.remove("active");
+        });
+
     }
 
     document.getElementById("sort-arrow-col-0").addEventListener("click", () => sortCol(0));

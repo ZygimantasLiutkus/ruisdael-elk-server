@@ -55,8 +55,10 @@ tbody>tr {
 }
 
 .filter-container {
-    display: flex;
+    /*display: flex;*/
     flex-wrap: wrap;
+    margin-top: 5%;
+    margin-bottom: 5%;
 }
 
 .input-group, .input-group .flex-nowrap {
@@ -158,4 +160,33 @@ tbody>tr {
     padding-right: calc(var(--bs-gutter-x) * .5);
     padding-left: calc(var(--bs-gutter-x) * .5);
     margin-top: var(--bs-gutter-y);
+}
+
+.status-container, .multi-range-slider, #search-input {
+    height: 100%;
+    width: 100%;
+    min-height: 30px;
+    min-width: 150px;
+    display: none;
+}
+
+.status-container {
+    border: transparent;
+}
+
+#current-filter {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: #d4dadc;
+}
+
+.input-group>.form-control, .input-group>.form-select {
+    position: relative;
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+}
+
+.input-group .flex-nowrap {
+    display: flex;
 }
