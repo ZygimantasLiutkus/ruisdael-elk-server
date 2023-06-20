@@ -5,6 +5,7 @@ const table = document.getElementById("device-table");
 let isAsc = true;
 let currentPage = 1;
 let lastSorted = 0;
+let filter = "status";
 const devicesPerPage = 10;
 const metricMapping = new Map([
     ["Status", "Status"],
@@ -90,19 +91,24 @@ function init() {
 
         document.getElementById("btn-search").addEventListener("click", search);
         document.getElementById("dropdown-name").addEventListener("click", () => {
+            filter = "name";
             loadTextBox("Instrument Name");
             });
         document.getElementById("dropdown-location").addEventListener("click", () => {
+            filter = "location";
             loadTextBox("Location");
         });
         document.getElementById("dropdown-status").addEventListener("click", () => {
+            filter = "status";
             loadStatuses("Statuses");
         });
         document.getElementById("dropdown-storage").addEventListener("click", () => {
-            loadSlider("Storage");
+            filter = "storage";
+            loadSlider("Storage Used (%)");
         });
         document.getElementById("dropdown-ram").addEventListener("click", () => {
-            loadSlider("RAM");
+            filter = "RAM";
+            loadSlider("RAM Used (%)");
         });
 
         let inputLeft = document.getElementById("input-left");
@@ -411,50 +417,61 @@ function search() {
     let radioButtons = document.getElementsByClassName("form-check-input");
     let tag = document.getElementById("search-tag").value.trim().toLowerCase();
     let found = [];
-    let filter = "status";
-    let checked = false;
+    filter = filter.toLowerCase();
 
-    if (radioButtons.item(2).checked) {
-        tag = "online";
-    } else if (radioButtons.item(3).checked) {
-        tag = "warning";
-    } else if (radioButtons.item(4).checked) {
-        tag = "offline";
-    } else if (tag === "") {
-        createTable();
-        return;
+    if (filter === "storage" || filter === "ram") {
+        searchNum();
     } else {
-        for (let i = 0; i < radioButtons.length - 2; i++) {
-            let radioButton = radioButtons.item(i);
-            if (radioButton.checked) {
-                filter = radioButton.value;
-                checked = true;
-                break;
+        if (radioButtons !== null) {
+            for (let i = 0; i < radioButtons.length; i++) {
+                if (radioButtons.item(i).checked) {
+                    tag = radioButtons.item(i).id.toString().split("-")[0];
+                    break;
+                }
             }
         }
-        if (!checked) {
-            return;
+        for (let i = 0; i < devices.length; i++) {
+            let deviceTag = "";
+            if (filter === "location") {
+                deviceTag = devices[i][filter]["name"].toString().toLowerCase();
+            } else if (filter === "name") {
+                deviceTag = devices[i]["instrument"][filter].toString().toLowerCase();
+            } else if (filter === "status") {
+                deviceTag = devices[i]["status"].toString().toLowerCase();
+            }
+            if (deviceTag.startsWith(tag.trim().toLowerCase())) {
+                found.push(devices[i]);
+            }
         }
+        devices = found;
     }
-    for (let i = 0; i < devices.length; i++) {
-        let deviceTag = "";
-        if (filter === "location") {
-            deviceTag = devices[i][filter]["name"].toString().toLowerCase();
-        } else if (filter === "name") {
-            deviceTag = devices[i]["instrument"][filter].toString().toLowerCase();
-        } else if (filter === "status") {
-            deviceTag = devices[i]["status"].toString().toLowerCase();
-        }
-        if (deviceTag.startsWith(tag.trim().toLowerCase())) {
-            found.push(devices[i]);
-        }
-    }
-    devices = found;
-    setUp(Math.round(Math.ceil(found.length / 10.0)));
+    setUp(Math.round(Math.ceil(devices.length / 10.0)));
     updatePaginate(1);
     if (found.length > 0) {
         handleButton(document.getElementById("btn-first-page"));
     }
+}
+
+function searchNum() {
+    let min = parseInt(document.getElementsByClassName("thumb left")[0].style.left.toString().replace("%", ""));
+    let max = 100 - parseInt(document.getElementsByClassName("thumb right")[0].style.right.toString().replace("%", ""));
+    let found = [];
+
+    for (let i = 0; i < devices.length; i++) {
+        let device = devices[i];
+        if (filter == "storage") {
+            let perc = device[filter]["usedPercStorage"];
+            if (min <= perc && perc <= max) {
+                found.push(device);
+            }
+        } else {
+            let perc = device[filter]["usedPerc"];
+            if (min <= perc && perc <= max) {
+                found.push(device);
+            }
+        }
+    }
+    devices = found;
 }
 
 /**

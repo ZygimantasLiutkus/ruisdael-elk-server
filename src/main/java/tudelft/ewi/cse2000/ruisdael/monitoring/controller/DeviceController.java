@@ -121,7 +121,6 @@ public class DeviceController {
 
         model.addAttribute("metrics", metrics);
 
-
         /* For testing purposes
         List<Device> devices = new ArrayList<>();
         List<String> metrics = METRIC_MAPPING.values().stream().toList();

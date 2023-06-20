@@ -126,16 +126,6 @@ tbody>tr {
     text-decoration-line: none;
 }
 
-#reset-table {
-    margin-top: 3%;
-}
-
-#pagination {
-    display: flex;
-    align-items: center;
-    flex-wrap: nowrap;
-}
-
 .table-container {
     display: inline-flex;
     flex-wrap: wrap;
@@ -174,11 +164,6 @@ tbody>tr {
     border: transparent;
 }
 
-#current-filter {
-    background-color: #6c757d;
-    border-color: #6c757d;
-    color: #d4dadc;
-}
 
 .input-group>.form-control, .input-group>.form-select {
     position: relative;
@@ -189,4 +174,25 @@ tbody>tr {
 
 .input-group .flex-nowrap {
     display: flex;
+}
+
+#current-filter {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: #d4dadc;
+}
+
+#btn-search {
+    color: #fff;
+    background-color: #6c757d;
+}
+
+#btn-search-reset {
+    margin-top: 3%;
+}
+
+#pagination {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
 }
