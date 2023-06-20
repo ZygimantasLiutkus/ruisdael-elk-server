@@ -119,6 +119,7 @@ public class DeviceController {
         /* For testing purposes
         List<Device> devices = new ArrayList<>();
         List<String> metrics = METRIC_MAPPING.values().stream().toList();
+        List<Status> statuses = new ArrayList<>(Arrays.asList(Status.ONLINE, Status.WARNING, Status.OFFLINE));
         List<String> locations = (Arrays.asList("Rotterdam", "Delft", "Den Haag", "Amsterdam", "Eindhoven", "Leiden",
                 "Utrecht"));
 
@@ -130,8 +131,9 @@ public class DeviceController {
         for (int i = 0; i < 25; i++) {
             location.setName(locations.get(new Random().nextInt(locations.size())));
             Instrument instrument = new Instrument("instrument" + (i + 1), "it");
-            devices.add(new Device("device" + (i + 1), instrument, location, Status.ONLINE, storage, ram,
-                    1.0, bandwidth, "t", null));
+            devices.add(new Device("device" + (i + 1), instrument, location,
+                    statuses.get(new Random().nextInt(statuses.size())), storage, ram,1.0, bandwidth,
+                    "t", null));
         }
 
         model.addAttribute("devices", devices);
@@ -141,9 +143,36 @@ public class DeviceController {
     }
 
 
+    /**
+     * This method is used to retrieve the list of all devices when being called by SockJS on the frontend.
+     *
+     * @return list of all devices.
+     */
     @MessageMapping("/devices") // /app/devices
     @SendTo("/topic/devices")
     public List<Device> updateDevices() {
+
+        /* For testing purposes
+        List<Device> devices = new ArrayList<>();
+        List<String> metrics = METRIC_MAPPING.values().stream().toList();
+        List<Status> statuses = new ArrayList<>(Arrays.asList(Status.ONLINE, Status.WARNING, Status.OFFLINE));
+        List<String> locations = (Arrays.asList("Rotterdam", "Delft", "Den Haag", "Amsterdam", "Eindhoven", "Leiden",
+                "Utrecht"));
+
+        Location location = new Location(1.0, 2.0, "le", "ln");
+        Storage storage = new Storage(0.0, 0.0, 0.0, 0.0);
+        Ram ram = new Ram(0.0, 0.0, 0.0, 0.0, 0.0);
+        Bandwidth bandwidth = new Bandwidth(0.0, 0.0, 0.0, 0.0);
+
+        for (int i = 0; i < 25; i++) {
+            location.setName(locations.get(new Random().nextInt(locations.size())));
+            Instrument instrument = new Instrument("instrument" + (i + 1), "it");
+            devices.add(new Device("device" + (i + 1), instrument, location,
+                    statuses.get(new Random().nextInt(statuses.size())), storage, ram,1.0, bandwidth,
+                    "t", null));
+        }
+        return devices */
+
         return elasticsearchService.getAllDevices();
     }
 }
