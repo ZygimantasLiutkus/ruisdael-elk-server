@@ -6,7 +6,7 @@ import co.elastic.clients.elasticsearch._types.SortOptions;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
-
+import co.elastic.clients.elasticsearch.indices.DeleteIndexRequest;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import co.elastic.clients.elasticsearch.indices.DeleteIndexRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tudelft.ewi.cse2000.ruisdael.monitoring.component.DeviceDataConverter;
@@ -39,6 +38,7 @@ public class ElasticsearchService {
     private final ElasticsearchClient client;
 
     private IndexRepository indexRepository;
+
     /**
      * Constructs an instance of ElasticsearchService with the specified Elasticsearch client.
      *
@@ -52,6 +52,7 @@ public class ElasticsearchService {
 
     /**
      * Queries elastic to receive the latest data on a given node, and converts this to a @{@link Device}.
+     *
      * @param nodeIndexName The name of the node to look up data for.
      * @return A {@link Device} object with the latest data, or null if no such device exists, or no data is available.
      */
@@ -74,7 +75,7 @@ public class ElasticsearchService {
             // The following line is added so that the Status of the node can be determined before creation,
             // the method `getStatus()` is at the bottom of the ElasticsearchService class.
             String timestamp = lastHit.source().get("@timestamp").toString();
-            if (indexRepository.existsByIndex(lastHit.index())) {
+            if (indexRepository.existsByIndexValue(lastHit.index())) {
                 return DeviceDataConverter.createDeviceFromElasticData(deviceName, Status.DISABLED, lastHit.source());
             }
             return DeviceDataConverter.createDeviceFromElasticData(deviceName, getStatus(timestamp), lastHit.source());
@@ -86,6 +87,7 @@ public class ElasticsearchService {
     /**
      * Queries elastic to receive data on all nodes, the order of devices will be according to their names.
      * In order to obtain a list of devices with their appropriate statuses, this method should be used.
+     *
      * @return A list of all nodes with the latest data in a {@link Device} object.
      */
     public List<Device> getAllDevices() {
@@ -136,8 +138,8 @@ public class ElasticsearchService {
                 String exampleIndex = optionalIndex.get();
 
                 SearchResponse<Map> response = client.search(s -> s
-                        .index(exampleIndex)
-                        .sort(build -> build.field(f -> f.field("@timestamp").order(SortOrder.Desc))),
+                                .index(exampleIndex)
+                                .sort(build -> build.field(f -> f.field("@timestamp").order(SortOrder.Desc))),
                         Map.class);
 
                 List<Hit<Map>> hits = response.hits().hits();
@@ -191,6 +193,12 @@ public class ElasticsearchService {
         return Status.OFFLINE;
     }
 
+    /**
+     * This method takes an index name and attempts to delete it from Elasticsearch.
+     *
+     * @param index index to be deleted from Elasticsearch.
+     * @return an acknowledgement response of whether the deletion succeeded.
+     */
     public AcknowledgedResponse deleteIndex(String index) {
         try {
             DeleteIndexRequest request = new DeleteIndexRequest.Builder().index(index).build();

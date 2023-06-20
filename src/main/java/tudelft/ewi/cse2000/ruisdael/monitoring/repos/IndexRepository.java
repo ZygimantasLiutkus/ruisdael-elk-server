@@ -7,7 +7,7 @@ import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Index;
 @Repository
 public interface IndexRepository extends JpaRepository<Index, Long> {
 
-    boolean existsByIndex(String index);
+    boolean existsByIndexValue(String index);
 
-    Index findByIndex(String index);
+    Index findByIndexValue(String index);
 }
