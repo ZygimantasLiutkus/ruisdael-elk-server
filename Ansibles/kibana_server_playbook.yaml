@@ -3,7 +3,7 @@
   hosts: all
   tasks:
     # Install and configure Kibana
-    - name: Add the beats repository to apt
+    - name: Add the kibana repository to apt
       ansible.builtin.apt_key:
         url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
         state: present
@@ -12,6 +12,7 @@
     - name: Install kibana
       ansible.builtin.apt:
         name: kibana
+        update_cache: true
       become: true
 
     - name: Edit the kibana.yml to link up with elastic search

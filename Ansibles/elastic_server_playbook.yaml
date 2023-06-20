@@ -1,0 +1,111 @@
+---
+- name: Installing the elastic search
+  hosts: all
+  tasks:
+    # Install elasticsearch
+    - name: Add the elasticsearch repository to apt
+      ansible.builtin.apt_key:
+        url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+        state: present
+      become: true
+
+    - name: Install elasticsearch
+      ansible.builtin.apt:
+        name: elasticsearch
+        update_cache: true
+      become: true
+
+    - name: copy service tokens
+      ansible.builtin.copy:
+        src: Ansibles/FilesElasticSearch/service_token
+        dest: /etc/elasticsearch/service_tokens
+        remote_src: yes
+      become: true
+
+    # Set certificates
+    - name: copy http.p12 file
+      ansible.builtin.copy:
+        src: Ansibles/FilesElasticSearch/http.p12
+        dest: /etc/elasticsearch/certs/http.p12
+        remote_src: yes
+      become: true
+
+    - name: copy http_ca.crt file
+      ansible.builtin.copy:
+        src: Ansibles/FilesElasticSearch/http_ca.crt
+        dest: /etc/elasticsearch/certs/http_ca.crt
+        remote_src: yes
+      become: true
+
+    - name: copy transport.p12 file
+      ansible.builtin.copy:
+        src: Ansibles/FilesElasticSearch/transport.p12
+        dest: /etc/elasticsearch/certs/transport.p12
+        remote_src: yes
+      become: true
+
+    # setting up directories for the snapshots
+    - name: create backups directory
+      ansible.builtin.file:
+        path: /mnt/backups
+        state: directory
+        owner: elasticsearch
+        mode: '0775'
+      become: true
+
+    - name: copy the backups directory
+      ansible.builtin.copy:
+        src: Ansibles/my_fs_backup_location
+        dest: /mnt/backups/my_fs_backup_location
+        remote_src: yes
+        owner: elasticsearch
+        mode: '0775'
+      become: true
+
+    # Start and enable elasticsearch
+    - name: enable elasticsearch.service
+      ansible.builtin.systemd:
+        name: elasticsearch
+        daemon_reload: true
+        enabled: true
+      become: true
+
+    - name: start elasticsearch.service
+      ansible.builtin.systemd:
+        name: elasticsearch
+        state: started
+      become: true
+
+    # Change elastic users password
+    - name: change the password via cli
+      ansible.builtin.shell: bin/elasticsearch-reset-password -u elastic -i {{ elastic_password }}
+      args:
+        chdir: /usr/share/elasticsearch
+      become: true
+
+    # Set up the kibana snapshot and restore to it
+    - name: register the directory in elastic
+      ansible.builtin.uri:
+        url: https://localhost:9200/_snapshot/my_fs_backup
+        method: PUT
+        headers:
+          Content-Type: "application/json"
+          Authorization: 'Basic {{ ("elastic:" + elastic_password) | ansible.builtin.b64encode}}'
+        validate_certs: false
+        body_format: json
+        body:
+          type: "fs"
+          settings:
+            location: "/mnt/backups/my_fs_backup_location"
+
+    - name: restore to the snapshot inside the directory
+      ansible.builtin.uri:
+        url: https://localhost:9200/_snapshot/my_fs_backup/snapshot_kibana/_restore
+        method: POST
+        headers:
+          Content-Type: "application/json"
+          Authorization: 'Basic {{ ("elastic:" + elastic_password) | ansible.builtin.b64encode}}'
+        validate_certs: false
+        body_format: json
+        body:
+          indices: ".kibana*"
