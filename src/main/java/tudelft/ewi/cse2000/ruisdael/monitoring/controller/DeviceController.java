@@ -115,6 +115,12 @@ public class DeviceController {
     public String getDeviceList(Model model) {
         /* Use for Production */
         model.addAttribute("devices", elasticsearchService.getAllDevices());
+        List<String> metrics = elasticsearchService.getMetricTypes().stream()
+                .map(METRIC_MAPPING::get)
+                .toList();
+
+        model.addAttribute("metrics", metrics);
+
 
         /* For testing purposes
         List<Device> devices = new ArrayList<>();
