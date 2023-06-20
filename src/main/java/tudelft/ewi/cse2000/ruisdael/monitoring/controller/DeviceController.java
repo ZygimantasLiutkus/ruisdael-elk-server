@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import tudelft.ewi.cse2000.ruisdael.monitoring.configurations.ApplicationConfig;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Index;
-import tudelft.ewi.cse2000.ruisdael.monitoring.repos.IndexRepository;
+import tudelft.ewi.cse2000.ruisdael.monitoring.repositories.IndexRepository;
 import tudelft.ewi.cse2000.ruisdael.monitoring.service.ElasticsearchService;
 
 @Controller

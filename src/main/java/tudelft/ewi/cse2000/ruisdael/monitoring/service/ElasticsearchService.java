@@ -25,7 +25,7 @@ import tudelft.ewi.cse2000.ruisdael.monitoring.component.DeviceDataConverter;
 import tudelft.ewi.cse2000.ruisdael.monitoring.configurations.ApplicationConfig;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Status;
-import tudelft.ewi.cse2000.ruisdael.monitoring.repos.IndexRepository;
+import tudelft.ewi.cse2000.ruisdael.monitoring.repositories.IndexRepository;
 
 /**
  * Service class for Elasticsearch operations.

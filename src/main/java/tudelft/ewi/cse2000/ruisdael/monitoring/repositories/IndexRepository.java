@@ -1,4 +1,4 @@
-package tudelft.ewi.cse2000.ruisdael.monitoring.repos;
+package tudelft.ewi.cse2000.ruisdael.monitoring.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
