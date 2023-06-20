@@ -1,4 +1,4 @@
-import { setUp } from "./pagination.js";
+import { setUp, reset, handleButton } from "./pagination.js";
 
 const table = document.getElementById("device-table");
 let isAsc = true;
@@ -50,9 +50,11 @@ function connect() {
             // and the columns are sorted twice to restore the previous order.
             // createTable();
             createStatuses();
+            // currentPage = Math.min(currentPage, Math.ceil(devices.lenght / 10.0));
             let tempPage = currentPage;     // Sorting switches page to 1. To not have the
             sortCol(lastSorted);            // view reset to page 1 every minute, current
             sortCol(lastSorted);            // page is saved.
+            reset(Math.ceil(devices.length / 10.0));
             updatePaginate(tempPage);
             // Reload map
             if (document.title === "Device Overview") {
@@ -67,7 +69,7 @@ function connect() {
  * Function that disconnects from the websockets.
  */
 function disconnect() {
-    client.disconnect()
+    client.disconnect();
     interval = null;
 }
 
@@ -102,8 +104,8 @@ function init() {
     }
     createTable();
     // Use to compute the number of overall pages
-    const pageNum = Math.round(Math.ceil(devices.length / 10.0));
-    setUp(pageNum);
+    // const pageNum = Math.round(Math.ceil(devices.length / 10.0));
+    setUp(Math.ceil(devices.length / 10.0));
 }
 
 /**
@@ -132,17 +134,12 @@ function createTable() {
         });
     }
 }
-/* Function is used to query the Elasticsearch database and retrieve the list of all devices, when the
+
+/** Function is used to query the Elasticsearch database and retrieve the list of all devices, when the
  * reset table button is clicked.
  */
 function resetTable() {
-    client.connect({}, () => {
-        client.subscribe('/topic/devices', (d) => {
-            devices = JSON.parse(d.body);
-            createTable();
-            updatePaginate(currentPage);
-        });
-    });
+    client.send('/app/devices', {});
 }
 
 /* Function to update the view of the page control (number row under the table).
@@ -357,6 +354,10 @@ function setStatusColorAll(device, row) {
     }
 }
 
+/**
+ * This function is used to query the list of devices based on their tags. A tag can be one of the following:
+ * Instrument Name, Location, Status (Online, Warning, Offline).
+ */
 function search() {
     let radioButtons = document.getElementsByClassName("form-check-input");
     let tag = document.getElementById("search-tag").value.trim().toLowerCase();
@@ -401,7 +402,10 @@ function search() {
     }
     devices = found;
     setUp(Math.round(Math.ceil(found.length / 10.0)));
-    createTable();
+    updatePaginate(1);
+    if (found.length > 0) {
+        handleButton(document.getElementById("btn-first-page"));
+    }
 }
 
 /**
