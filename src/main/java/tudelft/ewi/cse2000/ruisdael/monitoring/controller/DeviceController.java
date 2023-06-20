@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import tudelft.ewi.cse2000.ruisdael.monitoring.configurations.ApplicationConfig;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Index;
+import tudelft.ewi.cse2000.ruisdael.monitoring.repos.IndexRepository;
 import tudelft.ewi.cse2000.ruisdael.monitoring.service.ElasticsearchService;
 
 @Controller
@@ -24,6 +27,9 @@ public class DeviceController {
      */
     @Autowired
     private ElasticsearchService elasticsearchService;
+
+    @Autowired
+    private IndexRepository indexRepository;
 
     private static final Map<String, String> METRIC_MAPPING = Map.ofEntries(
             entry("Status", "Status"),
@@ -148,5 +154,33 @@ public class DeviceController {
     @SendTo("/topic/devices")
     public List<Device> updateDevices() {
         return elasticsearchService.getAllDevices();
+    }
+
+    @MessageMapping("/delete/{index}")
+    @SendTo("/topic/delete")
+    public boolean deleteIndex(@DestinationVariable String index) {
+        return elasticsearchService.deleteIndex(index).acknowledged();
+    }
+
+    @MessageMapping("/disable/{index}")
+    @SendTo("/topic/disable")
+    public boolean disableIndex(@DestinationVariable String index) {
+        if (indexRepository.existsByIndex(index)) {
+            return false;
+        } else {
+            indexRepository.saveAndFlush(new Index(0L, index));
+            return true;
+        }
+    }
+
+    @MessageMapping("/enable/{index}")
+    @SendTo("/topic/enable")
+    public boolean enableIndex(@DestinationVariable String index) {
+        if (indexRepository.existsByIndex(index)) {
+            indexRepository.delete(indexRepository.findByIndex(index));
+            return true;
+        } else {
+            return false;
+        }
     }
 }

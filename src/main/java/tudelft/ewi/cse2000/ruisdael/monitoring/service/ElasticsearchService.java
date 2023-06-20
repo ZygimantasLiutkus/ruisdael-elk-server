@@ -1,6 +1,7 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.AcknowledgedResponse;
 import co.elastic.clients.elasticsearch._types.SortOptions;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
@@ -18,12 +19,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import co.elastic.clients.elasticsearch.indices.DeleteIndexRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tudelft.ewi.cse2000.ruisdael.monitoring.component.DeviceDataConverter;
 import tudelft.ewi.cse2000.ruisdael.monitoring.configurations.ApplicationConfig;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Status;
+import tudelft.ewi.cse2000.ruisdael.monitoring.repos.IndexRepository;
 
 /**
  * Service class for Elasticsearch operations.
@@ -35,14 +38,16 @@ public class ElasticsearchService {
 
     private final ElasticsearchClient client;
 
+    private IndexRepository indexRepository;
     /**
      * Constructs an instance of ElasticsearchService with the specified Elasticsearch client.
      *
      * @param client The ElasticsearchClient dependency injected automatically by the Spring framework.
      */
     @Autowired
-    public ElasticsearchService(ElasticsearchClient client) {
+    public ElasticsearchService(ElasticsearchClient client, IndexRepository indexRepository) {
         this.client = client;
+        this.indexRepository = indexRepository;
     }
 
     /**
@@ -69,7 +74,9 @@ public class ElasticsearchService {
             // The following line is added so that the Status of the node can be determined before creation,
             // the method `getStatus()` is at the bottom of the ElasticsearchService class.
             String timestamp = lastHit.source().get("@timestamp").toString();
-
+            if (indexRepository.existsByIndex(lastHit.index())) {
+                return DeviceDataConverter.createDeviceFromElasticData(deviceName, Status.DISABLED, lastHit.source());
+            }
             return DeviceDataConverter.createDeviceFromElasticData(deviceName, getStatus(timestamp), lastHit.source());
         } catch (Exception e) { //IOException or IllegalArgumentException
             return null;
@@ -182,5 +189,18 @@ public class ElasticsearchService {
         }
         // If the device did not send a request to the server in the last 5 minutes, set its status to OFFLINE
         return Status.OFFLINE;
+    }
+
+    public AcknowledgedResponse deleteIndex(String index) {
+        try {
+            DeleteIndexRequest request = new DeleteIndexRequest.Builder().index(index).build();
+
+            AcknowledgedResponse deleteResponse = client.indices().delete(request);
+            return deleteResponse;
+        } catch (Exception e) {
+            e.printStackTrace();
+            AcknowledgedResponse response = () -> false;
+            return response;
+        }
     }
 }

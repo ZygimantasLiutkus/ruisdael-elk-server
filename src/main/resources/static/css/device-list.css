@@ -159,3 +159,21 @@ tbody>tr {
     padding-left: calc(var(--bs-gutter-x) * .5);
     margin-top: var(--bs-gutter-y);
 }
+
+tr>.none {
+    display: flex;
+    border-style: none;
+    background-color: transparent;
+}
+
+.table>:not(:first-child) {
+    border-top: transparent;
+}
+
+.table>:not(:first-child)>:first-child>:not(:last-child) {
+    border-top: 2px solid #fff;
+}
+
+tbody>tr>:last-child {
+    cursor: default;
+}
