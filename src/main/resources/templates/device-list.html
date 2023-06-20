@@ -13,7 +13,7 @@
         <script src="/webjars/stomp-websocket/stomp.min.js"></script>
         <script th:type="module" src="/js/table-script.js" defer></script>
         <script th:inline="javascript">
-            const devices = /*[[${devices}]]*/ [];
+            let devices = /*[[${devices}]]*/ [];
         </script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     </head>

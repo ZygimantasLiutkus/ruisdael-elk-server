@@ -55,8 +55,10 @@ function connect() {
             sortCol(lastSorted);            // page is saved.
             updatePaginate(tempPage);
             // Reload map
-            reloadMarkers(savedMetric);
-            mapFilter(savedMetric);
+            if (document.title === "Device Overview") {
+                reloadMarkers(savedMetric);
+                mapFilter(savedMetric);
+            }
         });
     });
 }
@@ -79,6 +81,7 @@ function init() {
     if (document.title === "Device List") {
         document.getElementById("btn-reset-table").addEventListener("click", () => {
             currentPage = 1;
+            resetTable();
             createTable();
         });
         document.getElementById("btn-search").addEventListener("click", () => search());
@@ -106,11 +109,10 @@ function init() {
 /**
  * Function to populate the table with information about devices.
  */
-function createTable(devs) {
-    let deviceList = (devs != null) ? devs : devices;
+function createTable() {
     let start = devicesPerPage * (currentPage - 1);
     let end = start + devicesPerPage;
-    let selectedDevices = deviceList.slice(start, end);
+    let selectedDevices = devices.slice(start, end);
     let tbody = table.getElementsByTagName("tbody")[0];
 
     while (tbody.rows.length > 0) {
@@ -129,6 +131,18 @@ function createTable(devs) {
             window.location.href = "/node/" + device.name;
         });
     }
+}
+/* Function is used to query the Elasticsearch database and retrieve the list of all devices, when the
+ * reset table button is clicked.
+ */
+function resetTable() {
+    client.connect({}, () => {
+        client.subscribe('/topic/devices', (d) => {
+            devices = JSON.parse(d.body);
+            createTable();
+            updatePaginate(currentPage);
+        });
+    });
 }
 
 /* Function to update the view of the page control (number row under the table).
@@ -372,7 +386,6 @@ function search() {
             return;
         }
     }
-
     for (let i = 0; i < devices.length; i++) {
         let deviceTag = "";
         if (filter === "location") {
@@ -380,20 +393,26 @@ function search() {
         } else if (filter === "name") {
             deviceTag = devices[i]["instrument"][filter].toString().toLowerCase();
         } else if (filter === "status") {
-            deviceTag = deviceTag[i]["STATUS"].toString().toLowerCase();
+            deviceTag = devices[i]["status"].toString().toLowerCase();
         }
         if (deviceTag.startsWith(tag.trim().toLowerCase())) {
             found.push(devices[i]);
         }
     }
+    devices = found;
     setUp(Math.round(Math.ceil(found.length / 10.0)));
-    createTable(found);
+    createTable();
 }
 
 /**
  * Function to create/update the status squares and their colors.
  */
 function createStatuses() {
+
+    if (document.title === "Device List") {
+        return;
+    }
+
     let container = document.getElementsByClassName("status-container")[0];
     let innerHTML = "";
     for (let i = 0; i < devices.length; i++) {
