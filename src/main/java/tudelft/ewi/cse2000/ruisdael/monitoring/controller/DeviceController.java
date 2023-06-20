@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import tudelft.ewi.cse2000.ruisdael.monitoring.configurations.ApplicationConfig;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
 import tudelft.ewi.cse2000.ruisdael.monitoring.service.ElasticsearchService;
 
@@ -56,6 +57,7 @@ public class DeviceController {
     public String getOverview(Model model) {
         /* Use for Production */
         model.addAttribute("devices", elasticsearchService.getAllDevices());
+        model.addAttribute("websocketDelay", ApplicationConfig.websocketDelay);
 
         List<String> metrics = elasticsearchService.getMetricTypes().stream()
                 .map(METRIC_MAPPING::get)
@@ -115,6 +117,7 @@ public class DeviceController {
     public String getDeviceList(Model model) {
         /* Use for Production */
         model.addAttribute("devices", elasticsearchService.getAllDevices());
+        model.addAttribute("websocketDelay", ApplicationConfig.websocketDelay);
 
         /* For testing purposes
         List<Device> devices = new ArrayList<>();
