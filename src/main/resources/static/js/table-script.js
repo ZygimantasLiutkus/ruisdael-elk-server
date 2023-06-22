@@ -2,6 +2,7 @@ import { setUp, reset, handleButton } from "./pagination.js";
 import { loadTextBox, loadStatuses, loadSlider, setLeftValue, setRightValue, hideAll } from "./filters.js";
 
 const table = document.getElementById("device-table");
+const docTitle = document.title;
 let isAsc = true;
 let currentPage = 1;
 let lastSorted = 0;
@@ -58,11 +59,26 @@ function connect() {
             sortCol(lastSorted);            // page is saved.
             reset(Math.ceil(devices.length / 10.0));
             updatePaginate(tempPage);
-            // Reload map
-            if (document.title === "Ruisdael Monitoring | Overview") {
+            if (docTitle === "Ruisdael Monitoring | Overview") {
+                // Reload status boxes
+                createStatuses();
+                // Reload map
                 reloadMarkers(savedMetric);
                 mapFilter(savedMetric);
             }
+        });
+
+        client.subscribe('/topic/enable', (d) => {
+            client.send('/app/devices', {});
+            createTable();
+        });
+        client.subscribe('/topic/disable', (d) => {
+            client.send('/app/devices', {});
+            createTable();
+        });
+        client.subscribe('/topic/delete', (d) => {
+            client.send('/app/devices', {});
+            createTable();
         });
     });
 }
@@ -179,14 +195,47 @@ function createTable() {
     for (let i = 0; i < selectedDevices.length; i++) {
         let row = tbody.insertRow(tbody.rows.length);
         let device = selectedDevices[i];
-        row.insertCell(0).innerText = parseField(device, document.getElementById("metric-0").innerText);
-        row.insertCell(1).innerText = parseField(device, document.getElementById("metric-1").innerText);
-        row.insertCell(2).innerText = parseField(device, document.getElementById("metric-2").innerText);
-        setStatusColorAll(device, row);
+        if (device.status !== "DISABLED" || docTitle === "Ruisdael Monitoring | Device List") {
+            row.insertCell(0).innerText = parseField(device, document.getElementById("metric-0").innerText);
+            row.insertCell(1).innerText = parseField(device, document.getElementById("metric-1").innerText);
+            row.insertCell(2).innerText = parseField(device, document.getElementById("metric-2").innerText);
+            setStatusColorAll(device, row);
 
-        row.addEventListener("click", () => {
-            window.location.href = "/node/" + device.name;
-        });
+            row.cells[0].addEventListener("click", () => {
+                window.location.href = "/node/" + device.name;
+            });
+            row.cells[1].addEventListener("click", () => {
+                window.location.href = "/node/" + device.name;
+            });
+            row.cells[2].addEventListener("click", () => {
+                window.location.href = "/node/" + device.name;
+            });
+        }
+        if (docTitle === "Ruisdael Monitoring | Device List") {
+            let n = i.toString();
+            row.insertCell(3).innerHTML = `<button id="enable-button`+n+`" class="btn-secondary">Enable</button>
+                    <button id="disable-button`+n+`" class="btn-secondary">Disable</button>
+                    <button id="delete-button`+n+`" class="btn-secondary">Delete</button>`;
+            row.cells[3].classList.add("none");
+
+            if (device.status === "DISABLED") {
+                let tempBtn = document.getElementById("disable-button"+i.toString());
+                tempBtn.disabled = true;
+            } else {
+                let tempBtn = document.getElementById("enable-button"+i.toString());
+                tempBtn.disabled = true;
+            }
+
+            document.getElementById("enable-button"+i.toString()).addEventListener("click", () => {
+                client.send('/app/enable/collector_'+device.name, {});
+            });
+            document.getElementById("disable-button"+i.toString()).addEventListener("click", () => {
+                client.send('/app/disable/collector_'+device.name, {});
+            });
+            document.getElementById("delete-button"+i.toString()).addEventListener("click", () => {
+                client.send('/app/delete/collector_'+device.name, {});
+            });
+        }
     }
 }
 
@@ -378,9 +427,14 @@ function setStatusColor(device, cell) {
     } else if (device.status === "WARNING") {
         cell.innerText = "Warning";
         cell.style.color = "#b9a940ff";
-    } else {
+    } else if (device.status === "OFFLINE") {
         cell.innerText = "Offline";
         cell.style.color = "#ad2626";
+    } else if (device.status === "DISABLED"){
+        cell.innerText = "Disabled";
+        cell.style.color = "#a0a0a0"
+    } else {
+        cell.innerText = $.camelCase(device.status);
     }
 }
 
@@ -489,9 +543,11 @@ function createStatuses() {
         let style = devices[i].status === "ONLINE" ? "#4eb940" :
             devices[i].status === "WARNING" ? "#b9a940" :
                 "#ad2626";
-        innerHTML += `<div class="status-div-container"><div class="status-div" title="` + devices[i].name + `" style="background: ` + style + `">
+        if (devices[i].status !== "DISABLED") {
+            innerHTML += `<div class="status-div-container"><div class="status-div" title="` + devices[i].name + `" style="background: ` + style + `">
                 <a class="status-div" href="/node/` + devices[i].name + `"></a>
                 </div></div>`;
+        }
     }
     container.innerHTML = innerHTML;
 }
