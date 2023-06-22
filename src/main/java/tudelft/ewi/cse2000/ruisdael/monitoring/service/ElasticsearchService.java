@@ -21,6 +21,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tudelft.ewi.cse2000.ruisdael.monitoring.component.DeviceDataConverter;
+import tudelft.ewi.cse2000.ruisdael.monitoring.configurations.ApplicationConfig;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Status;
 
@@ -30,12 +31,9 @@ import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Status;
 @Service
 public class ElasticsearchService {
     private static final String INDEXPREFIX = "collector_";
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private final ElasticsearchClient client;
-
-    private static final long warningInterval = 121L;
-    private static final long offlineInterval = 301L;
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     /**
      * Constructs an instance of ElasticsearchService with the specified Elasticsearch client.
@@ -160,9 +158,9 @@ public class ElasticsearchService {
     /**
      * This method takes in a Device instance, and depending on its most recent timestamp, determines the devices
      * status which can either be Online, Warning, or Offline. The status is determined based on the following:
-     * |responseTime - currentTime| < 2min (in milliseconds) -> Online
-     * |responseTime - currentTime| < 5min (in milliseconds) -> Warning
-     * |responseTime - currentTime| > 5min (in milliseconds) -> Offline
+     * |responseTime - currentTime| {@literal <} 2min (in milliseconds) -> Online
+     * |responseTime - currentTime| {@literal <} 5min (in milliseconds) -> Warning
+     * |responseTime - currentTime| {@literal >} 5min (in milliseconds) -> Offline
      *
      * @param timestamp - Timestamp representing the most recent time of receiving a server request from a Device.
      *                  The format of the timestamp is expected to be "yyyy-MM-dd'T'HH:mm:ss".
@@ -176,9 +174,9 @@ public class ElasticsearchService {
         String time = timestamp.replace("T", " ").replace("Z", "");
         long deviceTime = LocalDateTime.parse(time, formatter).atZone(ZoneId.of("UTC")).toEpochSecond();
 
-        if (Math.abs(currentTime - deviceTime) < warningInterval) {
+        if (Math.abs(currentTime - deviceTime) < ApplicationConfig.warningTime) {
             return Status.ONLINE;
-        } else if (Math.abs(currentTime - deviceTime) < offlineInterval) {
+        } else if (Math.abs(currentTime - deviceTime) < ApplicationConfig.offlineTime) {
             // If the device did not send a request to the server in the last 2 minutes, set its status to WARNING
             return Status.WARNING;
         }
