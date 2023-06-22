@@ -38,13 +38,13 @@ window.addEventListener("load", init);
 
 /**
  * Function that connects to the websockets and sends messages to the '/app/devices'
- * message path every 60 second intervals.
+ * message path with an interval set by the ApplicationConfig.
  */
 function connect() {
     client.connect({}, () => {
         interval = setInterval(() => {
             client.send('/app/devices', {});
-        }, 60000);
+        }, websocketDelay);
 
         client.subscribe('/topic/devices', (d) => {
             devices = JSON.parse(d.body);
