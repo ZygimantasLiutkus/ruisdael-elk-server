@@ -1,10 +1,12 @@
-import {setUp} from "./pagination.js";
+import { setUp, reset, handleButton } from "./pagination.js";
+import { loadTextBox, loadStatuses, loadSlider, setLeftValue, setRightValue, hideAll } from "./filters.js";
 
 const table = document.getElementById("device-table");
 const docTitle = document.title;
 let isAsc = true;
 let currentPage = 1;
 let lastSorted = 0;
+let filter = "status";
 const devicesPerPage = 10;
 const metricMapping = new Map([
     ["Status", "Status"],
@@ -50,9 +52,12 @@ function connect() {
             // Once updated devices are received, the table is recreated
             // and the columns are sorted twice to restore the previous order.
             // createTable();
+            createStatuses();
+            // currentPage = Math.min(currentPage, Math.ceil(devices.lenght / 10.0));
             let tempPage = currentPage;     // Sorting switches page to 1. To not have the
             sortCol(lastSorted);            // view reset to page 1 every minute, current
             sortCol(lastSorted);            // page is saved.
+            reset(Math.ceil(devices.length / 10.0));
             updatePaginate(tempPage);
             if (docTitle === "Ruisdael Monitoring | Overview") {
                 // Reload status boxes
@@ -82,7 +87,7 @@ function connect() {
  * Function that disconnects from the websockets.
  */
 function disconnect() {
-    client.disconnect()
+    client.disconnect();
     interval = null;
 }
 
@@ -96,9 +101,63 @@ function init() {
     if (document.title === "Ruisdael Monitoring | Device List") {
         document.getElementById("btn-reset-table").addEventListener("click", () => {
             currentPage = 1;
+            resetTable();
             createTable();
         });
-        document.getElementById("btn-search").addEventListener("click", () => search());
+
+        document.getElementById("btn-search").addEventListener("click", search);
+        document.getElementById("dropdown-name").addEventListener("click", () => {
+            filter = "name";
+            loadTextBox("Instrument Name");
+            });
+        document.getElementById("dropdown-location").addEventListener("click", () => {
+            filter = "location";
+            loadTextBox("Location");
+        });
+        document.getElementById("dropdown-status").addEventListener("click", () => {
+            filter = "status";
+            loadStatuses("Statuses");
+        });
+        document.getElementById("dropdown-storage").addEventListener("click", () => {
+            filter = "storage";
+            loadSlider("Storage Used (%)");
+        });
+        document.getElementById("dropdown-ram").addEventListener("click", () => {
+            filter = "RAM";
+            loadSlider("RAM Used (%)");
+        });
+
+        let inputLeft = document.getElementById("input-left");
+        let inputRight = document.getElementById("input-right");
+        let thumbLeft = document.querySelector(".slider > .thumb.left");
+        let thumbRight = document.querySelector(".slider > .thumb.right");
+
+        inputLeft.addEventListener("input", setLeftValue);
+        inputRight.addEventListener("input", setRightValue);
+
+        inputLeft.addEventListener("mousedown", function() {
+            thumbLeft.classList.add("active");
+        });
+        inputLeft.addEventListener("mouseup", function() {
+            thumbLeft.classList.remove("active");
+        });
+
+        inputRight.addEventListener("mouseover", function() {
+            thumbRight.classList.add("hover");
+        });
+
+        inputRight.addEventListener("mouseout", function() {
+            thumbRight.classList.remove("hover");
+        });
+
+        inputRight.addEventListener("mousedown", function() {
+            thumbRight.classList.add("active");
+        });
+
+        inputRight.addEventListener("mouseup", function() {
+            thumbRight.classList.remove("active");
+        });
+
     }
 
     document.getElementById("sort-arrow-col-0").addEventListener("click", () => sortCol(0));
@@ -116,18 +175,17 @@ function init() {
     }
     createTable();
     // Use to compute the number of overall pages
-    const pageNum = Math.round(Math.ceil(devices.length / 10.0));
-    setUp(pageNum);
+    // const pageNum = Math.round(Math.ceil(devices.length / 10.0));
+    setUp(Math.ceil(devices.length / 10.0));
 }
 
 /**
  * Function to populate the table with information about devices.
  */
-function createTable(devs) {
-    let deviceList = (devs != null) ? devs : devices;
+function createTable() {
     let start = devicesPerPage * (currentPage - 1);
     let end = start + devicesPerPage;
-    let selectedDevices = deviceList.slice(start, end);
+    let selectedDevices = devices.slice(start, end);
     let tbody = table.getElementsByTagName("tbody")[0];
 
     while (tbody.rows.length > 0) {
@@ -179,6 +237,13 @@ function createTable(devs) {
             });
         }
     }
+}
+
+/** Function is used to query the Elasticsearch database and retrieve the list of all devices, when the
+ * reset table button is clicked.
+ */
+function resetTable() {
+    client.send('/app/devices', {});
 }
 
 /* Function to update the view of the page control (number row under the table).
@@ -398,57 +463,80 @@ function setStatusColorAll(device, row) {
     }
 }
 
+/**
+ * This function is used to query the list of devices based on their tags. A tag can be one of the following:
+ * Instrument Name, Location, Status (Online, Warning, Offline).
+ */
 function search() {
     let radioButtons = document.getElementsByClassName("form-check-input");
     let tag = document.getElementById("search-tag").value.trim().toLowerCase();
     let found = [];
-    let filter = "status";
-    let checked = false;
+    filter = filter.toLowerCase();
 
-    if (radioButtons.item(2).checked) {
-        tag = "online";
-    } else if (radioButtons.item(3).checked) {
-        tag = "warning";
-    } else if (radioButtons.item(4).checked) {
-        tag = "offline";
-    } else if (tag === "") {
-        createTable();
-        return;
+    if (filter === "storage" || filter === "ram") {
+        searchNum();
     } else {
-        for (let i = 0; i < radioButtons.length - 2; i++) {
-            let radioButton = radioButtons.item(i);
-            if (radioButton.checked) {
-                filter = radioButton.value;
-                checked = true;
-                break;
+        if (radioButtons !== null) {
+            for (let i = 0; i < radioButtons.length; i++) {
+                if (radioButtons.item(i).checked) {
+                    tag = radioButtons.item(i).id.toString().split("-")[0];
+                    break;
+                }
             }
         }
-        if (!checked) {
-            return;
+        for (let i = 0; i < devices.length; i++) {
+            let deviceTag = "";
+            if (filter === "location") {
+                deviceTag = devices[i][filter]["name"].toString().toLowerCase();
+            } else if (filter === "name") {
+                deviceTag = devices[i]["instrument"][filter].toString().toLowerCase();
+            } else if (filter === "status") {
+                deviceTag = devices[i]["status"].toString().toLowerCase();
+            }
+            if (deviceTag.startsWith(tag.trim().toLowerCase())) {
+                found.push(devices[i]);
+            }
         }
+        devices = found;
     }
+    setUp(Math.round(Math.ceil(devices.length / 10.0)));
+    updatePaginate(1);
+    if (found.length > 0) {
+        handleButton(document.getElementById("btn-first-page"));
+    }
+}
+
+function searchNum() {
+    let min = parseInt(document.getElementsByClassName("thumb left")[0].style.left.toString().replace("%", ""));
+    let max = 100 - parseInt(document.getElementsByClassName("thumb right")[0].style.right.toString().replace("%", ""));
+    let found = [];
 
     for (let i = 0; i < devices.length; i++) {
-        let deviceTag = "";
-        if (filter === "location") {
-            deviceTag = devices[i][filter]["name"].toString().toLowerCase();
-        } else if (filter === "name") {
-            deviceTag = devices[i]["instrument"][filter].toString().toLowerCase();
-        } else if (filter === "status") {
-            deviceTag = devices[i]["status"].toString().toLowerCase();
-        }
-        if (deviceTag.startsWith(tag.trim().toLowerCase())) {
-            found.push(devices[i]);
+        let device = devices[i];
+        if (filter == "storage") {
+            let perc = device[filter]["usedPercStorage"];
+            if (min <= perc && perc <= max) {
+                found.push(device);
+            }
+        } else {
+            let perc = device[filter]["usedPerc"];
+            if (min <= perc && perc <= max) {
+                found.push(device);
+            }
         }
     }
-    setUp(Math.round(Math.ceil(found.length / 10.0)));
-    createTable(found);
+    devices = found;
 }
 
 /**
  * Function to create/update the status squares and their colors.
  */
 function createStatuses() {
+
+    if (document.title === "Ruisdael Monitoring | Device List") {
+        return;
+    }
+
     let container = document.getElementsByClassName("status-container")[0];
     let innerHTML = "";
     for (let i = 0; i < devices.length; i++) {

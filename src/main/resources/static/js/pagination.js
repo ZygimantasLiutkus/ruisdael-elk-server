@@ -16,6 +16,13 @@ const valuePage = {
     totalPages: 1
 };
 
+export function reset(totalPages) {
+    valuePage.curPage = 1;
+    valuePage.numLinksTwoSide = 1;
+    valuePage.totalPages = 1;
+    setUp(totalPages);
+}
+
 export function setUp(totalPages) {
     valuePage.totalPages = totalPages;
     pagination();
@@ -26,7 +33,7 @@ export function setUp(totalPages) {
 
         if (ele.dataset.page) {
             valuePage.curPage = parseInt(e.target.dataset.page, 10);
-            pagination(valuePage);
+            pagination();
             handleButtonLeft();
             handleButtonRight();
         }
@@ -88,8 +95,7 @@ function pagination() {
     } else {
         pg.innerHTML = render;
     }
-
-    updatePaginate(valuePage.curPage);
+    updatePaginate(curPage);    // SHOULD BE KEPT HERE
 }
 
 function renderPage(index, active = "") {
@@ -98,7 +104,7 @@ function renderPage(index, active = "") {
     </li>`;
 }
 
-function handleButton(element) {
+export function handleButton(element) {
     if (element.id === "btn-first-page") {
         valuePage.curPage = 1;
     } else if (element.id ===  "btn-last-page") {
