@@ -16,6 +16,9 @@ import tudelft.ewi.cse2000.ruisdael.monitoring.configurations.ApplicationConfig;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
 import tudelft.ewi.cse2000.ruisdael.monitoring.service.ElasticsearchService;
 
+/**
+ * Controller class that controls all endpoints relating to nodes.
+ */
 @Controller
 public class DeviceController {
 

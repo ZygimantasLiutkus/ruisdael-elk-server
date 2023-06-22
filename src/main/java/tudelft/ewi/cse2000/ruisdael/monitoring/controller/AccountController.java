@@ -18,6 +18,9 @@ import tudelft.ewi.cse2000.ruisdael.monitoring.security.dto.UserCreationDTO;
 import tudelft.ewi.cse2000.ruisdael.monitoring.security.persistent.User;
 import tudelft.ewi.cse2000.ruisdael.monitoring.security.persistent.UserRepository;
 
+/**
+ * Controller class that controls all endpoints relating to account management.
+ */
 @Controller
 @SuppressWarnings("PMD.AvoidDuplicateLiterals") //Redirects links.
 public class AccountController {

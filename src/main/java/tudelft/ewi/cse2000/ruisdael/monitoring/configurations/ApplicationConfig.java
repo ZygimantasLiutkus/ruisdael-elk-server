@@ -7,6 +7,9 @@ import org.springframework.context.event.EventListener;
 import tudelft.ewi.cse2000.ruisdael.monitoring.security.persistent.User;
 import tudelft.ewi.cse2000.ruisdael.monitoring.security.persistent.UserRepository;
 
+/**
+ * Configuration class that sets application-level options.
+ */
 @Configuration
 public class ApplicationConfig {
 

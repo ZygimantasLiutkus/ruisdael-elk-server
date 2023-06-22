@@ -4,6 +4,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
+/**
+ * Controller class that controls all endpoints for authentication that are not managed by Spring Security.
+ */
 @Controller
 public class LoginController {
 

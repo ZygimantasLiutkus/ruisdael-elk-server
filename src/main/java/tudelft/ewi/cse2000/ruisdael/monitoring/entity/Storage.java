@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Data Structure to contain information about a node's storage metrics.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

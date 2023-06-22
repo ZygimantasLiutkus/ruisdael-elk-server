@@ -15,6 +15,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+/**
+ * Entity / Database Object to store account and user information and credentials.
+ */
 @Entity(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor

@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Data Structure to contain information about the equipment a node is monitoring.
+ */
 @Getter
 @Setter
 @AllArgsConstructor
