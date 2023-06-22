@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,8 +50,8 @@ public class AccountController {
      * A user is logged out immediately after changing their password.
      */
     @PostMapping("/change-password")
-    public String changePassword(@ModelAttribute PasswordDTO passworddto, Authentication authentication) {
-        if (!config.encoder().matches(passworddto.getCurrentPassword(), ((User) authentication.getPrincipal()).getPassword())) {
+    public String changePassword(@ModelAttribute(name = "passworddto") PasswordDTO passworddto, Authentication authentication) {
+        if (!config.encoder().matches(passworddto.getCurrentPassword(), ((UserDetails) authentication.getPrincipal()).getPassword())) {
             return "redirect:/account-management?user_wrong";
         }
 
@@ -184,7 +185,7 @@ public class AccountController {
      * @return A redirect to the account management page, where the new account will be shown.
      */
     @PostMapping("/create-account")
-    public String createAccount(@ModelAttribute UserCreationDTO usercreationdto, Authentication authentication) {
+    public String createAccount(@ModelAttribute(name = "usercreationdto") UserCreationDTO usercreationdto, Authentication authentication) {
         String precheck = doAccountPreChecks(usercreationdto.getUsername(), authentication);
 
         if (precheck != null) {
@@ -229,7 +230,7 @@ public class AccountController {
             return "redirect:/account-management?account_adminchange";
         }
 
-        if (username.equals(((User) authentication.getPrincipal()).getUsername())) {
+        if (username.equals(((UserDetails) authentication.getPrincipal()).getUsername())) {
             return "redirect:/account-management?account_ownchange";
         }
 

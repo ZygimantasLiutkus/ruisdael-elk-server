@@ -26,4 +26,19 @@ public class UserTest {
         assertTrue(adminAuthorities.contains(new SimpleGrantedAuthority("USER")));
         assertTrue(adminAuthorities.contains(new SimpleGrantedAuthority("ADMIN")));
     }
+
+    @DisplayName("Test UserDetails Required Methods")
+    @Test
+    void userDetailsMethods() {
+        //Should be true if user is enabled
+        assertTrue(demoUser.isAccountNonExpired());
+        assertTrue(demoUser.isAccountNonLocked());
+
+        demoUser.setEnabled(false);
+
+        assertFalse(demoUser.isAccountNonExpired());
+        assertFalse(demoUser.isAccountNonLocked());
+
+        assertFalse(demoUser.isCredentialsNonExpired());
+    }
 }
