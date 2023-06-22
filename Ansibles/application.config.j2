@@ -1,11 +1,11 @@
 # Set Webserver Port
-server.port=8080
+server.port=8081
 
 # Elasticsearch configurations (input your Elasticsearch config details)
 elasticsearch.host.address={{ elastic_url }}
 elasticsearch.host.port=9200
-elastic.user.password=[[Password for the 'elastic' user]]
-ca.cert=[[Elasticsearch host's certificate authority fingerprint]]
+elastic.user.password={{ elastic_password }}
+ca.cert={{ elastic_ca_fingerprint }}
 
 # Database Configuration
 spring.datasource.url=jdbc:h2:file:./ruisdael-webui

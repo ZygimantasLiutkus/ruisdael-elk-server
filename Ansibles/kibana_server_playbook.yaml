@@ -64,6 +64,13 @@
         dest: /etc/nginx/conf.d/kibana.conf
       become: true
 
+    - name: copy dashboard.conf
+      ansible.builtin.copy:
+        src: dashboard.conf
+        dest: /etc/nginx/conf.d/dashboard.conf
+        mode: '0775'
+      become: true
+
     - name: restart nginx
       ansible.builtin.systemd:
         name: nginx
