@@ -72,7 +72,68 @@ This file contains configuration options for the application itself. The default
 
 ### Ansible Installation
 
-TODO
+There are 2 installation script, one is for the kibana server which also runs the dashboard, while the other is for the ElasticSearch server. 
+
+#### Kibana and dashboard
+Firstly, the playbook for the kibana server installs and configures kibana. It also installs and configures the dashboard.
+This playbook relies on the content of the server_inventory.yaml file. So make sure you create one and fill it in with values from template_server_inventory.yaml
+You can add hostnames of target machines to the inventory.yaml file under the hosts section.
+This hosts section should look something like this:
+```yaml
+all:
+  hosts:
+    ansible_hosts: [[hostname inside your ~/.ssh/config file]]
+    ansible_user: [[username that will execute the commands in the playbook]]
+```
+You can add multiple machines to simultaneously install the collector on multiple notes
+
+The playbook installs kibana, creates a user that can view dashboards, which is then used in combination with nginx to set up access to kibana iframes.
+After that, it clones this repository and builds the java dashboard.
+You can execute the playbook with this command:
+```shell
+ansible-playbook -i Ansibles/server_inventory.yaml Ansibles/kibana_server_playbook.yaml -K
+```
+You can add --limit to chose on which of the hosts the ansible will be executed. 
+The -K means that you need to provide a password to the account that will execute the playbook on the nodes. You are prompted for this after you start the playbook
+
+To check if the ansible worked, you can see check kibana.service and dashboard.service are running, by executing the following commands.
+```shell
+sudo systemctl status kibana
+sudo systemctl status dashboard
+```
+Or you can visit these urls: localhost:5601 and localhost:8081
+If the playbook was executed on a headless machine, then you can the port on you local machine via port forwarding.
+```shell
+ssh -L 5601:localhost:5601 [[hostname]]
+```
+or 
+```shell
+ssh -L 8081:localhost:8081 [[hostname]]
+```
+
+#### elasticsearch server
+This playbook to install elasticsearch, installs elastic search, changes the password, changes other security features, and restores a kibana snapshot
+It also relies on server_inventory.yaml, for further information, look at the kibana and dashboard section.
+
+You can run the playbook with the following command:
+```shell
+ansible-playbook -i Ansibles/server_inventory.yaml Ansibles/elastic_server_playbook.yaml -K
+```
+You can add --limit to chose on which of the hosts the ansible will be executed. 
+The -K means that you need to provide a password to the account that will execute the playbook on the nodes. You are prompted for this after you start the playbook
+
+To check if the ansible worked, you can see check kibana.service and dashboard.service are running, by executing the following commands.
+```shell
+sudo systemctl status elasticsearch
+```
+
+
+You can change this snapshot by running on the elastic server, and then storing the contents of the /mnt/backups/my_fs_backup_location inside the my_fs_backup_location file of this repository
+```shell
+ curl -k -X PUT --user elastic:[[ password elastic ]] -H "Content-Type: application/json" -d '{"indices": ".kibana*", "metadata": {"taken_by": "dev_team", "taken_because": "backup of the .kibana index"}}' https://localhost:9200/_snapshot/my_fs_backup/name_backup
+```
+
+
 
 ### Manual Installation
 
