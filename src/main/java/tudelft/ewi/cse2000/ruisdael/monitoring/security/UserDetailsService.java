@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import tudelft.ewi.cse2000.ruisdael.monitoring.security.persistent.User;
 import tudelft.ewi.cse2000.ruisdael.monitoring.security.persistent.UserRepository;
 
+/**
+ * Service class to supplement user account information to Spring, converting a {@link User} to {@link UserDetails} format.
+ */
 @Service
 public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
 
