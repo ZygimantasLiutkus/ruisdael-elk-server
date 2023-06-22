@@ -52,7 +52,8 @@ It is recommended to install the software using the provided installation script
 If you are unfamiliar with Ansible, do not have Ansible set up on your environment or application configuration options must be changed it is strongly recommended to manually install the software.  
 
 Before you proceed with the installation, an ElasticSearch server must be set up.
-See [Elastic Installation](docs/readme/elastic_install.md) for installation instructions.
+See the official [Elastic Installation Documentation](https://www.elastic.co/guide/en/elasticsearch/reference/8.8/install-elasticsearch.html) and [Kibana Installation Instructions](https://www.elastic.co/guide/en/kibana/8.8/install.html) for installation instructions if you wish to customize your install, 
+or use the Ansible scripts below. The same warnings about Ansible apply as mentioned before, however it is highly recommended to use the Ansible scripts.
 
 ### Configuring the application
 
@@ -111,7 +112,7 @@ or
 ssh -L 8081:localhost:8081 [[hostname]]
 ```
 
-#### elasticsearch server
+#### ElasticSearch server
 This playbook to install elasticsearch, installs elastic search, changes the password, changes other security features, and restores a kibana snapshot
 It also relies on server_inventory.yaml, for further information, look at the kibana and dashboard section.
 
@@ -132,8 +133,6 @@ You can change this snapshot by running on the elastic server, and then storing 
 ```shell
  curl -k -X PUT --user elastic:[[ password elastic ]] -H "Content-Type: application/json" -d '{"indices": ".kibana*", "metadata": {"taken_by": "dev_team", "taken_because": "backup of the .kibana index"}}' https://localhost:9200/_snapshot/my_fs_backup/name_backup
 ```
-
-
 
 ### Manual Installation
 
@@ -179,6 +178,16 @@ java -jar ruisdael-monitoring-webui.jar
 ### Default Port Mapping
 
 The application by default listens on port 8080, but this can be changed with a configuration file. (See below)
+
+### Default Credentials
+
+When starting the application for the first time, an H2 database will be created upon startup. This file will be stored alongside the .jar file, named `ruisdael-webui.mv.db`.  
+The default credentials for the default accounts (if enabled) are:
+
+| Username | Password       | Enabled by Default | 
+|----------|----------------|--------------------|
+| admin    | ruisdael-admin | Yes                |
+| guest    | anonymous      | No                 |
 
 #### Note for the ruisdael network
 
