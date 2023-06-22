@@ -5,7 +5,6 @@ import co.elastic.clients.elasticsearch._types.SortOptions;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
-
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tudelft.ewi.cse2000.ruisdael.monitoring.component.DeviceDataConverter;

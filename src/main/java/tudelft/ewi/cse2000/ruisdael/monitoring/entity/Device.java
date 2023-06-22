@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 /**
  * Author: Dean Polimac.
  * Date:23/05/2023
@@ -28,7 +27,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Device {
-
     public static final DecimalFormat byteFormat = new DecimalFormat("#0.00");
 
     /**

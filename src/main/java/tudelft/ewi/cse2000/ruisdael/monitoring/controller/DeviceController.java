@@ -116,8 +116,8 @@ public class DeviceController {
     @GetMapping("/device-list")
     public String getDeviceList(Model model) {
         /* Use for Production */
-        model.addAttribute("devices", elasticsearchService.getAllDevices());
-        model.addAttribute("websocketDelay", ApplicationConfig.websocketDelay);
+//        model.addAttribute("devices", elasticsearchService.getAllDevices());
+//        model.addAttribute("websocketDelay", ApplicationConfig.websocketDelay);
 
         /* For testing purposes
         List<Device> devices = new ArrayList<>();

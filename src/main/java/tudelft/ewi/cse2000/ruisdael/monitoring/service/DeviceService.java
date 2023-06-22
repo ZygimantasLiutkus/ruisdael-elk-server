@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
 
-
 @Service
 public class DeviceService {
 

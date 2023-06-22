@@ -1,7 +1,6 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.entity;
 
 import java.util.Objects;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
