@@ -39,6 +39,7 @@ export function setLeftValue() {
 
     thumbLeft.style.left = percent + "%";
     range.style.left = percent + "%";
+    document.getElementById("min-value").value = Math.round(percent) + "%";
 }
 
 export function setRightValue() {
@@ -50,13 +51,13 @@ export function setRightValue() {
     let percent = ((_this.value - min) / (max - min)) * 100;
     thumbRight.style.right = (100 - percent) + "%";
     range.style.right = (100 - percent) + "%";
+    document.getElementById("max-value").value = Math.round(percent) + "%";
 }
 
 export function loadSlider(name) {
     hideAll();
-    document.getElementById("range-slider").style.display = "block";
+    document.getElementById("range-div").style.display = "block";
     document.getElementById("current-filter").value = "Current Filter: " + name;
-    document.getElementById("filter-container").style.marginTop = "10%";
     setLeftValue();
     setRightValue();
 }
@@ -67,6 +68,6 @@ export function loadSlider(name) {
 export function hideAll() {
     document.getElementById("filter-container").style.marginTop = "5%";
     document.getElementById("status-container").style.display = "none";
-    document.getElementById("range-slider").style.display = "none";
+    document.getElementById("range-div").style.display = "none";
     document.getElementById("search-input").style.display = "none";
 }

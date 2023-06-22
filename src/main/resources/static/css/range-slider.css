@@ -34,8 +34,8 @@
 .slider > .thumb {
     position: absolute;
     z-index: 3;
-    width: 30px;
-    height: 30px;
+    width: 25px;
+    height: 25px;
     background-color: #0d6efd;
     border-radius: 50%;
     box-shadow: 0 0 0 0 rgba(10, 58, 197, 0.1);
@@ -44,12 +44,12 @@
 
 .slider > .thumb.left {
     left: 25%;
-    transform: translate(-15px, -10px);
+    transform: translate(-5px, -8px);
 }
 
 .slider > .thumb.right {
     right: 25%;
-    transform: translate(15px, -10px);
+    transform: translate(5px, -8px);
 }
 
 .slider > .thumb.hover {

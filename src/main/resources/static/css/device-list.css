@@ -152,7 +152,7 @@ tbody>tr {
     margin-top: var(--bs-gutter-y);
 }
 
-.status-container, .multi-range-slider, #search-input {
+.status-container, .range-div, #search-input {
     height: 100%;
     width: 100%;
     min-height: 30px;
@@ -172,8 +172,14 @@ tbody>tr {
     min-width: 0;
 }
 
-.input-group .flex-nowrap {
+.input-group, .input-group .flex-nowrap {
+    margin-top: 3%;
     display: flex;
+    flex-wrap: nowrap;
+}
+
+.separator {
+    min-width: 10px;
 }
 
 #current-filter {

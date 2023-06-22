@@ -123,7 +123,6 @@ public class DeviceController {
 
         /* For testing purposes
         List<Device> devices = new ArrayList<>();
-        List<String> metrics = METRIC_MAPPING.values().stream().toList();
         List<Status> statuses = new ArrayList<>(Arrays.asList(Status.ONLINE, Status.WARNING, Status.OFFLINE));
         List<String> locations = (Arrays.asList("Rotterdam", "Delft", "Den Haag", "Amsterdam", "Eindhoven", "Leiden",
                 "Utrecht"));
@@ -141,8 +140,7 @@ public class DeviceController {
                     "t", null));
         }
 
-        model.addAttribute("devices", devices);
-        model.addAttribute("metrics", metrics); */
+        model.addAttribute("devices", devices); */
 
         return "device-list";
     }
