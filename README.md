@@ -192,7 +192,7 @@ The default credentials for the default accounts (if enabled) are:
 #### Note for the ruisdael network
 
 The WebUI is running on port 8081 (Configuration file) and behind the provided NGINX reverse proxy to serve `https://ruisdael-kibana.citg.tudelft.nl/`.
-The Kibana service can be accessed from `https://ruisdael-kibana.citg.tudelft.nl/kibana`.
+The Kibana service can be accessed from `https://ruisdael-kibana.citg.tudelft.nl/kibana` and accessed with the same credentials created for elastic during installation.
 
 ## Contributing
 
