@@ -119,6 +119,10 @@ public class DeviceController {
         model.addAttribute("devices", elasticsearchService.getAllDevices());
         model.addAttribute("websocketDelay", ApplicationConfig.websocketDelay);
 
+        List<String> metrics = elasticsearchService.getMetricTypes().stream()
+                .map(METRIC_MAPPING::get)
+                .toList();
+
         model.addAttribute("metrics", metrics);
 
         /* For testing purposes

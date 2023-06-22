@@ -59,7 +59,7 @@ function connect() {
             reset(Math.ceil(devices.length / 10.0));
             updatePaginate(tempPage);
             // Reload map
-            if (document.title === "Device Overview") {
+            if (document.title === "Ruisdael Monitoring | Overview") {
                 reloadMarkers(savedMetric);
                 mapFilter(savedMetric);
             }
@@ -82,7 +82,7 @@ function init() {
     // Runs the `connect()` function on load to create a connection with the websockets
     connect();
 
-    if (document.title === "Device List") {
+    if (document.title === "Ruisdael Monitoring | Device List") {
         document.getElementById("btn-reset-table").addEventListener("click", () => {
             currentPage = 1;
             resetTable();
@@ -479,7 +479,7 @@ function searchNum() {
  */
 function createStatuses() {
 
-    if (document.title === "Device List") {
+    if (document.title === "Ruisdael Monitoring | Device List") {
         return;
     }
 
