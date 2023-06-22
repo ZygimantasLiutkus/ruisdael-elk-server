@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import tudelft.ewi.cse2000.ruisdael.monitoring.configurations.ApplicationConfig;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Index;
+import tudelft.ewi.cse2000.ruisdael.monitoring.repositories.IndexRepository;
 import tudelft.ewi.cse2000.ruisdael.monitoring.service.ElasticsearchService;
 
 /**
@@ -27,6 +30,9 @@ public class DeviceController {
      */
     @Autowired
     private ElasticsearchService elasticsearchService;
+
+    @Autowired
+    private IndexRepository indexRepository;
 
     private static final Map<String, String> METRIC_MAPPING = Map.ofEntries(
             entry("Status", "Status"),
@@ -146,10 +152,61 @@ public class DeviceController {
         return "device-list";
     }
 
-
+    /**
+     * Method that listens for a websockets message to '/app/devices' and returns a device list to
+     * '/topic/devices' after receiving a message.
+     *
+     * @return a list of devices from Elasticsearch.
+     */
     @MessageMapping("/devices") // /app/devices
     @SendTo("/topic/devices")
     public List<Device> updateDevices() {
         return elasticsearchService.getAllDevices();
+    }
+
+    /**
+     * Method that listens for a websocket message to delete a specific index from Elasticsearch.
+     *
+     * @param index the index to be deleted.
+     * @return boolean of success.
+     */
+    @MessageMapping("/delete/{index}")
+    @SendTo("/topic/delete")
+    public boolean deleteIndex(@DestinationVariable String index) {
+        return elasticsearchService.deleteIndex(index).acknowledged();
+    }
+
+    /**
+     * Method that listens for a websocket message to disable a specific index (add it to a disabled index repo).
+     *
+     * @param index the index to be disabled.
+     * @return boolean of success.
+     */
+    @MessageMapping("/disable/{index}")
+    @SendTo("/topic/disable")
+    public boolean disableIndex(@DestinationVariable String index) {
+        if (indexRepository.existsByIndexValue(index)) {
+            return false;
+        } else {
+            indexRepository.saveAndFlush(new Index(0L, index));
+            return true;
+        }
+    }
+
+    /**
+     * Method that listens for a websocket message to enable a specific index (remove it from a disabled index repo).
+     *
+     * @param index the index to be enabled.
+     * @return boolean of success.
+     */
+    @MessageMapping("/enable/{index}")
+    @SendTo("/topic/enable")
+    public boolean enableIndex(@DestinationVariable String index) {
+        if (indexRepository.existsByIndexValue(index)) {
+            indexRepository.delete(indexRepository.findByIndexValue(index));
+            return true;
+        } else {
+            return false;
+        }
     }
 }

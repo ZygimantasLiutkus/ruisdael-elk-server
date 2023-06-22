@@ -1,10 +1,12 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.AcknowledgedResponse;
 import co.elastic.clients.elasticsearch._types.SortOptions;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.elasticsearch.indices.DeleteIndexRequest;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -22,6 +24,7 @@ import tudelft.ewi.cse2000.ruisdael.monitoring.component.DeviceDataConverter;
 import tudelft.ewi.cse2000.ruisdael.monitoring.configurations.ApplicationConfig;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Status;
+import tudelft.ewi.cse2000.ruisdael.monitoring.repositories.IndexRepository;
 
 /**
  * Service class for Elasticsearch operations.
@@ -33,18 +36,22 @@ public class ElasticsearchService {
 
     private final ElasticsearchClient client;
 
+    private IndexRepository indexRepository;
+
     /**
      * Constructs an instance of ElasticsearchService with the specified Elasticsearch client.
      *
      * @param client The ElasticsearchClient dependency injected automatically by the Spring framework.
      */
     @Autowired
-    public ElasticsearchService(ElasticsearchClient client) {
+    public ElasticsearchService(ElasticsearchClient client, IndexRepository indexRepository) {
         this.client = client;
+        this.indexRepository = indexRepository;
     }
 
     /**
      * Queries elastic to receive the latest data on a given node, and converts this to a @{@link Device}.
+     *
      * @param nodeIndexName The name of the node to look up data for.
      * @return A {@link Device} object with the latest data, or null if no such device exists, or no data is available.
      */
@@ -67,7 +74,9 @@ public class ElasticsearchService {
             // The following line is added so that the Status of the node can be determined before creation,
             // the method `getStatus()` is at the bottom of the ElasticsearchService class.
             String timestamp = lastHit.source().get("@timestamp").toString();
-
+            if (indexRepository.existsByIndexValue(lastHit.index())) {
+                return DeviceDataConverter.createDeviceFromElasticData(deviceName, Status.DISABLED, lastHit.source());
+            }
             return DeviceDataConverter.createDeviceFromElasticData(deviceName, getStatus(timestamp), lastHit.source());
         } catch (Exception e) { //IOException or IllegalArgumentException
             return null;
@@ -77,6 +86,7 @@ public class ElasticsearchService {
     /**
      * Queries elastic to receive data on all nodes, the order of devices will be according to their names.
      * In order to obtain a list of devices with their appropriate statuses, this method should be used.
+     *
      * @return A list of all nodes with the latest data in a {@link Device} object.
      */
     public List<Device> getAllDevices() {
@@ -127,8 +137,8 @@ public class ElasticsearchService {
                 String exampleIndex = optionalIndex.get();
 
                 SearchResponse<Map> response = client.search(s -> s
-                        .index(exampleIndex)
-                        .sort(build -> build.field(f -> f.field("@timestamp").order(SortOrder.Desc))),
+                                .index(exampleIndex)
+                                .sort(build -> build.field(f -> f.field("@timestamp").order(SortOrder.Desc))),
                         Map.class);
 
                 List<Hit<Map>> hits = response.hits().hits();
@@ -180,5 +190,24 @@ public class ElasticsearchService {
         }
         // If the device did not send a request to the server in the last 5 minutes, set its status to OFFLINE
         return Status.OFFLINE;
+    }
+
+    /**
+     * This method takes an index name and attempts to delete it from Elasticsearch.
+     *
+     * @param index index to be deleted from Elasticsearch.
+     * @return an acknowledgement response of whether the deletion succeeded.
+     */
+    public AcknowledgedResponse deleteIndex(String index) {
+        try {
+            DeleteIndexRequest request = new DeleteIndexRequest.Builder().index(index).build();
+
+            AcknowledgedResponse deleteResponse = client.indices().delete(request);
+            return deleteResponse;
+        } catch (Exception e) {
+            e.printStackTrace();
+            AcknowledgedResponse response = () -> false;
+            return response;
+        }
     }
 }
