@@ -11,56 +11,18 @@
 
     - name: Install elasticsearch
       ansible.builtin.apt:
-        name: elasticsearch
+        name: elasticsearch=8.7.1
         update_cache: true
       become: true
 
-    - name: copy service tokens
-      ansible.builtin.copy:
-        src: Ansibles/FilesElasticSearch/service_token
-        dest: /etc/elasticsearch/service_tokens
-        remote_src: yes
-      become: true
 
-    # Set certificates
-    - name: copy http.p12 file
-      ansible.builtin.copy:
-        src: Ansibles/FilesElasticSearch/http.p12
-        dest: /etc/elasticsearch/certs/http.p12
-        remote_src: yes
-      become: true
-
-    - name: copy http_ca.crt file
-      ansible.builtin.copy:
-        src: Ansibles/FilesElasticSearch/http_ca.crt
-        dest: /etc/elasticsearch/certs/http_ca.crt
-        remote_src: yes
-      become: true
-
-    - name: copy transport.p12 file
-      ansible.builtin.copy:
-        src: Ansibles/FilesElasticSearch/transport.p12
-        dest: /etc/elasticsearch/certs/transport.p12
-        remote_src: yes
-      become: true
-
-    # setting up directories for the snapshots
-    - name: create backups directory
-      ansible.builtin.file:
-        path: /mnt/backups
-        state: directory
-        owner: elasticsearch
-        mode: '0775'
-      become: true
-
-    - name: copy the backups directory
-      ansible.builtin.copy:
-        src: Ansibles/my_fs_backup_location
-        dest: /mnt/backups/my_fs_backup_location
-        remote_src: yes
-        owner: elasticsearch
-        mode: '0775'
-      become: true
+#    - name: copy elasticsearch.yml to set the fs repo used by the snapshots
+#      ansible.builtin.copy:
+#        src: elasticsearch.yml
+#        dest: /etc/elasticsearch/elasticsearch.yml
+#        owner: elasticsearch
+#        mode: '0775'
+#      become: true
 
     # Start and enable elasticsearch
     - name: enable elasticsearch.service
@@ -76,11 +38,77 @@
         state: started
       become: true
 
-    # Change elastic users password
-    - name: change the password via cli
-      ansible.builtin.shell: bin/elasticsearch-reset-password -u elastic -i {{ elastic_password }}
+    # Get current password
+    - name: get password in stdout
+      ansible.builtin.shell: echo y | bin/elasticsearch-reset-password -b -s -u elastic
       args:
         chdir: /usr/share/elasticsearch
+      become: true
+      register: passwordChange
+
+    # reset elastic user password via api
+    - name: change password via api
+      ansible.builtin.uri:
+        url: https://localhost:9200/_security/user/elastic/_password
+        method: POST
+        headers:
+          Content-Type: "application/json"
+          Authorization: 'Basic {{ ("elastic:" + (passwordChange.stdout_lines.0)) | ansible.builtin.b64encode}}'
+        validate_certs: false
+        body_format: json
+        body:
+          password: "{{ elastic_password }}"
+
+    # add line to elastic.yml
+    - name: add path.repo line to elasticsearch.yml
+      lineinfile:
+        state: present
+        path: /etc/elasticsearch/elasticsearch.yml
+        line: 'path.repo: /mnt/backups/my_fs_backup_location'
+      become: true
+
+
+    # copy kibana service token
+    - name: copy service tokens
+      ansible.builtin.copy:
+        src: FilesElasticSearch/service_token
+        dest: /etc/elasticsearch/service_tokens
+        owner: elasticsearch
+        mode: '0775'
+        #remote_src: yes
+      become: true
+
+    - name: copy http_ca.crt file
+      ansible.builtin.copy:
+        src: FilesElasticSearch/http_ca.crt
+        dest: /etc/elasticsearch/certs/http_ca.crt
+        owner: elasticsearch
+        mode: '0775'
+        # remote_src: yes
+      become: true
+
+    # setting up directories for the snapshots
+    - name: create backups directory
+      ansible.builtin.file:
+        path: /mnt/backups
+        state: directory
+        owner: elasticsearch
+        mode: '0775'
+      become: true
+
+    - name: copy the backups directory
+      ansible.builtin.copy:
+        src: my_fs_backup_location
+        dest: /mnt/backups
+#        remote_src: yes
+        owner: elasticsearch
+        mode: '0775'
+      become: true
+
+    - name: restart elasticsearch.service
+      ansible.builtin.systemd:
+        name: elasticsearch
+        state: restarted
       become: true
 
     # Set up the kibana snapshot and restore to it

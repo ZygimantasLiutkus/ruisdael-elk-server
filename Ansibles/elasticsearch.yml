@@ -36,6 +36,7 @@ path.data: /var/lib/elasticsearch
 #
 path.logs: /var/log/elasticsearch
 #
+
 path.repo: /mnt/backups/my_fs_backup_location
 # ----------------------------------- Memory -----------------------------------
 #
