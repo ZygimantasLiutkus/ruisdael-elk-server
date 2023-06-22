@@ -1,0 +1,14 @@
+all:
+  hosts:
+      [[ hosts ]]
+  vars:
+    elastic_password: [[ elastic password ]]
+    elastic_url: [[ elastic url ]]
+    elastic_ca_fingerprint: [[ elastic ca fingerprint ]]
+    kibana_certificate: [[ kibana service token ]]
+    guest_user: [[ guest user username ]]
+    guest_password: [[ guest user password ]]
+    git_access_token: [[ git access token to clone the git repository]]
+    token_name: [[ name of the git token ]]
+    gitlab_address:
+      gitlab.ewi.tudelft.nl/cse2000-software-project/2022-2023-q4/cluster-12/ruisdael-automatic-network-monitoring-system/ruisdael-elk-server.git
