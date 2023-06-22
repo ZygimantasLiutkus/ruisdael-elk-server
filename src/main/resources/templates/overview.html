@@ -37,7 +37,7 @@
 
                 <!-- Used to represent the device grid -->
                 <div class="status-container">
-                    <div class="status-div-container" th:each="device : ${devices}">
+                    <div class="status-div-container" th:each="device : ${devices.?[getStatus().toString() != 'DISABLED' ]}">
                         <div class="status-div" th:title="${device.getName()}" th:if="${device.getStatus().toString() == 'ONLINE'}" style="background: #4eb940"><a class="status-div" th:href="@{/node/{name}(name=${device.getName()})}"></a></div>
                         <div class="status-div" th:title="${device.getName()}" th:if="${device.getStatus().toString() == 'WARNING'}" style="background: #b9a940"><a class="status-div" th:href="@{/node/{name}(name=${device.getName()})}"></a></div>
                         <div class="status-div" th:title="${device.getName()}" th:if="${device.getStatus().toString() == 'OFFLINE'}" style="background: #ad2626"><a class="status-div" th:href="@{/node/{name}(name=${device.getName()})}"></a></div>

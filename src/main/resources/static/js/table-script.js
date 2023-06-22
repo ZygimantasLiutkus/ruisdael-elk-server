@@ -1,6 +1,7 @@
-import { setUp } from "./pagination.js";
+import {setUp} from "./pagination.js";
 
 const table = document.getElementById("device-table");
+const docTitle = document.title;
 let isAsc = true;
 let currentPage = 1;
 let lastSorted = 0;
@@ -49,14 +50,30 @@ function connect() {
             // Once updated devices are received, the table is recreated
             // and the columns are sorted twice to restore the previous order.
             // createTable();
-            createStatuses();
             let tempPage = currentPage;     // Sorting switches page to 1. To not have the
             sortCol(lastSorted);            // view reset to page 1 every minute, current
             sortCol(lastSorted);            // page is saved.
             updatePaginate(tempPage);
-            // Reload map
-            reloadMarkers(savedMetric);
-            mapFilter(savedMetric);
+            if (docTitle === "Ruisdael Monitoring | Overview") {
+                // Reload status boxes
+                createStatuses();
+                // Reload map
+                reloadMarkers(savedMetric);
+                mapFilter(savedMetric);
+            }
+        });
+
+        client.subscribe('/topic/enable', (d) => {
+            client.send('/app/devices', {});
+            createTable();
+        });
+        client.subscribe('/topic/disable', (d) => {
+            client.send('/app/devices', {});
+            createTable();
+        });
+        client.subscribe('/topic/delete', (d) => {
+            client.send('/app/devices', {});
+            createTable();
         });
     });
 }
@@ -76,7 +93,7 @@ function init() {
     // Runs the `connect()` function on load to create a connection with the websockets
     connect();
 
-    if (document.title === "Device List") {
+    if (document.title === "Ruisdael Monitoring | Device List") {
         document.getElementById("btn-reset-table").addEventListener("click", () => {
             currentPage = 1;
             createTable();
@@ -120,14 +137,47 @@ function createTable(devs) {
     for (let i = 0; i < selectedDevices.length; i++) {
         let row = tbody.insertRow(tbody.rows.length);
         let device = selectedDevices[i];
-        row.insertCell(0).innerText = parseField(device, document.getElementById("metric-0").innerText);
-        row.insertCell(1).innerText = parseField(device, document.getElementById("metric-1").innerText);
-        row.insertCell(2).innerText = parseField(device, document.getElementById("metric-2").innerText);
-        setStatusColorAll(device, row);
+        if (device.status !== "DISABLED" || docTitle === "Ruisdael Monitoring | Device List") {
+            row.insertCell(0).innerText = parseField(device, document.getElementById("metric-0").innerText);
+            row.insertCell(1).innerText = parseField(device, document.getElementById("metric-1").innerText);
+            row.insertCell(2).innerText = parseField(device, document.getElementById("metric-2").innerText);
+            setStatusColorAll(device, row);
 
-        row.addEventListener("click", () => {
-            window.location.href = "/node/" + device.name;
-        });
+            row.cells[0].addEventListener("click", () => {
+                window.location.href = "/node/" + device.name;
+            });
+            row.cells[1].addEventListener("click", () => {
+                window.location.href = "/node/" + device.name;
+            });
+            row.cells[2].addEventListener("click", () => {
+                window.location.href = "/node/" + device.name;
+            });
+        }
+        if (docTitle === "Ruisdael Monitoring | Device List") {
+            let n = i.toString();
+            row.insertCell(3).innerHTML = `<button id="enable-button`+n+`" class="btn-secondary">Enable</button>
+                    <button id="disable-button`+n+`" class="btn-secondary">Disable</button>
+                    <button id="delete-button`+n+`" class="btn-secondary">Delete</button>`;
+            row.cells[3].classList.add("none");
+
+            if (device.status === "DISABLED") {
+                let tempBtn = document.getElementById("disable-button"+i.toString());
+                tempBtn.disabled = true;
+            } else {
+                let tempBtn = document.getElementById("enable-button"+i.toString());
+                tempBtn.disabled = true;
+            }
+
+            document.getElementById("enable-button"+i.toString()).addEventListener("click", () => {
+                client.send('/app/enable/collector_'+device.name, {});
+            });
+            document.getElementById("disable-button"+i.toString()).addEventListener("click", () => {
+                client.send('/app/disable/collector_'+device.name, {});
+            });
+            document.getElementById("delete-button"+i.toString()).addEventListener("click", () => {
+                client.send('/app/delete/collector_'+device.name, {});
+            });
+        }
     }
 }
 
@@ -312,9 +362,14 @@ function setStatusColor(device, cell) {
     } else if (device.status === "WARNING") {
         cell.innerText = "Warning";
         cell.style.color = "#b9a940ff";
-    } else {
+    } else if (device.status === "OFFLINE") {
         cell.innerText = "Offline";
         cell.style.color = "#ad2626";
+    } else if (device.status === "DISABLED"){
+        cell.innerText = "Disabled";
+        cell.style.color = "#a0a0a0"
+    } else {
+        cell.innerText = $.camelCase(device.status);
     }
 }
 
@@ -380,7 +435,7 @@ function search() {
         } else if (filter === "name") {
             deviceTag = devices[i]["instrument"][filter].toString().toLowerCase();
         } else if (filter === "status") {
-            deviceTag = deviceTag[i]["STATUS"].toString().toLowerCase();
+            deviceTag = devices[i]["status"].toString().toLowerCase();
         }
         if (deviceTag.startsWith(tag.trim().toLowerCase())) {
             found.push(devices[i]);
@@ -400,9 +455,11 @@ function createStatuses() {
         let style = devices[i].status === "ONLINE" ? "#4eb940" :
             devices[i].status === "WARNING" ? "#b9a940" :
                 "#ad2626";
-        innerHTML += `<div class="status-div-container"><div class="status-div" title="` + devices[i].name + `" style="background: ` + style + `">
+        if (devices[i].status !== "DISABLED") {
+            innerHTML += `<div class="status-div-container"><div class="status-div" title="` + devices[i].name + `" style="background: ` + style + `">
                 <a class="status-div" href="/node/` + devices[i].name + `"></a>
                 </div></div>`;
+        }
     }
     container.innerHTML = innerHTML;
 }
