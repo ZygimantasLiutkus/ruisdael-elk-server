@@ -36,7 +36,7 @@ let socket = new SockJS('/device-update');
 let client = Stomp.over(socket);
 
 window.addEventListener("load", init);
-
+window.addEventListener("unload", disconnect);
 /**
  * Function that connects to the websockets and sends messages to the '/app/devices'
  * message path with an interval set by the ApplicationConfig.
@@ -65,6 +65,9 @@ function connect() {
                 // Reload map
                 reloadMarkers(savedMetric);
                 mapFilter(savedMetric);
+            }
+            if (docTitle === "Ruisdael Monitoring | Device List") {
+                search();
             }
         });
 
