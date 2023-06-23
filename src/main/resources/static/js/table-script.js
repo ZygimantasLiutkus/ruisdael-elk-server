@@ -57,7 +57,7 @@ function connect() {
             let tempPage = currentPage;     // Sorting switches page to 1. To not have the
             sortCol(lastSorted);            // view reset to page 1 every minute, current
             sortCol(lastSorted);            // page is saved.
-            reset(Math.ceil(devices.length / 10.0));
+            reset(Math.ceil(devices.length / devicesPerPage));
             updatePaginate(tempPage);
             if (docTitle === "Ruisdael Monitoring | Overview") {
                 // Reload status boxes
@@ -176,7 +176,7 @@ function init() {
     createTable();
     // Use to compute the number of overall pages
     // const pageNum = Math.round(Math.ceil(devices.length / 10.0));
-    setUp(Math.ceil(devices.length / 10.0));
+    setUp(Math.ceil(devices.length / devicesPerPage));
 }
 
 /**
@@ -499,7 +499,7 @@ function search() {
         }
         devices = found;
     }
-    setUp(Math.round(Math.ceil(devices.length / 10.0)));
+    setUp(Math.round(Math.ceil(devices.length / devicesPerPage)));
     updatePaginate(1);
     if (found.length > 0) {
         handleButton(document.getElementById("btn-first-page"));
