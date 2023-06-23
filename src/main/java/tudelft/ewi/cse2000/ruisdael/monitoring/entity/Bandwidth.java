@@ -1,13 +1,14 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.entity;
 
 import java.util.Objects;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
+/**
+ * Data Structure to contain information about a node's bandwidth metrics.
+ */
 @Getter
 @Setter
 @AllArgsConstructor
@@ -18,7 +19,6 @@ public class Bandwidth {
     private double downloadSize;
     private double uploadSpeed;
     private double downloadSpeed;
-
 
     /**
      * Used to compare an instance of the Bandwidth class to another object instance.

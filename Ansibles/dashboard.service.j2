@@ -1,0 +1,11 @@
+[Unit]
+Description = This service contains executes a custom dashboard software
+After = network.target kibana.service
+
+[Service]
+Type = simple
+ExecStart = java -jar /bin/dashboard/build/libs/ruisdael-monitoring-webui-0.0.1-SNAPSHOT.jar
+TimeoutStartSec = infinity
+
+[Install]
+WantedBy = multi-user.target

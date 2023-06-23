@@ -6,13 +6,22 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import tudelft.ewi.cse2000.ruisdael.monitoring.configurations.ApplicationConfig;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Index;
+import tudelft.ewi.cse2000.ruisdael.monitoring.repositories.IndexRepository;
 import tudelft.ewi.cse2000.ruisdael.monitoring.service.ElasticsearchService;
 
+/**
+ * Controller class that controls all endpoints relating to nodes.
+ */
 @Controller
 public class DeviceController {
 
@@ -21,6 +30,9 @@ public class DeviceController {
      */
     @Autowired
     private ElasticsearchService elasticsearchService;
+
+    @Autowired
+    private IndexRepository indexRepository;
 
     private static final Map<String, String> METRIC_MAPPING = Map.ofEntries(
             entry("Status", "Status"),
@@ -54,6 +66,7 @@ public class DeviceController {
     public String getOverview(Model model) {
         /* Use for Production */
         model.addAttribute("devices", elasticsearchService.getAllDevices());
+        model.addAttribute("websocketDelay", ApplicationConfig.websocketDelay);
 
         List<String> metrics = elasticsearchService.getMetricTypes().stream()
                 .map(METRIC_MAPPING::get)
@@ -66,24 +79,23 @@ public class DeviceController {
         List<String> metrics = METRIC_MAPPING.values().stream().toList();
         List<String> locations = (Arrays.asList("Rotterdam", "Delft", "Den Haag", "Amsterdam", "Eindhoven", "Leiden",
                 "Utrecht"));
+        List<Status> statuses = new ArrayList<>(Arrays.asList(Status.ONLINE, Status.WARNING, Status.OFFLINE));
+        Location location = new Location(1.0, 2.0, "le", "ln");
+        Storage storage = new Storage(0.0, 0.0, 0.0, 0.0);
+        Ram ram = new Ram(0.0, 0.0, 0.0, 0.0, 0.0);
+        Bandwidth bandwidth = new Bandwidth(0.0, 0.0, 0.0, 0.0);
 
-        for (int i = 0; i < 45; i++) {
-            Device d = new Device();
-            d.setName("Device " + (i + 1));
-            Location location = new Location();
+        for (int i = 0; i < 25; i++) {
             location.setName(locations.get(new Random().nextInt(locations.size())));
-            d.setLocation(location);
-            d.setStatus(Status.ONLINE);
-            if (i % 4 == 0) {
-                d.setStatus(Status.OFFLINE);
-            } else if (i % 3 == 0) {
-                d.setStatus(Status.WARNING);
-            }
-            devices.add(d);
+            Instrument instrument = new Instrument("instrument" + (i + 1), "it");
+            Status s = statuses.get(new Random().nextInt(statuses.size()));
+            devices.add(new Device("device" + (i + 1), instrument, location, s, storage, ram,
+                    1.0, bandwidth, "t", null));
         }
 
         model.addAttribute("devices", devices);
         model.addAttribute("metrics", metrics); */
+
         return "overview";
     }
 
@@ -114,29 +126,115 @@ public class DeviceController {
     public String getDeviceList(Model model) {
         /* Use for Production */
         model.addAttribute("devices", elasticsearchService.getAllDevices());
+        model.addAttribute("websocketDelay", ApplicationConfig.websocketDelay);
 
-        /* For Testing Purposes
+        List<String> metrics = elasticsearchService.getMetricTypes().stream()
+                .map(METRIC_MAPPING::get)
+                .toList();
+
+        model.addAttribute("metrics", metrics);
+
+        /* For testing purposes
         List<Device> devices = new ArrayList<>();
+        List<Status> statuses = new ArrayList<>(Arrays.asList(Status.ONLINE, Status.WARNING, Status.OFFLINE));
         List<String> locations = (Arrays.asList("Rotterdam", "Delft", "Den Haag", "Amsterdam", "Eindhoven", "Leiden",
                 "Utrecht"));
 
-        for (int i = 0; i < 45; i++) {
-            Device d = new Device();
-            d.setName("Device " + (i + 1));
-            Location location = new Location();
+        Location location = new Location(1.0, 2.0, "le", "ln");
+        Storage storage = new Storage(0.0, 0.0, 0.0, 0.0);
+        Ram ram = new Ram(0.0, 0.0, 0.0, 0.0, 0.0);
+        Bandwidth bandwidth = new Bandwidth(0.0, 0.0, 0.0, 0.0);
+
+        for (int i = 0; i < 25; i++) {
             location.setName(locations.get(new Random().nextInt(locations.size())));
-            d.setLocation(location);
-            d.setStatus(Status.ONLINE);
-            if (i % 4 == 0) {
-                d.setStatus(Status.OFFLINE);
-            } else if (i % 3 == 0) {
-                d.setStatus(Status.WARNING);
-            }
-            devices.add(d);
+            Instrument instrument = new Instrument("instrument" + (i + 1), "it");
+            devices.add(new Device("device" + (i + 1), instrument, location,
+                    statuses.get(new Random().nextInt(statuses.size())), storage, ram,1.0, bandwidth,
+                    "t", null));
         }
+
         model.addAttribute("devices", devices); */
 
         return "device-list";
     }
 
+    /**
+     * Method that listens for a websockets message to '/app/devices' and returns a device list to
+     * '/topic/devices' after receiving a message.
+     *
+     * @return a list of devices from Elasticsearch.
+     */
+    @MessageMapping("/devices") // /app/devices
+    @SendTo("/topic/devices")
+    public List<Device> updateDevices() {
+
+        /* For testing purposes
+        List<Device> devices = new ArrayList<>();
+        List<String> metrics = METRIC_MAPPING.values().stream().toList();
+        List<Status> statuses = new ArrayList<>(Arrays.asList(Status.ONLINE, Status.WARNING, Status.OFFLINE));
+        List<String> locations = (Arrays.asList("Rotterdam", "Delft", "Den Haag", "Amsterdam", "Eindhoven", "Leiden",
+                "Utrecht"));
+
+        Location location = new Location(1.0, 2.0, "le", "ln");
+        Storage storage = new Storage(0.0, 0.0, 0.0, 0.0);
+        Ram ram = new Ram(0.0, 0.0, 0.0, 0.0, 0.0);
+        Bandwidth bandwidth = new Bandwidth(0.0, 0.0, 0.0, 0.0);
+
+        for (int i = 0; i < 25; i++) {
+            location.setName(locations.get(new Random().nextInt(locations.size())));
+            Instrument instrument = new Instrument("instrument" + (i + 1), "it");
+            devices.add(new Device("device" + (i + 1), instrument, location,
+                    statuses.get(new Random().nextInt(statuses.size())), storage, ram,1.0, bandwidth,
+                    "t", null));
+        }
+        return devices */
+
+        return elasticsearchService.getAllDevices();
+    }
+
+    /**
+     * Method that listens for a websocket message to delete a specific index from Elasticsearch.
+     *
+     * @param index the index to be deleted.
+     * @return boolean of success.
+     */
+    @MessageMapping("/delete/{index}")
+    @SendTo("/topic/delete")
+    public boolean deleteIndex(@DestinationVariable String index) {
+        return elasticsearchService.deleteIndex(index).acknowledged();
+    }
+
+    /**
+     * Method that listens for a websocket message to disable a specific index (add it to a disabled index repo).
+     *
+     * @param index the index to be disabled.
+     * @return boolean of success.
+     */
+    @MessageMapping("/disable/{index}")
+    @SendTo("/topic/disable")
+    public boolean disableIndex(@DestinationVariable String index) {
+        if (indexRepository.existsByIndexValue(index)) {
+            return false;
+        } else {
+            indexRepository.saveAndFlush(new Index(0L, index));
+            return true;
+        }
+    }
+
+    /**
+     * Method that listens for a websocket message to enable a specific index (remove it from a disabled index repo).
+     *
+     * @param index the index to be enabled.
+     * @return boolean of success.
+     */
+    @MessageMapping("/enable/{index}")
+    @SendTo("/topic/enable")
+    public boolean enableIndex(@DestinationVariable String index) {
+        if (indexRepository.existsByIndexValue(index)) {
+            indexRepository.delete(indexRepository.findByIndexValue(index));
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

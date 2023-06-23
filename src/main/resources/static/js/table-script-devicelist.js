@@ -18,56 +18,6 @@ function setCellColors(device, row) {
     }
 }
 
-function sortCol(col) {
-
-    if (currentPage !== 1) {
-        changePage(1);
-    }
-    let deviceList = devices;
-
-    if (isSorting) {
-        deviceList = [];
-        for (let i = 1; i < table.rows.length; i++) {
-            let row = table.rows[i];
-            deviceList.push({
-                "name": row.cells[0].innerText,
-                "location": row.cells[1].innerText,
-                "status": row.cells[2].innerText
-            });
-        }
-    }
-
-    if (isAsc) {
-        if (col === "location") {
-            deviceList.sort((a, b) => a[col].name.localeCompare(b[col].name, undefined, { numeric: true }));
-        } else {
-            deviceList.sort((a, b) => a[col].localeCompare(b[col], undefined, { numeric: true }));
-        }
-    } else {
-        if (col === "location") {
-            deviceList.sort((a, b) => b[col].name.localeCompare(a[col].name, undefined, { numeric: true }));
-        } else {
-            deviceList.sort((a, b) => b[col].localeCompare(a[col], undefined, { numeric: true }));
-        }
-    }
-    isAsc = !isAsc
-
-    for (let i = 0; i < deviceList.length; i++) {
-        let device = deviceList[i];
-        let row = table.rows[i + 1];
-
-        if (row === undefined) {
-            break;
-        }
-
-        row.cells[0].innerText = device.name;
-        row.cells[1].innerText = device.location.name;
-
-        // In order to change the colors
-        setCellColors(device, row);
-    }
-}
-
 function createTable(devs) {
     let deviceList = (devs != null) ? devs : devices;
     let start = devicesPerPage * (currentPage - 1);
@@ -134,7 +84,6 @@ function search() {
             found.push(devices[i]);
         }
     }
-
     createTable(found)
 }
 

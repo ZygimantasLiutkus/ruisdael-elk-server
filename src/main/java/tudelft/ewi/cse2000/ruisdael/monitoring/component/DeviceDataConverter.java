@@ -12,8 +12,37 @@ import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Ram;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Status;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Storage;
 
+/**
+ * Component class that provides methods to parse ElasticSearch data results.
+ */
 @Component
 public class DeviceDataConverter {
+
+    /*
+     * These are all the attributes being sent from the node to the server.
+     * The converter should retrieve all information.
+     * data = {'RAM.total': ram[0],  # B(ytes)
+     *         'RAM.available': ram[1],  # B
+     *         'RAM.used.perc': ram[2],  # %
+     *         'RAM.used.bytes': ram[3],  # B
+     *         'RAM.free': ram[4],  # B
+     *         'storage.total': mainmem[0],  # B
+     *         'storage.used.bytes': mainmem[1],  # B
+     *         'storage.free': mainmem[2],  # B
+     *         'storage.used.perc': mainmem[3],  # %
+     *         'CPU': cpu,  # %
+     *         'upload.size': sent,  # B
+     *         'download.size': rec,  # B
+     *         'upload.speed': (sent - self.old_bytes_sent) / self.update_delay,  # B/s
+     *         'download.speed': (rec - self.old_bytes_rec) / self.update_delay,  # B/s
+     *         '@timestamp': datetime.utcnow().strftime('yyyy-MM-ddTHH:mm:ssZ'),
+     *         'location.coordinates': [device_details['longitude'], device_details['latitude']],
+     *         'location.elevation': device_details['elevation'],   # String
+     *         'instrument.name': device_details['instrument_name'],
+     *         'location.name': device_details['location'],
+     *         'instrument.type': device_details['instrument_type']
+     * }
+     */
 
     private static final String parseErrorMessage = "Provided values contain invalid or missing data.";
 
