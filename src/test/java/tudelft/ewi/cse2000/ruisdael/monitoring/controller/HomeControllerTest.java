@@ -2,7 +2,6 @@ package tudelft.ewi.cse2000.ruisdael.monitoring.controller;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -16,12 +15,9 @@ public class HomeControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @InjectMocks
-    private HomeController homeController;
-
     @DisplayName("Check if overview is returned")
     @Test
-    @WithMockUser(authorities = {"USER", "ADMIN"})
+    @WithMockUser(authorities = {"USER"})
     void testHomePage() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/"))
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
