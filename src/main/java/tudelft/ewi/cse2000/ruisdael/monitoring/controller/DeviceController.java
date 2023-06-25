@@ -128,6 +128,7 @@ public class DeviceController {
 
         // For alert table
         model.addAttribute("websocketDelay", ApplicationConfig.websocketDelay);
+        model.addAttribute("gitlabURL", ApplicationConfig.gitlabURL);
         List<Alert> deviceAlerts = alertController.getNodeAlerts(nodeIndex);
         Collections.sort(deviceAlerts, (b, a) -> a.getTimeStamp().compareTo(b.getTimeStamp()));
         model.addAttribute("deviceAlerts", deviceAlerts);
