@@ -16,8 +16,8 @@ function connect() {
         }, websocketDelay);
 
         client.subscribe('/topic/alerts', (d) => {
-            allAlerts = JSON.parse(d.body);
-            createTable(allAlerts);
+            alerts = JSON.parse(d.body);
+            createTable(alerts);
         });
     });
 }
@@ -35,7 +35,7 @@ function disconnect() {
 function init() {
     // Runs the `connect()` function on load to create a connection with the websockets
     connect();
-    createTable(allAlerts);
+    createTable(alerts);
 }
 
 
