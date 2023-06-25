@@ -7,14 +7,14 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Bandwidth;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Flag;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Instrument;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Location;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Ram;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Status;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Storage;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.Bandwidth;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.Device;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.enums.Flag;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.Instrument;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.Location;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.Ram;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.enums.Status;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.Storage;
 
 
 @SuppressWarnings("PMD.AvoidDuplicateLiterals") //Map keys are causing this to pop up, this is necessary.

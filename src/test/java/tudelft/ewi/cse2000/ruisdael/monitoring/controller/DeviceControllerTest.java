@@ -16,13 +16,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Bandwidth;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Instrument;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Location;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Ram;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Status;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Storage;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.Bandwidth;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.Device;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.Instrument;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.Location;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.Ram;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.enums.Status;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.Storage;
 import tudelft.ewi.cse2000.ruisdael.monitoring.repositories.IndexRepository;
 import tudelft.ewi.cse2000.ruisdael.monitoring.service.ElasticsearchService;
 
