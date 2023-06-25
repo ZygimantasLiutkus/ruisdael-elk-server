@@ -1,5 +1,5 @@
 // Default Metric
-let savedMetric = 'Up-Status'
+let savedMetric = 'Status'
 
 // The map object
 const map = L.map('map').setView([51.90511, 4.37233], 9);
@@ -9,6 +9,8 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 20,
     attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
 }).addTo(map);
+
+let nodes = devices.map(d => deviceToNode(d));
 
 
 /**
@@ -44,8 +46,6 @@ var yellowIcon = new L.Icon({
     shadowSize: [41, 41]
 });
 
-let nodes = devices.map(d => deviceToNode(d));
-
 // An array of all markers, default is Up-Status
 let markersArray = nodes.map(node => nodeToMarker(node, savedMetric));
 // First Time On Load
@@ -64,7 +64,7 @@ function deviceToNode(device) {
         'facility': device.location.name,
         'location': [device.location.longitude, device.location.latitude],
         'metrics': {
-            'Up-Status' : device.online ? 0 : 2,
+            'Status' : device.status,
             'CPU': device.cpuUsage,
             'RAM': device.ram.usedPerc,
             'Storage' : device.storage.usedPercStorage
@@ -82,56 +82,40 @@ function deviceToNode(device) {
 function getNodeMarker(node, metric) {
     // TODO: implement the outlier detection to determine which colors the nodes should be.
     const value = node['metrics'][metric];
-    const CPU_CRITICAL_THRESHOLD = 0.9;
-    const CPU_WARNING_THRESHOLD = 0.8;
+    const CPU_CRITICAL_THRESHOLD = 90;
+    const CPU_WARNING_THRESHOLD = 80;
 
-    const RAM_CRITICAL_THRESHOLD = 0.9;
-    const RAM_WARNING_THRESHOLD = 0.8;
+    const RAM_CRITICAL_THRESHOLD = 90;
+    const RAM_WARNING_THRESHOLD = 80;
 
-    const STORAGE_CRITICAL_THRESHOLD = 0.9;
-    const STORAGE_WARNING_THRESHOLD = 0.8;
+    const STORAGE_CRITICAL_THRESHOLD = 90;
+    const STORAGE_WARNING_THRESHOLD = 80;
 
-    let isWarning = false;
-    let isCritical = false;
-
-    if (metric == 'Up-Status'){
-        // console.log('zeb.')
-        if (value == 0) {return greenIcon}
-        if (value == 1) {return yellowIcon}
-        return redIcon;
+    switch(metric) {
+        case 'Status':
+            switch(value) {
+                case 'ONLINE':
+                    return greenIcon;
+                case 'WARNING':
+                    return yellowIcon;
+                default:
+                    return redIcon;
+            }
+        case 'CPU':
+            if(value > CPU_CRITICAL_THRESHOLD) return redIcon;
+            if(value > CPU_WARNING_THRESHOLD) return yellowIcon;
+            break;
+        case 'RAM':
+            if(value > RAM_CRITICAL_THRESHOLD) return redIcon;
+            if(value > RAM_WARNING_THRESHOLD) return yellowIcon;
+            break;
+        case 'Storage':
+            if(value > STORAGE_CRITICAL_THRESHOLD) return redIcon;
+            if(value > STORAGE_WARNING_THRESHOLD) return yellowIcon;
+            break;
     }
 
-    else if (metric == 'CPU') {
-        if (value > CPU_CRITICAL_THRESHOLD) isCritical = true;
-        else if (value > CPU_WARNING_THRESHOLD) isWarning = true;
-    }
-
-    else if (metric == 'RAM') {
-        if (value > RAM_CRITICAL_THRESHOLD) isCritical = true;
-        else if (value > RAM_WARNING_THRESHOLD) isWarning = true;
-    }
-
-    else if (metric == 'STORAGE') {
-        if (value > STORAGE_CRITICAL_THRESHOLD) isCritical = true;
-        else if (value > STORAGE_WARNING_THRESHOLD) isWarning = true;
-    }
-    
-    else{
-        throw new Error("Metric Value Kapot.");
-    }
-
-    if (isCritical) {
-        notify(node, metric,'critical');
-        return redIcon;
-    }
-    else if (isWarning) {
-        notify(node, metric, 'warning');
-        return yellowIcon;
-    }
-    else{
-        return greenIcon;
-    }
-
+    return greenIcon;
 }
 
 
@@ -142,12 +126,21 @@ function nodeToMarker(node, metric){
 
     marker = L.marker(node['location'], {icon})
 
-    hoverText = '#' + node.id + ' ' + node.facility + ': ' + metric + ": <br>"
+    hoverText = 'Node: ' + node.id + '<br>Location: ' + node.facility + '<br>' + metric + ": "
         + JSON.stringify(node.metrics[metric])
             .replaceAll("\"", "")
             .replaceAll("{", "")
             .replaceAll("}", "")
             .replaceAll(":", ": ");
+
+    switch(metric) {
+        case 'CPU':
+        case 'RAM':
+        case 'Storage':
+            hoverText += '%'
+            break;
+    }
+
     marker.bindPopup(hoverText);
     marker.on('mouseover', function(e){this.openPopup();});
     marker.on('mouseout', function(e){this.closePopup();});

@@ -49,16 +49,16 @@
                         <div>
                             <fieldset>
                                 <div class="some-class">
-                                  <input type="radio" class="radio" name="metric" id="upStatus" checked="checked" onchange="mapFilter('Up Status')" />
-                                  <label for="y">ON/OFF</label>
-                                  <input type="radio" class="radio" name="metric" id="cpu" onchange="mapFilter('CPU/RAM')"/>
-                                  <label for="z">CPU/RAM</label>
-                                  <input type="radio" class="radio" name="metric" id="storage" onchange="mapFilter('Storage (%)')"/>
+                                  <input type="radio" class="radio" name="metric" id="upStatus" checked="checked" onchange="mapFilter('Status')" />
+                                  <label for="y">Status</label>
+                                  <input type="radio" class="radio" name="metric" id="cpu" onchange="mapFilter('CPU')"/>
+                                  <label for="z">CPU</label>
+                                  <input type="radio" class="radio" name="metric" value="z" id="ram" onchange="mapFilter('RAM')"/>
+                                  <label for="z">RAM</label>
+                                  <input type="radio" class="radio" name="metric" id="storage" onchange="mapFilter('Storage')"/>
                                   <label for="z">Storage</label>
-                                  <!-- <input type="radio" class="radio" name="metric" value="z" id="ram" onchange="mapFilter('ramStatus')"/>
-                                  <label for="z">RAM</label> -->
-                                  <input type="radio" class="radio" name="metric" id="network" onchange="mapFilter('networkSatus')"/>
-                                  <label for="z">Network</label>
+<!--                                  <input type="radio" class="radio" name="metric" id="network" onchange="mapFilter('Network')"/>-->
+<!--                                  <label for="z">Network</label>-->
                                 </div>
                             </fieldset>
                             <div id="map">
