@@ -41,7 +41,7 @@
                     <span th:text="${field.key} + ': ' + ${field.value}"></span><br />
                 </div>
             </div>
-            <div style="position:absolute; bottom: 0;">
+            <div>
                 <p>Last Update: <span th:text="${device.getTimestamp()}">Unknown</span></p>
             </div>
         </div>
@@ -73,7 +73,7 @@
                     <h3 class="text-center"><span th:text="${device.getHumanReadableValueKbs(device.getBandwidth().getDownloadSpeed())}">???</span> KB/s Bandwidth Use</h3>
                 </div>
             </div>
-            <div class="row" style="height: 100%">
+            <div class="row" style="min-height: 48vh;">
                 <div class="col node-box">
                     <iframe th:src="'http://localhost:8085/app/dashboards#/view/90ab7390-ff08-11ed-a647-f3f338cb7d41?embed=true&_g=(filters:!((query:(match_phrase:(_index:collector_' + ${device.getName()} + ')))),refreshInterval:(pause:!t,value:60000),time:(from:now-24h,to:now))&show-time-filter=true'"
                             style="height: 100%; width: 100%;"></iframe>
@@ -82,54 +82,35 @@
         </div>
 
     </div>
-</div>
+    <div class="row">
+        <div id="device-alerts">
 
-<div id="device-alerts" style="height: 90vh; overflow: scroll;">
+            <div style="margin: 3% 0 1% 0;">
+                <h1 style="text-align: center; color:whitesmoke;">Alerts History</h3>
+            </div>
 
-        <div style="margin: 3% 0 1% 0;">
-            <h1 style="text-align: center; color:whitesmoke;">Alerts History</h3>
-        </div>
-
-        <table class="table table-dark" id="alerts-table" style="width: 80vw; margin-left: auto; margin-right: auto;">
-            <thead>
+            <table class="table table-dark" id="alerts-table" style="margin-left: auto; margin-right: auto;">
+                <thead>
                 <tr>
+                    <th>Timestamp</th>
+                    <th>Device</th>
+                    <th>Metric</th>
+                    <th>From</th>
+                    <th>To</th>
                     <th>
-                        Timestamp
-                    </th>
-                    
-                    <th>
-                        Device
-                    </th>
-
-                    <th>
-                        Metric
-                    </th>
-
-                    <th>
-                        From
-                    </th>
-
-                    <th>
-                        To
-                    </th>
-
-                    <th>
-                        <span>  
+                        <span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-git" viewBox="0 0 16 16">
                             <path d="M15.698 7.287 8.712.302a1.03 1.03 0 0 0-1.457 0l-1.45 1.45 1.84 1.84a1.223 1.223 0 0 1 1.55 1.56l1.773 1.774a1.224 1.224 0 0 1 1.267 2.025 1.226 1.226 0 0 1-2.002-1.334L8.58 5.963v4.353a1.226 1.226 0 1 1-1.008-.036V5.887a1.226 1.226 0 0 1-.666-1.608L5.093 2.465l-4.79 4.79a1.03 1.03 0 0 0 0 1.457l6.986 6.986a1.03 1.03 0 0 0 1.457 0l6.953-6.953a1.031 1.031 0 0 0 0-1.457"/>
                             </svg>
                           </span>
                     </th>
-
-                    
                 </tr>
-            </thead>
-
-            <tbody id="alerts-table-body">
-            </tbody>
-        </table>
-
+                </thead>
+                <tbody id="alerts-table-body">
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
-
 </body>
 </html>
