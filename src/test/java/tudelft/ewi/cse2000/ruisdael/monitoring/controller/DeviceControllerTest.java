@@ -36,6 +36,9 @@ class DeviceControllerTest {
     @MockBean
     private IndexRepository indexRepository;
 
+    @MockBean
+    private AlertController alertController;
+
     @Autowired
     private MockMvc mockMvc;
 
