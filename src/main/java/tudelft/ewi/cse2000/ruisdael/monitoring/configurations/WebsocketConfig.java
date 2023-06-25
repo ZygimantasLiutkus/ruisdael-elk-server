@@ -22,5 +22,6 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/device-update").withSockJS();
+        registry.addEndpoint("/alert-update").withSockJS();
     }
 }
