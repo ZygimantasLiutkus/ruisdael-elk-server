@@ -36,7 +36,7 @@ let socket = new SockJS('/device-update');
 let client = Stomp.over(socket);
 
 window.addEventListener("load", init);
-
+window.addEventListener("unload", disconnect);
 /**
  * Function that connects to the websockets and sends messages to the '/app/devices'
  * message path with an interval set by the ApplicationConfig.
@@ -57,7 +57,7 @@ function connect() {
             let tempPage = currentPage;     // Sorting switches page to 1. To not have the
             sortCol(lastSorted);            // view reset to page 1 every minute, current
             sortCol(lastSorted);            // page is saved.
-            reset(Math.ceil(devices.length / 10.0));
+            reset(Math.ceil(devices.length / devicesPerPage));
             updatePaginate(tempPage);
             if (docTitle === "Ruisdael Monitoring | Overview") {
                 // Reload status boxes
@@ -65,6 +65,9 @@ function connect() {
                 // Reload map
                 reloadMarkers(savedMetric);
                 mapFilter(savedMetric);
+            }
+            if (docTitle === "Ruisdael Monitoring | Device List") {
+                search();
             }
         });
 
@@ -176,7 +179,7 @@ function init() {
     createTable();
     // Use to compute the number of overall pages
     // const pageNum = Math.round(Math.ceil(devices.length / 10.0));
-    setUp(Math.ceil(devices.length / 10.0));
+    setUp(Math.ceil(devices.length / devicesPerPage));
 }
 
 /**
@@ -499,7 +502,7 @@ function search() {
         }
         devices = found;
     }
-    setUp(Math.round(Math.ceil(devices.length / 10.0)));
+    setUp(Math.round(Math.ceil(devices.length / devicesPerPage)));
     updatePaginate(1);
     if (found.length > 0) {
         handleButton(document.getElementById("btn-first-page"));
