@@ -1,5 +1,3 @@
-const table = document.getElementById("alerts-table");
-
 let socket = new SockJS('/alert-update');
 let client = Stomp.over(socket);
 

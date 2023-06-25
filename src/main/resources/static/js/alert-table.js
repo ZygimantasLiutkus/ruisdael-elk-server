@@ -1,3 +1,5 @@
+const table = document.getElementById("alerts-table");
+
 /**
  * Takes an array of alerts and gives back a html table of it.
  */
@@ -44,3 +46,5 @@ function createTable(alertsArray) {
         
     }
 }
+
+createTable(alerts);
