@@ -4,14 +4,13 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import tudelft.ewi.cse2000.ruisdael.monitoring.configurations.ApplicationConfig;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.Device;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.enums.Flag;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.enums.Status;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Alert;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Flag;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Status;
 import tudelft.ewi.cse2000.ruisdael.monitoring.repositories.AlertRepository;
 import tudelft.ewi.cse2000.ruisdael.monitoring.service.ElasticsearchService;
 

@@ -28,6 +28,7 @@ public class AlertController {
     @GetMapping("/alerts")
     public String getAlerts(Model model) {
         model.addAttribute("websocketDelay", ApplicationConfig.websocketDelay);
+        model.addAttribute("gitlabURL", ApplicationConfig.gitlabURL);
         List<Alert> alerts = alertRepository.findAll();
         Collections.sort(alerts, (b, a) -> a.getTimeStamp().compareTo(b.getTimeStamp()));
         model.addAttribute("alerts", alerts);

@@ -1,4 +1,4 @@
-package tudelft.ewi.cse2000.ruisdael.monitoring.entity;
+package tudelft.ewi.cse2000.ruisdael.monitoring.device;
 
 import java.text.DecimalFormat;
 import java.util.Map;
@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.enums.Status;
 
 /**
  * This class contains all the attributes of a instrument in the Ruisdael network. The attributes of the class

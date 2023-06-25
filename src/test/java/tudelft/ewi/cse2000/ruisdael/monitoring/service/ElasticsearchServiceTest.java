@@ -42,8 +42,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import tudelft.ewi.cse2000.ruisdael.monitoring.component.DeviceDataConverter;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Status;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.Device;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.enums.Status;
 
 @SpringBootTest
 class ElasticsearchServiceTest {

@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Objects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.Storage;
 
 
 class StorageTest {

@@ -9,6 +9,13 @@ import java.util.Map;
 import java.util.Objects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.Bandwidth;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.Device;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.Instrument;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.Location;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.Ram;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.Storage;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.enums.Status;
 
 
 class DeviceTest {

@@ -40,7 +40,7 @@ function createTable(alertsArray) {
         });
 
         row.children[5].addEventListener("click", () => {
-            window.location.href = "GITLAB"
+            window.location.href = gitlabURL + "/-/issues/new?issue[title]=" + encodeURI("Monitoring Alert: " + alert['deviceName'] + " - " + alert['metric']);
         });
 
         
