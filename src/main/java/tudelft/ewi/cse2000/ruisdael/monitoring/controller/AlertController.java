@@ -52,7 +52,7 @@ public class AlertController {
      * @param nodeName  - Name of the Node
      * @return a list of {@link Alert}s 
      * */
-    protected List<Alert> getNodeAlerts(String nodeName) {
+    public List<Alert> getNodeAlerts(String nodeName) {
         List<Alert> deviceAlerts = alertRepository.findAll();
         deviceAlerts.removeIf(a -> !a.getDeviceName().equals(nodeName));
         return deviceAlerts;

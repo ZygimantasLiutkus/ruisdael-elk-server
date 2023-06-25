@@ -2,23 +2,17 @@ package tudelft.ewi.cse2000.ruisdael.monitoring.component;
 
 import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.aspectj.lang.annotation.Before;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import tudelft.ewi.cse2000.ruisdael.monitoring.component.AlertComponent.Flag;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Bandwidth;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Flag;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Instrument;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Location;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Ram;
@@ -30,32 +24,9 @@ import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Storage;
 public class AlertComponentTest {
 
     // @Autowired
-    static AlertComponent alertComponent = new AlertComponent();
+    private AlertComponent alertComponent = new AlertComponent();
 
-    private static final Map<String, Object> VALUES = Map.ofEntries(
-            entry("RAM.total", "8192"),
-            entry("RAM.available", "4096"),
-            entry("RAM.used.perc", "50.0"),
-            entry("RAM.used.bytes", "4096"),
-            entry("RAM.free", "4096"),
-            entry("storage.total", "102400"),
-            entry("storage.used.bytes", "51200"),
-            entry("storage.free", "51200"),
-            entry("storage.used.perc", "50.0"),
-            entry("CPU", "0.5"),
-            entry("upload.size", "1024"),
-            entry("download.size", "2048"),
-            entry("upload.speed", "10.0"),
-            entry("download.speed", "20.0"),
-            entry("@timestamp", "2023-05-26T12:00:00"),
-            entry("location.coordinates", new ArrayList<>(List.of(52.0124, 4.8521))),
-            entry("instrument.name", "Instrument 1"),
-            entry("instrument.type", "Type 1"),
-            entry("location.name", "Location 1"),
-            entry("location.elevation", "10.0")
-    );
-
-    static Device d;
+    private Device d;
     
     /**
      * Make a device object for the methods.
@@ -69,7 +40,7 @@ public class AlertComponentTest {
         Ram ram = new Ram(8192, 4096, 4096, 50.0, 4096);
         float cpu = 0.5f;
         Bandwidth bandwidth = new Bandwidth(1024, 2048, 10.0, 20.0);
-        String timeStamp = "2023-05-26T12:00:00";
+        String timeStamp = "2023-05-26T12:00:00Z";
         Map map = Map.of();
 
         d = new Device("node", instrument, location, status, storage, ram, cpu, bandwidth, timeStamp, map);
