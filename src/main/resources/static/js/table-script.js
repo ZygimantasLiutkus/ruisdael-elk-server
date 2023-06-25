@@ -102,13 +102,11 @@ function init() {
     connect();
 
     if (document.title === "Ruisdael Monitoring | Device List") {
-        document.getElementById("btn-reset-table").addEventListener("click", () => {
+        document.getElementById("btn-search").addEventListener("click", () => {
             currentPage = 1;
             resetTable();
             createTable();
         });
-
-        document.getElementById("btn-search").addEventListener("click", search);
         document.getElementById("dropdown-name").addEventListener("click", () => {
             filter = "name";
             loadTextBox("Instrument Name");
