@@ -468,7 +468,7 @@ function setStatusColorAll(device, row) {
 
 /**
  * This function is used to query the list of devices based on their tags. A tag can be one of the following:
- * Instrument Name, Location, Status (Online, Warning, Offline).
+ * Instrument Name, Location, Status (Online, Warning, Offline, Disabled).
  */
 function search() {
     let radioButtons = document.getElementsByClassName("form-check-input");
