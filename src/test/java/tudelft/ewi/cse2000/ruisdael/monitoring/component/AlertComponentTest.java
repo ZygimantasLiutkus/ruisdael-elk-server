@@ -1,11 +1,8 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.component;
 
-import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +23,7 @@ public class AlertComponentTest {
     // @Autowired
     private AlertComponent alertComponent = new AlertComponent();
 
-    private Device d;
+    private Device device;
     
     /**
      * Make a device object for the methods.
@@ -43,7 +40,7 @@ public class AlertComponentTest {
         String timeStamp = "2023-05-26T12:00:00Z";
         Map map = Map.of();
 
-        d = new Device("node", instrument, location, status, storage, ram, cpu, bandwidth, timeStamp, map);
+        device = new Device("node", instrument, location, status, storage, ram, cpu, bandwidth, timeStamp, map);
     }
 
     /**
@@ -52,15 +49,15 @@ public class AlertComponentTest {
     @DisplayName("Test Up-Status Flags")
     @Test
     void testUpStatusFlags() {
-        HashMap<String, Flag> flags = alertComponent.getFlagsOf(d);
+        HashMap<String, Flag> flags = alertComponent.getFlagsOf(device);
         assertEquals(flags.get("UP-STATUS"), Flag.GREEN);
 
-        d.setStatus(Status.WARNING);
-        flags = alertComponent.getFlagsOf(d);
+        device.setStatus(Status.WARNING);
+        flags = alertComponent.getFlagsOf(device);
         assertEquals(flags.get("UP-STATUS"), Flag.YELLOW);
 
-        d.setStatus(Status.OFFLINE);
-        flags = alertComponent.getFlagsOf(d);
+        device.setStatus(Status.OFFLINE);
+        flags = alertComponent.getFlagsOf(device);
         assertEquals(flags.get("UP-STATUS"), Flag.RED);
     }
 
@@ -70,15 +67,15 @@ public class AlertComponentTest {
     @DisplayName("Test CPU Flags")
     @Test
     void testCpuFlags() {
-        HashMap<String, Flag> flags = alertComponent.getFlagsOf(d);
+        HashMap<String, Flag> flags = alertComponent.getFlagsOf(device);
         assertEquals(flags.get("CPU"), Flag.GREEN);
 
-        d.setCpuUsage(81);
-        flags = alertComponent.getFlagsOf(d);
+        device.setCpuUsage(81);
+        flags = alertComponent.getFlagsOf(device);
         assertEquals(flags.get("CPU"), Flag.YELLOW);
 
-        d.setCpuUsage(91);
-        flags = alertComponent.getFlagsOf(d);
+        device.setCpuUsage(91);
+        flags = alertComponent.getFlagsOf(device);
         assertEquals(flags.get("CPU"), Flag.RED);
     }
 
@@ -88,17 +85,17 @@ public class AlertComponentTest {
     @DisplayName("Test RAM Flags")
     @Test
     void testRamFlags() {
-        HashMap<String, Flag> flags = alertComponent.getFlagsOf(d);
+        HashMap<String, Flag> flags = alertComponent.getFlagsOf(device);
         assertEquals(flags.get("RAM"), Flag.GREEN);
 
         Ram ram = new Ram(8192, 6696, 4096, 50.0, 4096);
-        d.setRam(ram);
-        flags = alertComponent.getFlagsOf(d);
+        device.setRam(ram);
+        flags = alertComponent.getFlagsOf(device);
         assertEquals(flags.get("RAM"), Flag.YELLOW);
 
         ram = new Ram(8192, 7996, 4096, 50.0, 4096);
-        d.setRam(ram);
-        flags = alertComponent.getFlagsOf(d);
+        device.setRam(ram);
+        flags = alertComponent.getFlagsOf(device);
         assertEquals(flags.get("RAM"), Flag.RED);
     }
 
@@ -108,19 +105,19 @@ public class AlertComponentTest {
     @DisplayName("Test Storage Flags")
     @Test
     void testStorageFlags() {
-        HashMap<String, Flag> flags = alertComponent.getFlagsOf(d);
+        HashMap<String, Flag> flags = alertComponent.getFlagsOf(device);
         assertEquals(flags.get("STORAGE"), Flag.GREEN);
 
         Storage storage = new Storage(102400, 51200, 50.0, 51200);
         
         storage.setUsedPercStorage(81);
-        d.setStorage(storage);
-        flags = alertComponent.getFlagsOf(d);
+        device.setStorage(storage);
+        flags = alertComponent.getFlagsOf(device);
         assertEquals(flags.get("STORAGE"), Flag.YELLOW);
 
         storage.setUsedPercStorage(91);
-        d.setStorage(storage);
-        flags = alertComponent.getFlagsOf(d);
+        device.setStorage(storage);
+        flags = alertComponent.getFlagsOf(device);
         assertEquals(flags.get("STORAGE"), Flag.RED);
     }
 

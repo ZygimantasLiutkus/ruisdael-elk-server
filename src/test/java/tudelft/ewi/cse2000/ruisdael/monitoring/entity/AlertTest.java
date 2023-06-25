@@ -1,12 +1,12 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.entity;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import java.time.LocalDateTime;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
+import java.time.LocalDateTime;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class AlertTest {
 
@@ -23,7 +23,7 @@ class AlertTest {
         assertEquals(new Alert(0L, "deviceName", "metric", "oldFlag", "newFlag",
                 LocalDateTime.of(2020, 1, 1, 0, 0, 0)), alertUnderTest);
         assertEquals(alertUnderTest, alertUnderTest);
-        assertFalse(alertUnderTest.equals(null));
+        assertNotEquals(null, alertUnderTest);
         assertFalse(alertUnderTest.equals(new Object()));
     }
 
