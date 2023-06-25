@@ -2,6 +2,7 @@ package tudelft.ewi.cse2000.ruisdael.monitoring.controller;
 
 import static java.util.Map.entry;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import tudelft.ewi.cse2000.ruisdael.monitoring.configurations.ApplicationConfig;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Alert;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Index;
 import tudelft.ewi.cse2000.ruisdael.monitoring.repositories.IndexRepository;
@@ -33,6 +35,9 @@ public class DeviceController {
 
     @Autowired
     private IndexRepository indexRepository;
+
+    @Autowired
+    private AlertController alertController;
 
     private static final Map<String, String> METRIC_MAPPING = Map.ofEntries(
             entry("Status", "Status"),
@@ -112,6 +117,12 @@ public class DeviceController {
         } else {
             model.addAttribute("device", lastHitResult);
         }
+
+        // For alert table  
+        List<Alert> deviceAlerts = alertController.getNodeAlerts(nodeIndex);
+        Collections.sort(deviceAlerts, (b, a) -> a.getTimeStamp().compareTo(b.getTimeStamp()));
+        model.addAttribute("deviceAlerts", deviceAlerts);
+
 
         return "node";
     }

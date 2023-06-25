@@ -62,7 +62,6 @@ public class AlertComponent {
                     Flag oldFlag = oldFlags.get(metric);
                     Flag newFlag = newFlags.get(metric);
                     if (oldFlag != newFlag) {
-                        System.out.println(metric + " " + oldFlag + " " + newFlag);
                         alertRepository.save(new Alert(0, d.getName(), metric, oldFlag.toString(), newFlag.toString(), LocalDateTime.now()));
                     }
                 }
@@ -93,7 +92,6 @@ public class AlertComponent {
         final double ramVal = d.getRam().getAvailablePercentage();
         final double storageVal = d.getStorage().getUsedPercStorage();
 
-        System.out.println(ramVal + " " + cpuVal);
 
         Flag cpuFlag = Flag.GREEN;
         Flag ramFlag = Flag.GREEN;
