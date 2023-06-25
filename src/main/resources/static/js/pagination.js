@@ -42,6 +42,8 @@ export function setUp(totalPages) {
     document.getElementById("page-container").onclick = function (e) {
         handleButton(e.target);
     };
+    handleButtonLeft();
+    handleButtonRight();
 }
 
 function pagination() {
