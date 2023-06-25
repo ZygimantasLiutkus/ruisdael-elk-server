@@ -14,9 +14,8 @@ import tudelft.ewi.cse2000.ruisdael.monitoring.device.Device;
 import tudelft.ewi.cse2000.ruisdael.monitoring.device.Instrument;
 import tudelft.ewi.cse2000.ruisdael.monitoring.device.Location;
 import tudelft.ewi.cse2000.ruisdael.monitoring.device.Ram;
-import tudelft.ewi.cse2000.ruisdael.monitoring.device.enums.Status;
 import tudelft.ewi.cse2000.ruisdael.monitoring.device.Storage;
-
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.enums.Status;
 
 @SuppressWarnings("PMD.AvoidDuplicateLiterals") //Map keys are causing this to pop up, this is necessary.
 public class DeviceDataConverterTest {
