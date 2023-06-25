@@ -14,6 +14,13 @@
         <script th:inline="javascript">
             let websocketDelay = /*[[${websocketDelay}]]*/ 60000;
             let devices = /*[[${devices}]]*/ [];
+
+            let CPU_CRITICAL_THRESHOLD = /*[[${CPU_CRITICAL_THRESHOLD}]]*/ 90;
+            let CPU_WARNING_THRESHOLD = /*[[${CPU_WARNING_THRESHOLD}]]*/ 80;
+            let RAM_CRITICAL_THRESHOLD = /*[[${RAM_CRITICAL_THRESHOLD}]]*/ 90;
+            let RAM_WARNING_THRESHOLD = /*[[${RAM_WARNING_THRESHOLD}]]*/ 80;
+            let STORAGE_CRITICAL_THRESHOLD = /*[[${STORAGE_CRITICAL_THRESHOLD}]]*/ 90;
+            let STORAGE_WARNING_THRESHOLD = /*[[${STORAGE_WARNING_THRESHOLD}]]*/ 80;
         </script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -49,16 +56,16 @@
                         <div>
                             <fieldset>
                                 <div class="some-class">
-                                  <input type="radio" class="radio" name="metric" id="upStatus" checked="checked" onchange="mapFilter('Up Status')" />
-                                  <label for="y">ON/OFF</label>
-                                  <input type="radio" class="radio" name="metric" id="cpu" onchange="mapFilter('CPU/RAM')"/>
-                                  <label for="z">CPU/RAM</label>
-                                  <input type="radio" class="radio" name="metric" id="storage" onchange="mapFilter('Storage (%)')"/>
+                                  <input type="radio" class="radio" name="metric" id="upStatus" checked="checked" onchange="mapFilter('Status')" />
+                                  <label for="y">Status</label>
+                                  <input type="radio" class="radio" name="metric" id="cpu" onchange="mapFilter('CPU')"/>
+                                  <label for="z">CPU</label>
+                                  <input type="radio" class="radio" name="metric" value="z" id="ram" onchange="mapFilter('RAM')"/>
+                                  <label for="z">RAM</label>
+                                  <input type="radio" class="radio" name="metric" id="storage" onchange="mapFilter('Storage')"/>
                                   <label for="z">Storage</label>
-                                  <!-- <input type="radio" class="radio" name="metric" value="z" id="ram" onchange="mapFilter('ramStatus')"/>
-                                  <label for="z">RAM</label> -->
-                                  <input type="radio" class="radio" name="metric" id="network" onchange="mapFilter('networkSatus')"/>
-                                  <label for="z">Network</label>
+<!--                                  <input type="radio" class="radio" name="metric" id="network" onchange="mapFilter('Network')"/>-->
+<!--                                  <label for="z">Network</label>-->
                                 </div>
                             </fieldset>
                             <div id="map">
