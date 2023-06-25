@@ -9,7 +9,7 @@ plugins {
 }
 
 group = 'tudelft.ewi.cse2000.ruisdael.monitoring'
-version = '0.0.1-SNAPSHOT'
+version = '1.0.0'
 sourceCompatibility = '17'
 
 bootJar {
