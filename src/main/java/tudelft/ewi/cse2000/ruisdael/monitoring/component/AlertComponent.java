@@ -7,15 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
 import tudelft.ewi.cse2000.ruisdael.monitoring.configurations.ApplicationConfig;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Alert;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Flag;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Status;
 import tudelft.ewi.cse2000.ruisdael.monitoring.repositories.AlertRepository;
 import tudelft.ewi.cse2000.ruisdael.monitoring.service.ElasticsearchService;
-
-
 
 @Component
 @EnableScheduling
@@ -27,24 +25,16 @@ public class AlertComponent {
     @Autowired
     private AlertRepository alertRepository;
 
-    enum Flag {
-        GREEN,
-        YELLOW,
-        RED
-    }
-
-
     /*
      * Keeps the last flag for each metric for each device.
      */
     private HashMap<String, HashMap<String, Flag>> statusFlags = new HashMap<String, HashMap<String, Flag>>();
-    
 
     /**
      * Constantly get new flags for each device and compare against 
      * the previous flags kept in statusFlags computed with getFlagsOf(device).
      */
-    @Scheduled(fixedRate = 1000) //Every 1s
+    @Scheduled(fixedRate = ApplicationConfig.FLAGS_CHECK_FREQUENCY)
     public void runAlertDetection() {
         //Get the devices from elastic
         List<Device> newDevices = elasticsearchService.getAllDevices();
@@ -70,12 +60,11 @@ public class AlertComponent {
         }
     }
 
-    /*
+    /**
      * Converts device metric values to flags.
      * @param d  - device
      */
-    HashMap<String, Flag> getFlagsOf(Device d) {
-        
+    public HashMap<String, Flag> getFlagsOf(Device d) {
 
         Flag upStatusFlag = null;
         if (d.getStatus() == Status.ONLINE) {

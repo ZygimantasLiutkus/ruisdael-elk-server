@@ -72,6 +72,14 @@ public class DeviceController {
         /* Use for Production */
         model.addAttribute("devices", elasticsearchService.getAllDevices());
         model.addAttribute("websocketDelay", ApplicationConfig.websocketDelay);
+        model.addAllAttributes(Map.of(
+            "CPU_CRITICAL_THRESHOLD", ApplicationConfig.CPU_CRITICAL_THRESHOLD,
+                "CPU_WARNING_THRESHOLD", ApplicationConfig.CPU_WARNING_THRESHOLD,
+                "RAM_CRITICAL_THRESHOLD", ApplicationConfig.RAM_CRITICAL_THRESHOLD,
+                "RAM_WARNING_THRESHOLD", ApplicationConfig.RAM_WARNING_THRESHOLD,
+                "STORAGE_CRITICAL_THRESHOLD", ApplicationConfig.STORAGE_CRITICAL_THRESHOLD,
+                "STORAGE_WARNING_THRESHOLD", ApplicationConfig.STORAGE_WARNING_THRESHOLD
+        ));
 
         List<String> metrics = elasticsearchService.getMetricTypes().stream()
                 .map(METRIC_MAPPING::get)

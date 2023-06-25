@@ -2,6 +2,7 @@ package tudelft.ewi.cse2000.ruisdael.monitoring.controller;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -9,16 +10,12 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import tudelft.ewi.cse2000.ruisdael.monitoring.component.AlertComponent;
 import tudelft.ewi.cse2000.ruisdael.monitoring.configurations.ApplicationConfig;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Alert;
 import tudelft.ewi.cse2000.ruisdael.monitoring.repositories.AlertRepository;
 
 @Controller
 public class AlertController {
-
-    @Autowired
-    private AlertComponent alertComponent;
 
     @Autowired
     private AlertRepository alertRepository;
@@ -60,6 +57,4 @@ public class AlertController {
         deviceAlerts.removeIf(a -> !a.getDeviceName().equals(nodeName));
         return deviceAlerts;
     }
-
-    
 }

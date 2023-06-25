@@ -14,6 +14,13 @@
         <script th:inline="javascript">
             let websocketDelay = /*[[${websocketDelay}]]*/ 60000;
             let devices = /*[[${devices}]]*/ [];
+
+            let CPU_CRITICAL_THRESHOLD = /*[[${CPU_CRITICAL_THRESHOLD}]]*/ 90;
+            let CPU_WARNING_THRESHOLD = /*[[${CPU_WARNING_THRESHOLD}]]*/ 80;
+            let RAM_CRITICAL_THRESHOLD = /*[[${RAM_CRITICAL_THRESHOLD}]]*/ 90;
+            let RAM_WARNING_THRESHOLD = /*[[${RAM_WARNING_THRESHOLD}]]*/ 80;
+            let STORAGE_CRITICAL_THRESHOLD = /*[[${STORAGE_CRITICAL_THRESHOLD}]]*/ 90;
+            let STORAGE_WARNING_THRESHOLD = /*[[${STORAGE_WARNING_THRESHOLD}]]*/ 80;
         </script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 

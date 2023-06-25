@@ -80,16 +80,7 @@ function deviceToNode(device) {
  * @returns {L.Icon} an icon to be displayed in the map.
  */
 function getNodeMarker(node, metric) {
-    // TODO: implement the outlier detection to determine which colors the nodes should be.
     const value = node['metrics'][metric];
-    const CPU_CRITICAL_THRESHOLD = 90;
-    const CPU_WARNING_THRESHOLD = 80;
-
-    const RAM_CRITICAL_THRESHOLD = 90;
-    const RAM_WARNING_THRESHOLD = 80;
-
-    const STORAGE_CRITICAL_THRESHOLD = 90;
-    const STORAGE_WARNING_THRESHOLD = 80;
 
     switch(metric) {
         case 'Status':
