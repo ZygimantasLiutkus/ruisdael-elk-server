@@ -16,7 +16,6 @@ import tudelft.ewi.cse2000.ruisdael.monitoring.repositories.AlertRepository;
 import tudelft.ewi.cse2000.ruisdael.monitoring.service.ElasticsearchService;
 
 @Component
-@EnableScheduling
 public class AlertComponent {
 
     @Autowired
