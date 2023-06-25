@@ -102,11 +102,11 @@ public class AlertComponentTest {
         HashMap<String, Flag> flags = alertComponent.getFlagsOf(d);
         assertEquals(flags.get("CPU"), Flag.GREEN);
 
-        d.setCpuUsage(.81);
+        d.setCpuUsage(81);
         flags = alertComponent.getFlagsOf(d);
         assertEquals(flags.get("CPU"), Flag.YELLOW);
 
-        d.setCpuUsage(.91);
+        d.setCpuUsage(91);
         flags = alertComponent.getFlagsOf(d);
         assertEquals(flags.get("CPU"), Flag.RED);
     }
