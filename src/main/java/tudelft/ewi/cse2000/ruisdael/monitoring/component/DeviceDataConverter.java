@@ -9,8 +9,8 @@ import tudelft.ewi.cse2000.ruisdael.monitoring.device.Device;
 import tudelft.ewi.cse2000.ruisdael.monitoring.device.Instrument;
 import tudelft.ewi.cse2000.ruisdael.monitoring.device.Location;
 import tudelft.ewi.cse2000.ruisdael.monitoring.device.Ram;
-import tudelft.ewi.cse2000.ruisdael.monitoring.device.enums.Status;
 import tudelft.ewi.cse2000.ruisdael.monitoring.device.Storage;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.enums.Status;
 
 /**
  * Component class that provides methods to parse ElasticSearch data results.
