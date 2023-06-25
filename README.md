@@ -201,6 +201,11 @@ It is recommended to set on up locally. Your credentials should be entered in th
 When making Merge Requests, please check that you do not commit the application.properties file, as this could possibly expose your H2 credentials and resets the file for other developers. Your MR might get closed if this file is overwritten.
 To avoid commits that only fix checkstyle or PMD issues, it is recommended to run these locally before commiting. If running gradle, they are the following tasks: `gradle checkstyleMain checkstyleTest pmdMain pmdTest test pitest`
 
+## Add dashboard to kibana
+
+To add a dashboard to kibana, you need to go to the kibana server on port 5601 via your webbrowser.
+After that you can find more information on [https://www.elastic.co/guide/en/kibana/current/dashboard.html](https://www.elastic.co/guide/en/kibana/current/dashboard.html)
+
 ## License
 
 This project is licensed under the Apache 2.0 license.  

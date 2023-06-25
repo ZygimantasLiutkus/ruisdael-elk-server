@@ -102,13 +102,11 @@ function init() {
     connect();
 
     if (document.title === "Ruisdael Monitoring | Device List") {
-        document.getElementById("btn-reset-table").addEventListener("click", () => {
+        document.getElementById("btn-search").addEventListener("click", () => {
             currentPage = 1;
             resetTable();
             createTable();
         });
-
-        document.getElementById("btn-search").addEventListener("click", search);
         document.getElementById("dropdown-name").addEventListener("click", () => {
             filter = "name";
             loadTextBox("Instrument Name");
@@ -468,7 +466,7 @@ function setStatusColorAll(device, row) {
 
 /**
  * This function is used to query the list of devices based on their tags. A tag can be one of the following:
- * Instrument Name, Location, Status (Online, Warning, Offline).
+ * Instrument Name, Location, Status (Online, Warning, Offline, Disabled).
  */
 function search() {
     let radioButtons = document.getElementsByClassName("form-check-input");

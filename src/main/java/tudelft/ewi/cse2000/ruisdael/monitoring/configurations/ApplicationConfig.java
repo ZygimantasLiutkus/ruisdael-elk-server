@@ -23,6 +23,25 @@ public class ApplicationConfig {
     public static final long warningTime = 121L;
     public static final long offlineTime = 301L;
 
+    // Alert Configuration
+    /**
+     * Percentages for classifying as yellow or red.
+     */
+    public static final double CPU_CRITICAL_THRESHOLD = 90;
+    public static final double CPU_WARNING_THRESHOLD = 80;
+
+    public static final double RAM_CRITICAL_THRESHOLD = 90;
+    public static final double RAM_WARNING_THRESHOLD = 80;
+
+    public static final double STORAGE_CRITICAL_THRESHOLD = 90;
+    public static final double STORAGE_WARNING_THRESHOLD = 80;
+
+
+    /**
+     * Delay between checking for a change in flags to report alerts on. In milliseconds.
+     */
+    public static final long FLAGS_CHECK_FREQUENCY = 30 * 1000L; //30 * 1000ms
+
     // GitLab Configuration
 
     /**

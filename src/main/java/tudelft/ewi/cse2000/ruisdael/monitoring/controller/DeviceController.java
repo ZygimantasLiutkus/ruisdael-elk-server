@@ -2,6 +2,7 @@ package tudelft.ewi.cse2000.ruisdael.monitoring.controller;
 
 import static java.util.Map.entry;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +15,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import tudelft.ewi.cse2000.ruisdael.monitoring.configurations.ApplicationConfig;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.Device;
+import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Alert;
 import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Index;
 import tudelft.ewi.cse2000.ruisdael.monitoring.repositories.IndexRepository;
 import tudelft.ewi.cse2000.ruisdael.monitoring.service.ElasticsearchService;
@@ -33,6 +35,9 @@ public class DeviceController {
 
     @Autowired
     private IndexRepository indexRepository;
+
+    @Autowired
+    private AlertController alertController;
 
     private static final Map<String, String> METRIC_MAPPING = Map.ofEntries(
             entry("Status", "Status"),
@@ -67,6 +72,14 @@ public class DeviceController {
         /* Use for Production */
         model.addAttribute("devices", elasticsearchService.getAllDevices());
         model.addAttribute("websocketDelay", ApplicationConfig.websocketDelay);
+        model.addAllAttributes(Map.of(
+            "CPU_CRITICAL_THRESHOLD", ApplicationConfig.CPU_CRITICAL_THRESHOLD,
+                "CPU_WARNING_THRESHOLD", ApplicationConfig.CPU_WARNING_THRESHOLD,
+                "RAM_CRITICAL_THRESHOLD", ApplicationConfig.RAM_CRITICAL_THRESHOLD,
+                "RAM_WARNING_THRESHOLD", ApplicationConfig.RAM_WARNING_THRESHOLD,
+                "STORAGE_CRITICAL_THRESHOLD", ApplicationConfig.STORAGE_CRITICAL_THRESHOLD,
+                "STORAGE_WARNING_THRESHOLD", ApplicationConfig.STORAGE_WARNING_THRESHOLD
+        ));
 
         List<String> metrics = elasticsearchService.getMetricTypes().stream()
                 .map(METRIC_MAPPING::get)
@@ -112,6 +125,14 @@ public class DeviceController {
         } else {
             model.addAttribute("device", lastHitResult);
         }
+
+        // For alert table
+        model.addAttribute("websocketDelay", ApplicationConfig.websocketDelay);
+        model.addAttribute("gitlabURL", ApplicationConfig.gitlabURL);
+        List<Alert> deviceAlerts = alertController.getNodeAlerts(nodeIndex);
+        Collections.sort(deviceAlerts, (b, a) -> a.getTimeStamp().compareTo(b.getTimeStamp()));
+        model.addAttribute("deviceAlerts", deviceAlerts);
+
 
         return "node";
     }

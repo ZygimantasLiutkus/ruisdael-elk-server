@@ -22,8 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tudelft.ewi.cse2000.ruisdael.monitoring.component.DeviceDataConverter;
 import tudelft.ewi.cse2000.ruisdael.monitoring.configurations.ApplicationConfig;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Device;
-import tudelft.ewi.cse2000.ruisdael.monitoring.entity.Status;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.Device;
+import tudelft.ewi.cse2000.ruisdael.monitoring.device.enums.Status;
 import tudelft.ewi.cse2000.ruisdael.monitoring.repositories.IndexRepository;
 
 /**

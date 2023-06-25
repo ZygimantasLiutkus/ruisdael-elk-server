@@ -1,4 +1,4 @@
-package tudelft.ewi.cse2000.ruisdael.monitoring.entity;
+package tudelft.ewi.cse2000.ruisdael.monitoring.device;
 
 import java.util.Objects;
 import lombok.AllArgsConstructor;
