@@ -124,6 +124,7 @@ public class DeviceController {
             model.addAttribute("noData", true);
         } else {
             model.addAttribute("device", lastHitResult);
+            model.addAttribute("kibanaURL", ApplicationConfig.kibanaURL);
         }
 
         // For alert table
