@@ -185,8 +185,6 @@ public class DeviceController {
      *
      * @return a response entity with a list of devices from Elasticsearch.
      */
-//    @MessageMapping("/devices") // /app/devices
-//    @SendTo("/topic/devices")
     @GetMapping("/device-update")
     public ResponseEntity<List<Device>> updateDevices() {
 
