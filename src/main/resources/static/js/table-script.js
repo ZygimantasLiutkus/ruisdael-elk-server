@@ -32,23 +32,17 @@ const metricMapping = new Map([
     ["Instrument Type", "instrument.type"]
 ]);
 let interval = null;
-let socket = new SockJS('/device-update');
-let client = Stomp.over(socket);
 
 window.addEventListener("load", init);
-window.addEventListener("unload", disconnect);
+window.addEventListener("unload", interval = null);
 /**
- * Function that connects to the websockets and sends messages to the '/app/devices'
- * message path with an interval set by the ApplicationConfig.
+ * Function to fetch and update devices.
  */
-function connect() {
-    client.connect({}, () => {
-        interval = setInterval(() => {
-            client.send('/app/devices', {});
-        }, websocketDelay);
-
-        client.subscribe('/topic/devices', (d) => {
-            devices = JSON.parse(d.body);
+function updateDevices() {
+    fetch("/device-update")
+        .then((response) => response.json())
+        .then((json) => {
+            devices = json;
             // Once updated devices are received, the table is recreated
             // and the columns are sorted twice to restore the previous order.
             // createTable();
@@ -70,28 +64,6 @@ function connect() {
                 search();
             }
         });
-
-        client.subscribe('/topic/enable', (d) => {
-            client.send('/app/devices', {});
-            createTable();
-        });
-        client.subscribe('/topic/disable', (d) => {
-            client.send('/app/devices', {});
-            createTable();
-        });
-        client.subscribe('/topic/delete', (d) => {
-            client.send('/app/devices', {});
-            createTable();
-        });
-    });
-}
-
-/**
- * Function that disconnects from the websockets.
- */
-function disconnect() {
-    client.disconnect();
-    interval = null;
 }
 
 // The initialize function sets up all the event listeners for the elements in the HTML page, and calls the
@@ -99,7 +71,9 @@ function disconnect() {
 function init() {
 
     // Runs the `connect()` function on load to create a connection with the websockets
-    connect();
+    // connect();
+
+    interval = setInterval(() => updateDevices(), 5000);
 
     if (document.title === "Ruisdael Monitoring | Device List") {
         document.getElementById("btn-search").addEventListener("click", () => {
@@ -228,13 +202,19 @@ function createTable() {
             }
 
             document.getElementById("enable-button"+i.toString()).addEventListener("click", () => {
-                client.send('/app/enable/collector_'+device.name, {});
+                fetch("/enable/collector_"+device.name).then((response) => {
+                    updateDevices();
+                });
             });
             document.getElementById("disable-button"+i.toString()).addEventListener("click", () => {
-                client.send('/app/disable/collector_'+device.name, {});
+                fetch("/disable/collector_"+device.name).then((response) => {
+                    updateDevices();
+                });
             });
             document.getElementById("delete-button"+i.toString()).addEventListener("click", () => {
-                client.send('/app/delete/collector_'+device.name, {});
+                fetch("/delete/collector_"+device.name).then((response) => {
+                    updateDevices();
+                });
             });
         }
     }
