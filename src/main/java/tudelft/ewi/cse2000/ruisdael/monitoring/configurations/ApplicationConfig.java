@@ -42,7 +42,7 @@ public class ApplicationConfig {
      * Delay between checking for a change in flags to report alerts on. In milliseconds.
      */
     public static final long FLAGS_CHECK_FREQUENCY = 30 * 1000L; //30 * 1000ms
-
+    public static final int MAX_ALERTS_IN_HISTORY = 200;
 
     // GitLab Configuration
 
