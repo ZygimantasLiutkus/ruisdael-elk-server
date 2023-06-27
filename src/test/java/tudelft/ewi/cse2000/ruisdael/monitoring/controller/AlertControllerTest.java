@@ -60,12 +60,15 @@ public class AlertControllerTest {
                 .andExpect(MockMvcResultMatchers.model().attributeExists("alerts"));
     }
 
-    @DisplayName("Test websocket method")
+    @DisplayName("Test update alerts method")
     @Test
-    void checkWebsocketUpdateAlerts() {
+    @WithMockUser(authorities = {"USER"})
+    void checkUpdateAlerts() throws Exception {
         when(alertRepository.findAll()).thenReturn(alerts);
 
-        assertEquals(alert2, alertController.updateAlerts().get(0)); //Checks sorting
+        mockMvc.perform(MockMvcRequestBuilders.get("/alert-update"))
+                        .andExpect(MockMvcResultMatchers.status().isOk());
+        assertEquals(alert2, alertController.updateAlerts().getBody().get(0)); //Checks sorting
     }
 
     @DisplayName("Test getNodeAlerts helper method")

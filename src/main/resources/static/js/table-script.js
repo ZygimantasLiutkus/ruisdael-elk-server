@@ -69,10 +69,7 @@ function updateDevices() {
 // The initialize function sets up all the event listeners for the elements in the HTML page, and calls the
 // createTable() function, as well as the setUp() function which initializes the Pagination.
 function init() {
-
-    // Runs the `connect()` function on load to create a connection with the websockets
-    // connect();
-
+    // Creates an interval to poll updated devices from backend.
     interval = setInterval(() => updateDevices(), websocketDelay);
 
     if (document.title === "Ruisdael Monitoring | Device List") {
