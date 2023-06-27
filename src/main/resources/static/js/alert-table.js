@@ -1,5 +1,16 @@
 const table = document.getElementById("alerts-table");
 
+function colorToStatus(color) {
+    switch(color) {
+        case 'RED':
+            return 'Failure';
+        case 'YELLOW':
+            return 'Warning';
+        case 'GREEN':
+            return 'OK';
+    }
+}
+
 /**
  * Takes an array of alerts and gives back a html table of it.
  */
@@ -26,12 +37,12 @@ function createTable(alertsArray) {
         let oldFlag = alert['oldFlag'];
         let newFlag = alert['newFlag'];
 
-        row.insertCell(3).innerText = oldFlag;
-        row.cells[3].style.color = row.cells[3].innerText;
+        row.insertCell(3).innerText = colorToStatus(oldFlag);
+        row.cells[3].style.color = oldFlag;
         
 
-        row.insertCell(4).innerText = newFlag;
-        row.cells[4].style.color = row.cells[4].innerText;
+        row.insertCell(4).innerText = colorToStatus(newFlag);
+        row.cells[4].style.color = newFlag;
 
         row.insertCell(5).innerText = 'Issue';
 
