@@ -2,7 +2,6 @@ package tudelft.ewi.cse2000.ruisdael.monitoring.controller;
 
 import static java.util.Map.entry;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -87,21 +86,25 @@ public class DeviceController {
 
         model.addAttribute("metrics", metrics);
 
-        /* For testing purposes
+        /* For testing purposes 
         List<Device> devices = new ArrayList<>();
-        List<String> metrics = METRIC_MAPPING.values().stream().toList();
+//        List<String> metrics = METRIC_MAPPING.values().stream().toList();
         List<String> locations = (Arrays.asList("Rotterdam", "Delft", "Den Haag", "Amsterdam", "Eindhoven", "Leiden",
                 "Utrecht"));
         List<Status> statuses = new ArrayList<>(Arrays.asList(Status.ONLINE, Status.WARNING, Status.OFFLINE));
         Location location = new Location(1.0, 2.0, "le", "ln");
-        Storage storage = new Storage(0.0, 0.0, 0.0, 0.0);
-        Ram ram = new Ram(0.0, 0.0, 0.0, 0.0, 0.0);
         Bandwidth bandwidth = new Bandwidth(0.0, 0.0, 0.0, 0.0);
 
         for (int i = 0; i < 25; i++) {
             location.setName(locations.get(new Random().nextInt(locations.size())));
             Instrument instrument = new Instrument("instrument" + (i + 1), "it");
             Status s = statuses.get(new Random().nextInt(statuses.size()));
+            Storage storage = new Storage(0.0, 0.0, 0.0, 0.0);
+            Ram ram = new Ram(0.0, 0.0, 0.0, 0.0, 0.0);
+            storage.setTotalStorage(new Random().nextLong(10000000000L));
+            storage.setUsedPercStorage(new Random().nextInt(100));
+            ram.setTotal(new Random().nextLong(10000000000L));
+            ram.setUsedPerc(new Random().nextInt(100));
             devices.add(new Device("device" + (i + 1), instrument, location, s, storage, ram,
                     1.0, bandwidth, "t", null));
         }
@@ -131,7 +134,7 @@ public class DeviceController {
         model.addAttribute("websocketDelay", ApplicationConfig.websocketDelay);
         model.addAttribute("gitlabURL", ApplicationConfig.gitlabURL);
         List<Alert> deviceAlerts = alertController.getNodeAlerts(nodeIndex);
-        Collections.sort(deviceAlerts, (b, a) -> a.getTimeStamp().compareTo(b.getTimeStamp()));
+        deviceAlerts.sort((b, a) -> a.getTimeStamp().compareTo(b.getTimeStamp()));
         model.addAttribute("deviceAlerts", deviceAlerts);
 
 
