@@ -73,7 +73,7 @@ function init() {
     // Runs the `connect()` function on load to create a connection with the websockets
     // connect();
 
-    interval = setInterval(() => updateDevices(), 5000);
+    interval = setInterval(() => updateDevices(), websocketDelay);
 
     if (document.title === "Ruisdael Monitoring | Device List") {
         document.getElementById("btn-search").addEventListener("click", () => {
