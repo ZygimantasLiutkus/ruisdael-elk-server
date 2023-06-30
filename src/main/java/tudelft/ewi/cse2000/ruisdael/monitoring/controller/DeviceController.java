@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -180,14 +181,12 @@ public class DeviceController {
     }
 
     /**
-     * Method that listens for a websockets message to '/app/devices' and returns a device list to
-     * '/topic/devices' after receiving a message.
+     * Returns a list of devices from the elasticsearch service.
      *
-     * @return a list of devices from Elasticsearch.
+     * @return a response entity with a list of devices from Elasticsearch.
      */
-    @MessageMapping("/devices") // /app/devices
-    @SendTo("/topic/devices")
-    public List<Device> updateDevices() {
+    @GetMapping("/device-update")
+    public ResponseEntity<List<Device>> updateDevices() {
 
         /* For testing purposes
         List<Device> devices = new ArrayList<>();
@@ -208,54 +207,51 @@ public class DeviceController {
                     statuses.get(new Random().nextInt(statuses.size())), storage, ram,1.0, bandwidth,
                     "t", null));
         }
-        return devices */
+        return ResponseEntity.ok(devices) */
 
-        return elasticsearchService.getAllDevices();
+        return ResponseEntity.ok(elasticsearchService.getAllDevices());
     }
 
     /**
-     * Method that listens for a websocket message to delete a specific index from Elasticsearch.
+     * Deletes an index from Elasticsearch.
      *
      * @param index the index to be deleted.
      * @return boolean of success.
      */
-    @MessageMapping("/delete/{index}")
-    @SendTo("/topic/delete")
-    public boolean deleteIndex(@DestinationVariable String index) {
-        return elasticsearchService.deleteIndex(index).acknowledged();
+    @GetMapping("/delete/{index}")
+    public ResponseEntity<Boolean> deleteIndex(@PathVariable("index") String index) {
+        return ResponseEntity.ok(elasticsearchService.deleteIndex(index).acknowledged());
     }
 
     /**
-     * Method that listens for a websocket message to disable a specific index (add it to a disabled index repo).
+     * Disables a node by adding it to the disabled node local repository if the node is not already disabled.
      *
      * @param index the index to be disabled.
      * @return boolean of success.
      */
-    @MessageMapping("/disable/{index}")
-    @SendTo("/topic/disable")
-    public boolean disableIndex(@DestinationVariable String index) {
+    @GetMapping("/disable/{index}")
+    public ResponseEntity<Boolean> disableIndex(@PathVariable("index") String index) {
         if (indexRepository.existsByIndexValue(index)) {
-            return false;
+            return ResponseEntity.ok(false);
         } else {
             indexRepository.saveAndFlush(new Index(0L, index));
-            return true;
+            return ResponseEntity.ok(true);
         }
     }
 
     /**
-     * Method that listens for a websocket message to enable a specific index (remove it from a disabled index repo).
+     * Enables a node by removing it from the disabled node local repository, if the node is found.
      *
      * @param index the index to be enabled.
      * @return boolean of success.
      */
-    @MessageMapping("/enable/{index}")
-    @SendTo("/topic/enable")
-    public boolean enableIndex(@DestinationVariable String index) {
+    @GetMapping("/enable/{index}")
+    public ResponseEntity<Boolean> enableIndex(@PathVariable("index") String index) {
         if (indexRepository.existsByIndexValue(index)) {
             indexRepository.delete(indexRepository.findByIndexValue(index));
-            return true;
+            return ResponseEntity.ok(true);
         } else {
-            return false;
+            return ResponseEntity.ok(false);
         }
     }
 }

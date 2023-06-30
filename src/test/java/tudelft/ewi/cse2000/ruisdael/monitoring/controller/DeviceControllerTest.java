@@ -1,18 +1,15 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import co.elastic.clients.elasticsearch._types.AcknowledgedResponse;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import java.util.List;
 import java.util.Map;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -24,7 +21,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
 import tudelft.ewi.cse2000.ruisdael.monitoring.device.Bandwidth;
 import tudelft.ewi.cse2000.ruisdael.monitoring.device.Device;
 import tudelft.ewi.cse2000.ruisdael.monitoring.device.Instrument;
@@ -112,59 +108,89 @@ class DeviceControllerTest {
     }
 
     @Test
-    void testUpdateDevices() {
+    @WithMockUser(authorities = {"USER"})
+    void testUpdateDevices() throws Exception {
         when(elasticsearchService.getAllDevices()).thenReturn(List.of(dummyDevice));
-        assertEquals(List.of(dummyDevice), deviceController.updateDevices());
+        ObjectWriter toJson = new ObjectMapper().writer();
+        mockMvc.perform(MockMvcRequestBuilders.get("/device-update"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string(toJson.writeValueAsString(List.of(dummyDevice))));
     }
 
     @Test
-    void testDeleteIndexTrue() {
+    @WithMockUser(authorities = {"USER"})
+    void testDeleteIndexTrue() throws Exception {
         AcknowledgedResponse response = mock(AcknowledgedResponse.class);
         when(response.acknowledged()).thenReturn(true);
         when(elasticsearchService.deleteIndex(any())).thenReturn(response);
-        when(elasticsearchService.deleteIndex("").acknowledged()).thenReturn(true);
-        assertTrue(deviceController.deleteIndex(""));
+        when(elasticsearchService.deleteIndex("dummyIndex").acknowledged()).thenReturn(true);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/delete/dummyIndex"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("true"));
     }
 
     @Test
-    void testDeleteIndexFalse() {
+    @WithMockUser(authorities = {"USER"})
+    void testDeleteIndexFalse() throws Exception {
         AcknowledgedResponse response = mock(AcknowledgedResponse.class);
         when(response.acknowledged()).thenReturn(false);
         when(elasticsearchService.deleteIndex(any())).thenReturn(response);
-        when(elasticsearchService.deleteIndex("").acknowledged()).thenReturn(false);
-        assertFalse(deviceController.deleteIndex(""));
+        when(elasticsearchService.deleteIndex("dummyIndex").acknowledged()).thenReturn(false);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/delete/dummyIndex"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("false"));
     }
 
     @Test
-    void testDisableIndexExists() {
+    @WithMockUser(authorities = {"USER"})
+    void testDisableIndexExists() throws Exception {
         when(indexRepository.existsByIndexValue(anyString())).thenReturn(true);
-        assertFalse(deviceController.disableIndex(""));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/disable/any"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("false"));
     }
 
     @Test
-    void testDisableNonExistent() {
+    @WithMockUser(authorities = {"USER"})
+    void testDisableNonExistent() throws Exception {
         when(indexRepository.existsByIndexValue(anyString())).thenReturn(false);
-        assertTrue(deviceController.disableIndex(""));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/disable/any"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("true"));
     }
 
     @Test
-    void testEnableIndexExists() {
+    @WithMockUser(authorities = {"USER"})
+    void testEnableIndexExists() throws Exception {
         when(indexRepository.existsByIndexValue(anyString())).thenReturn(false);
-        assertTrue(deviceController.disableIndex(""));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/enable/any"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("false"));
     }
 
     @Test
-    void testEnableIndexNonExistent() {
+    @WithMockUser(authorities = {"USER"})
+    void testEnableIndexNonExistent() throws Exception {
         when(indexRepository.existsByIndexValue(anyString())).thenReturn(false);
-        assertFalse(deviceController.enableIndex(""));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/enable/any"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("false"));
     }
 
     @Test
-    void testEnableIndexExistent() {
+    @WithMockUser(authorities = {"USER"})
+    void testEnableIndexExistent() throws Exception {
         when(indexRepository.existsByIndexValue(anyString())).thenReturn(true);
-        assertTrue(deviceController.enableIndex(""));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/enable/any"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("true"));
     }
-
-
 
 }
