@@ -85,6 +85,12 @@
         dest: /usr/local/src/dashboard
       become: true
 
+    - name: configure dashboard
+      template:
+        src: application.properties.j2
+        dest: /usr/local/src/dashboard/src/main/resources/
+      become: true
+
     - name: Install JDK
       ansible.builtin.apt:
         name: openjdk-17-jdk
