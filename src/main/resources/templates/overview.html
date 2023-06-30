@@ -14,6 +14,7 @@
         <script th:inline="javascript">
             let websocketDelay = /*[[${websocketDelay}]]*/ 60000;
             let devices = /*[[${devices}]]*/ [];
+            const metrics = /*[[${metrics}]]*/ [];
 
             let CPU_CRITICAL_THRESHOLD = /*[[${CPU_CRITICAL_THRESHOLD}]]*/ 90;
             let CPU_WARNING_THRESHOLD = /*[[${CPU_WARNING_THRESHOLD}]]*/ 80;
@@ -40,7 +41,7 @@
                 <h1 style="color: white;"> General Overview </h1>
 
                 <!-- This is used for the grid of the node statuses -->
-                <h2 style="color: white; margin-bottom: 1rem"> Device Statuses</h2>
+                <h2 style="color: white; margin-bottom: 1rem"> Device Statuses </h2>
 
                 <!-- Used to represent the device grid -->
                 <div class="status-container">
@@ -56,16 +57,26 @@
                         <div>
                             <fieldset>
                                 <div class="some-class">
-                                  <input type="radio" class="radio" name="metric" id="upStatus" checked="checked" onchange="mapFilter('Status')" />
-                                  <label for="y">Status</label>
-                                  <input type="radio" class="radio" name="metric" id="cpu" onchange="mapFilter('CPU')"/>
-                                  <label for="z">CPU</label>
-                                  <input type="radio" class="radio" name="metric" value="z" id="ram" onchange="mapFilter('RAM')"/>
-                                  <label for="z">RAM</label>
-                                  <input type="radio" class="radio" name="metric" id="storage" onchange="mapFilter('Storage')"/>
-                                  <label for="z">Storage</label>
-<!--                                  <input type="radio" class="radio" name="metric" id="network" onchange="mapFilter('Network')"/>-->
-<!--                                  <label for="z">Network</label>-->
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="metric" id="upStatus" checked="checked" onchange="mapFilter('Status')"/>
+                                        <label class="form-check-label" for="upStatus">Status</label>
+                                    </div>
+
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="metric" id="cpu" onchange="mapFilter('CPU')"/>
+                                        <label class="form-check-label" for="cpu">CPU</label>
+                                    </div>
+
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="metric" id="ram" onchange="mapFilter('RAM')"/>
+                                        <label class="form-check-label" for="ram">RAM</label>
+                                    </div>
+
+
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="metric" id="storage" onchange="mapFilter('Storage')"/>
+                                        <label class="form-check-label" for="storage">RAM</label>
+                                    </div>
                                 </div>
                             </fieldset>
                             <div id="map">
@@ -84,9 +95,6 @@
                                     <div class="select-metric">
                                         <div class="dropdown">
                                             <button id="metric-0" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Instrument Name</button>
-                                            <ul class="dropdown-menu dropdown-scrollbar">
-                                                <li th:each="metric : ${metrics}"><button class="dropdown-item zero" th:text="${metric}"></button></li>
-                                            </ul>
                                         </div>
                                         <div>
                                             <button type="button" class="btn btn-primary" id="sort-arrow-col-0" title="Sort">
@@ -100,7 +108,10 @@
                                         <div class="dropdown">
                                             <button id="metric-1" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Location Coordinates</button>
                                             <ul class="dropdown-menu dropdown-scrollbar">
-                                                <li th:each="metric : ${metrics}"><button class="dropdown-item one" th:text="${metric}"></button></li>
+                                                <li><button class="dropdown-item one">Location Name</button></li>
+                                                <li><button class="dropdown-item one">Location Coordinates</button></li>
+                                                <li><button class="dropdown-item one">Location Elevation</button></li>
+                                                <li><button class="dropdown-item one">Instrument Type</button></li>
                                             </ul>
                                         </div>
                                         <div>
@@ -115,7 +126,10 @@
                                         <div class="dropdown">
                                             <button id="metric-2" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Status</button>
                                             <ul class="dropdown-menu dropdown-scrollbar">
-                                                <li th:each="metric : ${metrics}"><button class="dropdown-item two" th:text="${metric}"></button></li>
+                                                <li><button class="dropdown-item two">Total Storage</button></li>
+                                                <li><button class="dropdown-item two">Used Storage (%)</button></li>
+                                                <li><button class="dropdown-item two">Total RAM</button></li>
+                                                <li><button class="dropdown-item two">Used RAM (%)</button></li>
                                             </ul>
                                         </div>
                                         <div>

@@ -47,7 +47,6 @@ function updateDevices() {
             // and the columns are sorted twice to restore the previous order.
             // createTable();
             createStatuses();
-            // currentPage = Math.min(currentPage, Math.ceil(devices.lenght / 10.0));
             let tempPage = currentPage;     // Sorting switches page to 1. To not have the
             sortCol(lastSorted);            // view reset to page 1 every minute, current
             sortCol(lastSorted);            // page is saved.
@@ -136,9 +135,6 @@ function init() {
     document.getElementById("sort-arrow-col-1").addEventListener("click", () => sortCol(1));
     document.getElementById("sort-arrow-col-2").addEventListener("click", () => sortCol(2));
 
-    for (let element of document.getElementsByClassName("dropdown-item zero")) {
-        element.addEventListener("click", () => setCol(0, element.innerText));
-    }
     for (let element of document.getElementsByClassName("dropdown-item one")) {
         element.addEventListener("click", () => setCol(1, element.innerText));
     }
@@ -147,7 +143,6 @@ function init() {
     }
     createTable();
     // Use to compute the number of overall pages
-    // const pageNum = Math.round(Math.ceil(devices.length / 10.0));
     setUp(Math.ceil(devices.length / devicesPerPage));
 }
 
@@ -171,6 +166,13 @@ function createTable() {
             row.insertCell(0).innerText = parseField(device, document.getElementById("metric-0").innerText);
             row.insertCell(1).innerText = parseField(device, document.getElementById("metric-1").innerText);
             row.insertCell(2).innerText = parseField(device, document.getElementById("metric-2").innerText);
+
+            if (document.getElementById("metric-2").innerText.includes("%")) {
+                row.cells.item(2).innerText += "%";
+            } else {
+                row.cells.item(2).innerText = formatBytes(parseInt(row.cells.item(2).innerText.trim()));
+            }
+
             setStatusColorAll(device, row);
 
             row.cells[0].addEventListener("click", () => {
@@ -185,9 +187,11 @@ function createTable() {
         }
         if (docTitle === "Ruisdael Monitoring | Device List") {
             let n = i.toString();
-            row.insertCell(3).innerHTML = `<button id="enable-button`+n+`" class="btn-secondary">Enable</button>
-                    <button id="disable-button`+n+`" class="btn-secondary">Disable</button>
-                    <button id="delete-button`+n+`" class="btn-secondary">Delete</button>`;
+            row.insertCell(3).innerHTML = `<div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                    <button id="enable-button` + n + `" class="btn btn-success">Enable</button>
+                    <button id="disable-button` + n + `" class="btn btn-warning">Disable</button>
+                    <button id="delete-button` + n + `" class="btn btn-danger">Delete</button>
+                    </div>`;
             row.cells[3].classList.add("none");
 
             if (device.status === "DISABLED") {
@@ -271,7 +275,6 @@ export function updatePaginate(curPage) {
 function setCol(colNum, metric) {
     let button = document.getElementById("metric-" + colNum.toString());
     button.innerText = metric;
-
     createTable();
 }
 
@@ -484,6 +487,9 @@ function search() {
     }
 }
 
+/**
+ * This function is used to perform sorting based on percentage usage of Storage and RAM.
+ */
 function searchNum() {
     let min = parseInt(document.getElementsByClassName("thumb left")[0].style.left.toString().replace("%", ""));
     let max = 100 - parseInt(document.getElementsByClassName("thumb right")[0].style.right.toString().replace("%", ""));
@@ -491,7 +497,7 @@ function searchNum() {
 
     for (let i = 0; i < devices.length; i++) {
         let device = devices[i];
-        if (filter == "storage") {
+        if (filter === "storage") {
             let perc = device[filter]["usedPercStorage"];
             if (min <= perc && perc <= max) {
                 found.push(device);
@@ -528,4 +534,18 @@ function createStatuses() {
         }
     }
     container.innerHTML = innerHTML;
+}
+
+/**
+ * This function is used to format the storage display. This code was based on code from:
+ * https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
+ */
+function formatBytes(bytes) {
+    if (!+bytes) {
+        return 0;
+    }
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 }

@@ -41,3 +41,7 @@ __pycache__/
 ### H2 ###
 ruisdael-webui.mv.db
 ruisdael-webui.trace.db
+
+codemr/ruisdael-monitoring-webui 2/html/main_report/html/assets/img/
+
+codemr/
