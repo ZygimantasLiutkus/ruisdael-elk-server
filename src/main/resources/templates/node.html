@@ -75,7 +75,7 @@
             </div>
             <div class="row" style="min-height: 48vh;">
                 <div class="col node-box">
-                    <iframe th:src="'http://localhost:8085/app/dashboards#/view/90ab7390-ff08-11ed-a647-f3f338cb7d41?embed=true&_g=(filters:!((query:(match_phrase:(_index:collector_' + ${device.getName()} + ')))),refreshInterval:(pause:!t,value:60000),time:(from:now-24h,to:now))&show-time-filter=true'"
+                    <iframe th:src="${kibanaURL} + '/app/dashboards#/view/90ab7390-ff08-11ed-a647-f3f338cb7d41?embed=true&_g=(filters:!((query:(match_phrase:(_index:collector_' + ${device.getName()} + ')))),refreshInterval:(pause:!t,value:60000),time:(from:now-24h,to:now))&show-time-filter=true'"
                             style="height: 100%; width: 100%;"></iframe>
                 </div>
             </div>

@@ -190,6 +190,12 @@ tbody>tr>:last-child {
     min-width: 0;
 }
 
+.btn-warning {
+    color: #000;
+    background-color: #f7cf3e;
+    border-color: #f7cf3e;
+}
+
 .input-group, .input-group .flex-nowrap {
     margin-top: 3%;
     display: flex;

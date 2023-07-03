@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
@@ -37,15 +38,14 @@ public class AlertController {
 
     /**
      * Handler for the /alerts pages on the dashboard.
-     * This is the response to each subsequent websocketRequest.
+     * This is the response to each subsequent request.
      * @return The list of {@link Alert}s 
      */
-    @MessageMapping("/alerts")
-    @SendTo("/topic/alerts")
-    public List<Alert> updateAlerts() {
+    @GetMapping("/alert-update")
+    public ResponseEntity<List<Alert>> updateAlerts() {
         List<Alert> alerts = alertRepository.findAll();
         Collections.sort(alerts, (b, a) -> a.getTimeStamp().compareTo(b.getTimeStamp()));
-        return alerts;
+        return ResponseEntity.ok(alerts);
     }
 
     /**

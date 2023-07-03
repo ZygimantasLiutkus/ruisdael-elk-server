@@ -17,6 +17,7 @@ public class ApplicationConfig {
     private UserRepository userRepository;
 
     // UI Configuration
+
     /**
      * Time that is required to pass before a device status changes to warning or offline in seconds.
      */
@@ -24,6 +25,7 @@ public class ApplicationConfig {
     public static final long offlineTime = 301L;
 
     // Alert Configuration
+
     /**
      * Percentages for classifying as yellow or red.
      */
@@ -36,11 +38,11 @@ public class ApplicationConfig {
     public static final double STORAGE_CRITICAL_THRESHOLD = 90;
     public static final double STORAGE_WARNING_THRESHOLD = 80;
 
-
     /**
      * Delay between checking for a change in flags to report alerts on. In milliseconds.
      */
     public static final long FLAGS_CHECK_FREQUENCY = 30 * 1000L; //30 * 1000ms
+    public static final int MAX_ALERTS_IN_HISTORY = 200;
 
     // GitLab Configuration
 
@@ -49,12 +51,21 @@ public class ApplicationConfig {
      */
     public static final String gitlabURL = "https://gitlab.tudelft.nl/ruisdael/ruisdael-monitoring";
 
+    // Kibana Host Configuration
+
+    /**
+     * This URL should be accessible by clients using the dashboard.
+     */
+    public static final String kibanaURL = "https://ruisdael-kibana.citg.tudelft.nl/kibana";
+
+
     // Websocket Configuration
 
     /**
      * The delay between updates on the overview and device list page, in milliseconds.
      */
     public static final int websocketDelay = 30000;
+
 
     // Account Configuration
 

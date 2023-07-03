@@ -2,11 +2,11 @@ package tudelft.ewi.cse2000.ruisdael.monitoring.controller;
 
 import static java.util.Map.entry;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -87,21 +87,25 @@ public class DeviceController {
 
         model.addAttribute("metrics", metrics);
 
-        /* For testing purposes
+        /* For testing purposes 
         List<Device> devices = new ArrayList<>();
-        List<String> metrics = METRIC_MAPPING.values().stream().toList();
+//        List<String> metrics = METRIC_MAPPING.values().stream().toList();
         List<String> locations = (Arrays.asList("Rotterdam", "Delft", "Den Haag", "Amsterdam", "Eindhoven", "Leiden",
                 "Utrecht"));
         List<Status> statuses = new ArrayList<>(Arrays.asList(Status.ONLINE, Status.WARNING, Status.OFFLINE));
         Location location = new Location(1.0, 2.0, "le", "ln");
-        Storage storage = new Storage(0.0, 0.0, 0.0, 0.0);
-        Ram ram = new Ram(0.0, 0.0, 0.0, 0.0, 0.0);
         Bandwidth bandwidth = new Bandwidth(0.0, 0.0, 0.0, 0.0);
 
         for (int i = 0; i < 25; i++) {
             location.setName(locations.get(new Random().nextInt(locations.size())));
             Instrument instrument = new Instrument("instrument" + (i + 1), "it");
             Status s = statuses.get(new Random().nextInt(statuses.size()));
+            Storage storage = new Storage(0.0, 0.0, 0.0, 0.0);
+            Ram ram = new Ram(0.0, 0.0, 0.0, 0.0, 0.0);
+            storage.setTotalStorage(new Random().nextLong(10000000000L));
+            storage.setUsedPercStorage(new Random().nextInt(100));
+            ram.setTotal(new Random().nextLong(10000000000L));
+            ram.setUsedPerc(new Random().nextInt(100));
             devices.add(new Device("device" + (i + 1), instrument, location, s, storage, ram,
                     1.0, bandwidth, "t", null));
         }
@@ -124,13 +128,14 @@ public class DeviceController {
             model.addAttribute("noData", true);
         } else {
             model.addAttribute("device", lastHitResult);
+            model.addAttribute("kibanaURL", ApplicationConfig.kibanaURL);
         }
 
         // For alert table
         model.addAttribute("websocketDelay", ApplicationConfig.websocketDelay);
         model.addAttribute("gitlabURL", ApplicationConfig.gitlabURL);
         List<Alert> deviceAlerts = alertController.getNodeAlerts(nodeIndex);
-        Collections.sort(deviceAlerts, (b, a) -> a.getTimeStamp().compareTo(b.getTimeStamp()));
+        deviceAlerts.sort((b, a) -> a.getTimeStamp().compareTo(b.getTimeStamp()));
         model.addAttribute("deviceAlerts", deviceAlerts);
 
 
@@ -180,14 +185,12 @@ public class DeviceController {
     }
 
     /**
-     * Method that listens for a websockets message to '/app/devices' and returns a device list to
-     * '/topic/devices' after receiving a message.
+     * Returns a list of devices from the elasticsearch service.
      *
-     * @return a list of devices from Elasticsearch.
+     * @return a response entity with a list of devices from Elasticsearch.
      */
-    @MessageMapping("/devices") // /app/devices
-    @SendTo("/topic/devices")
-    public List<Device> updateDevices() {
+    @GetMapping("/device-update")
+    public ResponseEntity<List<Device>> updateDevices() {
 
         /* For testing purposes
         List<Device> devices = new ArrayList<>();
@@ -208,54 +211,51 @@ public class DeviceController {
                     statuses.get(new Random().nextInt(statuses.size())), storage, ram,1.0, bandwidth,
                     "t", null));
         }
-        return devices */
+        return ResponseEntity.ok(devices) */
 
-        return elasticsearchService.getAllDevices();
+        return ResponseEntity.ok(elasticsearchService.getAllDevices());
     }
 
     /**
-     * Method that listens for a websocket message to delete a specific index from Elasticsearch.
+     * Deletes an index from Elasticsearch.
      *
      * @param index the index to be deleted.
      * @return boolean of success.
      */
-    @MessageMapping("/delete/{index}")
-    @SendTo("/topic/delete")
-    public boolean deleteIndex(@DestinationVariable String index) {
-        return elasticsearchService.deleteIndex(index).acknowledged();
+    @GetMapping("/delete/{index}")
+    public ResponseEntity<Boolean> deleteIndex(@PathVariable("index") String index) {
+        return ResponseEntity.ok(elasticsearchService.deleteIndex(index).acknowledged());
     }
 
     /**
-     * Method that listens for a websocket message to disable a specific index (add it to a disabled index repo).
+     * Disables a node by adding it to the disabled node local repository if the node is not already disabled.
      *
      * @param index the index to be disabled.
      * @return boolean of success.
      */
-    @MessageMapping("/disable/{index}")
-    @SendTo("/topic/disable")
-    public boolean disableIndex(@DestinationVariable String index) {
+    @GetMapping("/disable/{index}")
+    public ResponseEntity<Boolean> disableIndex(@PathVariable("index") String index) {
         if (indexRepository.existsByIndexValue(index)) {
-            return false;
+            return ResponseEntity.ok(false);
         } else {
             indexRepository.saveAndFlush(new Index(0L, index));
-            return true;
+            return ResponseEntity.ok(true);
         }
     }
 
     /**
-     * Method that listens for a websocket message to enable a specific index (remove it from a disabled index repo).
+     * Enables a node by removing it from the disabled node local repository, if the node is found.
      *
      * @param index the index to be enabled.
      * @return boolean of success.
      */
-    @MessageMapping("/enable/{index}")
-    @SendTo("/topic/enable")
-    public boolean enableIndex(@DestinationVariable String index) {
+    @GetMapping("/enable/{index}")
+    public ResponseEntity<Boolean> enableIndex(@PathVariable("index") String index) {
         if (indexRepository.existsByIndexValue(index)) {
             indexRepository.delete(indexRepository.findByIndexValue(index));
-            return true;
+            return ResponseEntity.ok(true);
         } else {
-            return false;
+            return ResponseEntity.ok(false);
         }
     }
 }

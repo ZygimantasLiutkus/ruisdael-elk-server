@@ -82,7 +82,13 @@
     - name: clone the git repository
       git:
         repo: https://{{token_name}}:{{git_access_token}}@{{gitlab_address}}
-        dest: /bin/dashboard
+        dest: /usr/local/src/dashboard
+      become: true
+
+    - name: configure dashboard
+      template:
+        src: application.properties.j2
+        dest: /usr/local/src/dashboard/src/main/resources/
       become: true
 
     - name: Install JDK
@@ -119,7 +125,7 @@
     - name: build with gradle
       ansible.builtin.shell: /opt/gradle/gradle-8.1.1/bin/gradle bootJar
       args:
-        chdir: /bin/dashboard
+        chdir: /usr/local/src/dashboard
       become: true
 
     # add the dashboard as a service and run it

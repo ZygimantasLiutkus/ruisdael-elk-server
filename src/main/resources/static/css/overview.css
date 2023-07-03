@@ -77,7 +77,7 @@ tbody>tr {
 .bottom-bar {
     width: 100%;
     min-height: 50px;
-    margin-top: 2%;
+    margin-top: 5%;
     background-color: #212529;
 }
 
@@ -109,6 +109,8 @@ fieldset {
   .some-class {
     float: left;
     clear: none;
+      display: flex;
+      flex-wrap: wrap;
   }
   
   label {

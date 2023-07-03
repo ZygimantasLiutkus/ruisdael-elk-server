@@ -1,6 +1,7 @@
 package tudelft.ewi.cse2000.ruisdael.monitoring.component;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +55,23 @@ public class AlertComponent {
                     }
                 }
                 statusFlags.put(d.getName(), newFlags);
+            }
+        }
+
+        clearResultOverflow();
+    }
+
+    /**
+     * Method to clean up history to avoid long page loading times.
+     */
+    public void clearResultOverflow() {
+        int toRemove = (int) (alertRepository.count() - ApplicationConfig.MAX_ALERTS_IN_HISTORY);
+        if (toRemove > 0) {
+            List<Alert> orderedList = alertRepository.findAll();
+            orderedList.sort((a, b) -> Math.toIntExact(a.getId() - b.getId()));
+
+            for (int i = 0; i < toRemove; i++) {
+                alertRepository.delete(orderedList.remove(0));
             }
         }
     }

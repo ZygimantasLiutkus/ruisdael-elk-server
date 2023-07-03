@@ -49,7 +49,7 @@
                     <p th:if="${param.get('create_error') != null}">An unspecified error occurred.</p>
 
                     <form th:action="@{/create-account}" th:object="${usercreation}" method="post" id="account-form">
-                        <input th:field="*{username}" type="password" placeholder="username">
+                        <input th:field="*{username}" type="text" placeholder="username">
                         <br />
                         <input th:field="*{password}" type="password" placeholder="password">
                         <br />
